@@ -9,6 +9,7 @@ from drf_yasg import openapi
 from django.urls import include
 from myapp.views import home
 from rest_framework.permissions import AllowAny
+from .views import add_person, get_people
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -25,14 +26,18 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home, name='home'),
+    path('', include('myapp.urls')),
     #re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('api/', include('myapp.urls')),
+    path('add-person/', add_person, name='add_person'),
+    path('get-people/', get_people, name='get_people'),
+
 ]
 
 # Si des fichiers statiques sont nécessaires
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -75,12 +75,23 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+import os
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'yourdatabase'),
+        'USER': os.getenv('POSTGRES_USER', 'yourusername'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'yourpassword'),
+        'HOST': os.getenv('POSTGRES_HOST', 'db'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
+
+
+MEDIA_URL = '/media/'  # URL pour accéder aux fichiers médias
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Répertoire où les fichiers seront stockés
+
 
 
 # Password validation

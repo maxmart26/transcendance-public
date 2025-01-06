@@ -1,13 +1,18 @@
 # Utiliser l'image officielle Python
 FROM python:3.10
 
+# Installer les dépendances système nécessaires à psycopg2
+RUN apt-get update && apt-get install -y \
+    libpq-dev gcc && \
+    apt-get clean
+
 # Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
 # Copier le fichier des dépendances
 COPY app/requirements.txt /app/requirements.txt
 
-# Installer les dépendances
+# Installer les dépendances Python
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # Copier le reste de l'application
