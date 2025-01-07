@@ -1,9 +1,9 @@
 from rest_framework.permissions import BasePermission
 
-class SwaggerPermission(BasePermission):
+class IsAdminOrReadOnly(BasePermission):
+    """
+    Custom permission to allow only admin users to access the route.
+    """
     def has_permission(self, request, view):
-        # Permet l'accès à Swagger pour tout le monde
-        if view.__class__.__name__ == 'SchemaView':
-            return True
-        # Applique les permissions normales ailleurs
-        return False
+        # Autorise uniquement les administrateurs à accéder
+        return request.user and request.user.is_staff

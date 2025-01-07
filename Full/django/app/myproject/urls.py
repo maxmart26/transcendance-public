@@ -1,15 +1,15 @@
 from django.conf import settings
 from django.conf.urls.static import static
-from myapp.views import home
 from django.contrib import admin
 from django.urls import path, re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import include
-from myapp.views import home
 from rest_framework.permissions import AllowAny
-from .views import add_person, get_people
+from .views import add_player, update_or_add_player
+from myapp.views import get_all_players
+from . import views
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -31,8 +31,9 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('api/', include('myapp.urls')),
-    path('add-person/', add_person, name='add_person'),
-    path('get-people/', get_people, name='get_people'),
+    path('add-player/', views.add_player, name='add_player'),
+    path('update-player/', update_or_add_player, name='update-player'),
+    path('get-all-players/', get_all_players, name='get_all_players'),
 
 ]
 
