@@ -8,3 +8,43 @@ document.getElementById('replaceButton').addEventListener('click', () => {
     const sectionB = document.getElementById('create-account');
     sectionB.classList.remove('hidden');
 });
+
+// Sélection des éléments
+const imageUpload = document.getElementById('imageUpload');
+const imagePreview = document.getElementById('imagePreview');
+
+// Écouteur d'événement pour le changement de fichier
+imageUpload.addEventListener('change', (event) => {
+  const file = event.target.files[0]; // Récupère le premier fichier sélectionné
+  
+  if (file) {
+    const reader = new FileReader(); // Crée un FileReader
+
+    // Quand le fichier est lu
+    reader.onload = (e) => {
+      imagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
+    };
+
+    reader.readAsDataURL(file); // Lit le fichier comme une URL de données
+  }
+});
+
+const image_upload = document.getElementById('imageUpload');
+const image_preview = document.getElementById('imagePreview');
+
+// Écoute l'événement "change" sur l'input file
+image_upload.addEventListener('change', (event) => {
+  const file = event.target.files[0]; // Récupère le fichier sélectionné
+
+  if (file) {
+    const reader = new FileReader(); // Crée un FileReader
+
+    // Quand le fichier est chargé
+    reader.onload = (e) => {
+      image_preview.src = e.target.result; // Remplace l'image actuelle par la nouvelle
+    };
+
+    reader.readAsDataURL(file); // Lit le fichier comme URL de données
+  }
+});
+

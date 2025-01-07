@@ -6,7 +6,10 @@
     <title>PONG</title>
     <link rel="stylesheet" href="login.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+
+
 </head>
 <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -22,13 +25,12 @@
                 <p class="text-wrapper-5">LOGIN</p>
                 <form class="login-infos">
                     <label for="username" class="text-wrapper-2">Username</label>
-                    <input type="text" id="username" placeholder="Entrez votre nom d'utilisateur">
-                
+                    <input type="text" id="username">
                     <label for="password" class="text-wrapper-2">Password</label>
-                    <input type="password" id="password" placeholder="Entrez votre mot de passe">
+                    <input type="password" id="password">
                 </form>
                 <div class="enter">
-                    <button id="replaceButton" class="rectangle-4">ENTER</button>
+                    <button class="rectangle-4">ENTER</button>
                 </div>
                 <div class="or">
                     <img class="line" src="img/line1.png" />
@@ -43,12 +45,36 @@
                 </div>
                 <div class="account">
                     <p class="p">You don't have an account ?</p>
-                    <button class="text-wrapper-6">Create an account</button>
+                    <button id="replaceButton" class="text-wrapper-6">Create an account</button>
                 </div>
             </div>
             <div id="create-account" class="hidden">
                 <div class="rectangle">
-                    <p class="content">Nouveau contenu (Section B).</p>
+                    <p class="text-wrapper-5">CREATE YOUR PROFILE</p>
+                    <div class="icon">
+                        <div class="people-contour">
+                            <img id="imagePreview" class="preview" src="img/person.png">
+                        </div>
+                        <div class="file">
+                            <div class="upload">
+                                <input type="file" id="imageUpload" accept="image/*" hidden>
+                                <label for="imageUpload" class="custom-button">Choose File</label>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="infos">
+                        <label for="username" class="text-wrapper-2">Username</label>
+                        <input type="text" id="username">
+                        <label for="password" class="text-wrapper-2">Password</label>
+                        <input type="password" id="password">
+                        <label for="confirm-password" class="text-wrapper-2">Confirm password</label>
+                        <input type="password" id="confirm-password">
+                        <label for="email" class="text-wrapper-2">Email</label>
+                        <input type="text" id="email">
+                    </form>
+                    <div class="enter">
+                        <button class="rectangle-4">Save</button>
+                    </div>
                 </div>
             </div>
           </div>
