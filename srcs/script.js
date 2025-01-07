@@ -48,3 +48,49 @@ image_upload.addEventListener('change', (event) => {
   }
 });
 
+document.getElementById('save').addEventListener('click', () => {
+const _profileImage = document.getElementById('imagePreview');
+const _username = document.getElementById('username');
+const _password = document.getElementById('password');
+const _confirmPassword = document.getElementById('confirm-password');
+const _email = document.getElementById('email');
+
+if (_username.value.trim() === "" || _password.value.trim() === "" || _confirmPassword.value.trim() === "" || _email.value.trim() === "")
+    console.log("Invalid field !");
+
+if (_password.value != _confirmPassword.value)
+    console.log("Passwords are not the same !");
+
+console.log(_password.value);
+console.log(_confirmPassword.value);
+
+const formData = new FormData();
+    formData.append('username', _username.value.trim());
+    formData.append('password', _password.value.trim());
+    formData.append('confirm-password', _confirmPassword.value.trim());
+    formData.append('email', _email.value.trim());
+    formData.append('imagePreview', _profileImage.files[0]);
+
+console.log(formData.value);
+
+fetch('https://localhost:8080/add-player/', {
+    method: 'POST',
+    body: formData,
+})
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Erreur lors de l\'envoi des données');
+        }
+    })
+    .then(result => {
+        console.log('Succès:', result);
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+
+});
+
+
