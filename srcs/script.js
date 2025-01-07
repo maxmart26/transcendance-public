@@ -48,10 +48,11 @@ image_upload.addEventListener('change', (event) => {
   }
 });
 
+
 document.getElementById('save').addEventListener('click', () => {
 const _profileImage = document.getElementById('imagePreview');
-const _username = document.getElementById('username');
-const _password = document.getElementById('password');
+const _username = document.getElementById('user');
+const _password = document.getElementById('password2');
 const _confirmPassword = document.getElementById('confirm-password');
 const _email = document.getElementById('email');
 
@@ -61,9 +62,6 @@ if (_username.value.trim() === "" || _password.value.trim() === "" || _confirmPa
 if (_password.value != _confirmPassword.value)
     console.log("Passwords are not the same !");
 
-console.log(_password.value);
-console.log(_confirmPassword.value);
-
 const formData = new FormData();
     formData.append('username', _username.value.trim());
     formData.append('password', _password.value.trim());
@@ -71,7 +69,7 @@ const formData = new FormData();
     formData.append('email', _email.value.trim());
     formData.append('imagePreview', _profileImage.files[0]);
 
-console.log(formData.value);
+    console.table(Array.from(formData.entries()));
 
 fetch('https://localhost:8080/add-player/', {
     method: 'POST',
@@ -90,7 +88,7 @@ fetch('https://localhost:8080/add-player/', {
     .catch(error => {
         console.error('Erreur:', error);
     });
-
 });
+
 
 
