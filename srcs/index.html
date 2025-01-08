@@ -19,9 +19,11 @@
         <div class="overlap-wrapper">
           <div class="overlap">
             <img class="background-img" src="img/back_img.webp" />
-            <div class="navbar"></div>
-            <p class="text-wrapper">PONG</p>
-            <div id="login-page" class="rectangle">
+            
+            <div id="login-page">
+                <div class="navbar"></div>
+                <p class="text-wrapper">PONG</p>
+                <div class="rectangle">
                 <p class="text-wrapper-5">LOGIN</p>
                 <form class="login-infos">
                     <label for="username" class="text-wrapper-2">Username</label>
@@ -30,7 +32,7 @@
                     <input type="password" id="password">
                 </form>
                 <div class="enter">
-                    <button class="rectangle-4">ENTER</button>
+                    <button id="homeButton" class="rectangle-4">ENTER</button>
                 </div>
                 <div class="or">
                     <img class="line" src="img/line1.png" />
@@ -47,8 +49,11 @@
                     <p class="p">You don't have an account ?</p>
                     <button id="replaceButton" class="text-wrapper-6">Create an account</button>
                 </div>
+                </div>
             </div>
             <div id="create-account" class="hidden">
+                <div class="navbar"></div>
+                <p class="text-wrapper">PONG</p>
                 <div class="rectangle">
                     <p class="text-wrapper-5">CREATE YOUR PROFILE</p>
                     <div class="icon">
@@ -74,6 +79,22 @@
                     </form>
                     <div class="enter">
                         <button id="save" class="rectangle-4">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div id="home-page" class="hidden">
+                <div class="home-navbar">
+                    <div class="navbar-left">
+                        <p class="text-wrapper">PONG</p>
+                        <a href="#home" class="navbar-item">HOME</a>
+                        <a href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                        <a href="#friends" class="navbar-item">FRIENDS</a>
+                      </div>
+                      <div class="navbar-right">
+                        <a href="#settings" class="navbar-item">SETTINGS</a>
+                        <div class="profile-container">
+                          <img src="42.png" alt="Profile" class="profile-image">
+                        </div>
                     </div>
                 </div>
             </div>

@@ -37,7 +37,7 @@ body {
 	inset: 0;
 }
   
-.login-page .navbar {
+.navbar {
   position: absolute;
   width: 100%;
   height: 80px;
@@ -381,5 +381,61 @@ input {
   max-height: 100%;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.home-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  color: white;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 100%;
+  height: 80px;
+  top: 0;
+  left: 0;
+  background-color: #271e79;
+}
+
+/* Left side of the navbar */
+.navbar-left {
+  display: flex;
+  gap: 13%; /* Space between links */
+  padding-left: 15%;
+}
+
+/* Right side of the navbar */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 13%; /* Space between settings and profile */
+}
+
+/* Navbar items (links) */
+.navbar-item {
+  text-decoration: none; /* Remove underline */
+  color: white; /* Text color */
+  font-size: 16px;
+  transition: color 0.3s ease;
+  font-family: 'Audiowide', sans-serif;
+}
+
+.navbar-item:hover {
+  color: #51fbf2; /* Highlight color on hover */
+}
+
+/* Profile image styling */
+.profile-container {
+  width: 40px;
+  height: 40px;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%; /* Circular image */
+  object-fit: cover; /* Ensure the image fits within the circle */
+  border: 2px solid white; /* Optional border around the image */
 }
 

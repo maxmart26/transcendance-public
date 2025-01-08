@@ -9,6 +9,16 @@ document.getElementById('replaceButton').addEventListener('click', () => {
     sectionB.classList.remove('hidden');
 });
 
+document.getElementById('homeButton').addEventListener('click', () => {
+  // Cacher la section A
+  const sectionA = document.getElementById('login-page');
+  sectionA.classList.add('hidden');
+  
+  // Afficher la section B
+  const sectionB = document.getElementById('home-page');
+  sectionB.classList.remove('hidden');
+});
+
 // Sélection des éléments
 const imageUpload = document.getElementById('imageUpload');
 const imagePreview = document.getElementById('imagePreview');
@@ -50,7 +60,7 @@ image_upload.addEventListener('change', (event) => {
 
 
 document.getElementById('save').addEventListener('click', () => {
-const _profileImage = document.getElementById('imagePreview');
+const _profileImage = document.getElementById('imageUpload');
 const _username = document.getElementById('user');
 const _password = document.getElementById('password2');
 const _confirmPassword = document.getElementById('confirm-password');
@@ -67,7 +77,7 @@ const formData = new FormData();
     formData.append('password', _password.value.trim());
     formData.append('confirm-password', _confirmPassword.value.trim());
     formData.append('email', _email.value.trim());
-    formData.append('imagePreview', _profileImage.files[0]);
+    formData.append('imageUpload', _profileImage.files[0]);
 
     console.table(Array.from(formData.entries()));
 
