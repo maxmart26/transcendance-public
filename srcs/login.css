@@ -398,11 +398,13 @@ input {
   background-color: #271e79;
 }
 
+
 /* Left side of the navbar */
 .navbar-left {
   display: flex;
   gap: 13%; /* Space between links */
   padding-left: 15%;
+  align-items: center;
 }
 
 /* Right side of the navbar */
@@ -413,7 +415,7 @@ input {
 }
 
 /* Navbar items (links) */
-.navbar-item {
+#home {
   text-decoration: none; /* Remove underline */
   color: white; /* Text color */
   font-size: 16px;
@@ -421,21 +423,121 @@ input {
   font-family: 'Audiowide', sans-serif;
 }
 
-.navbar-item:hover {
+#leaderboard {
+  text-decoration: none; /* Remove underline */
+  color: white; /* Text color */
+  font-size: 16px;
+  transition: color 0.3s ease;
+  font-family: 'Audiowide', sans-serif;
+}
+
+#friends {
+  text-decoration: none; /* Remove underline */
+  color: white; /* Text color */
+  font-size: 16px;
+  transition: color 0.3s ease;
+  font-family: 'Audiowide', sans-serif;
+}
+
+#settings {
+  text-decoration: none; /* Remove underline */
+  color: white; /* Text color */
+  font-size: 16px;
+  transition: color 0.3s ease;
+  font-family: 'Audiowide', sans-serif;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  padding: 5px 8px;
+  background-color: #E085CB;
+}
+
+#home:hover {
   color: #51fbf2; /* Highlight color on hover */
+  text-decoration: underline;
+}
+
+#friends:hover {
+  color: #FAB005; /* Highlight color on hover */
+  text-decoration: underline;
+}
+
+#leaderboard:hover {
+  text-decoration: underline;
+}
+
+#settings:hover {
+  color: #fff; /* Highlight color on hover */
+  background-color: #D25CB9;
 }
 
 /* Profile image styling */
 .profile-container {
-  width: 40px;
-  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 .profile-image {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%; /* Circular image */
-  object-fit: cover; /* Ensure the image fits within the circle */
-  border: 2px solid white; /* Optional border around the image */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
+.game-rectangle {
+  position: relative;
+  width: 25%;
+  top: 186px;
+  left: 2%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 120%;
+  font-family: 'Audiowide', sans-serif;
+  padding: 10px 5px;
+  transition: all 0.3s ease;
+}
+
+.game-rectangle:hover {
+  background-color: #D25CB9;
+  transform: scale(1.05);
+}
+
+.game-rectangle:active {
+  background-color: #D25CB9;
+  transform: scale(0.95);
+}
+
+.start-game {
+  color: #fff;
+  font-family: 'Audiowide', sans-serif;
+  display: flex;
+  margin-bottom: 5%;
+  margin-top: 5%;
+}
+
+.settings-page {
+  position: absolute;
+  top: 50%; /* Centre verticalement */
+  left: 50%; /* Centre horizontalement */
+  transform: translate(-50%, -50%); /* Ajuste pour centrer */
+  width: 552px;
+  height: 672px;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

@@ -19,6 +19,16 @@ document.getElementById('homeButton').addEventListener('click', () => {
   sectionB.classList.remove('hidden');
 });
 
+document.getElementById('settings').addEventListener('click', () => {
+  // Cacher la section A
+  const sectionA = document.getElementById('home-page');
+  sectionA.classList.add('hidden');
+  
+  // Afficher la section B
+  const sectionB = document.getElementById('settings-page');
+  sectionB.classList.remove('hidden');
+});
+
 // Sélection des éléments
 const imageUpload = document.getElementById('imageUpload');
 const imagePreview = document.getElementById('imagePreview');
