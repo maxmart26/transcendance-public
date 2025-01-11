@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from .models import Player
 from .permissions import IsAdminOrReadOnly
 from .serializers import PlayerSerializer
+from django.shortcuts import render
 
 @api_view(["GET"])
 @permission_classes([IsAdminOrReadOnly])
@@ -19,3 +20,6 @@ def get_all_players(request):
         return Response(serializer.data, status=200)
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+
+def homepage(request):
+    return render(request, 'index.html')
