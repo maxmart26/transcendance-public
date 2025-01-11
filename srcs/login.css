@@ -550,7 +550,7 @@ input {
   justify-content: center;
   width: 80%;
   height: 30%;
-  background-color: #51FBF2;
+  background-color: #E085CB;
   border-radius: 30px;
   font-family: 'Audiowide', sans-serif;
   margin-top: 8%;
@@ -562,6 +562,7 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 15%;
 }
 
 .settings-infos {
@@ -572,8 +573,58 @@ input {
   gap: 10px;
 }
 
-.text {
+.settings-text {
   color: #fff;
+}
+
+.settings-profileImage {
+  display: inline-block;
+  background-color: #fff;
+  color: #000000;
+  font-size: 11px;
+  font-family: 'Audiowide', sans-serif;
+  padding: 5px 15px;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.settings-profileImage:hover {
+  background-color: #281f79;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.settings-profileImage:active {
+  background-color: #281f79;
+  color: #ffffff;
+  transform: scale(0.95);
+}
+
+.save-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-bottom: 3%;
+  border-radius: 60px;
+  background-color: #D25CB9;
+  transition: all 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: #281f79;
+  transform: scale(1.05);
+}
+
+.save-button:active {
+  background-color: #281f79;
+  transform: scale(0.95);
 }
 
 .change-password {

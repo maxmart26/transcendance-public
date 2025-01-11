@@ -88,6 +88,45 @@ image_upload.addEventListener('change', (event) => {
   }
 });
 
+// Sélection des éléments
+const newImageUpload = document.getElementById('newImageUpload');
+const newImagePreview = document.getElementById('newImagePreview');
+
+// Écouteur d'événement pour le changement de fichier
+imageUpload.addEventListener('change', (event) => {
+  const file = event.target.files[0]; // Récupère le premier fichier sélectionné
+  
+  if (file) {
+    const reader = new FileReader(); // Crée un FileReader
+
+    // Quand le fichier est lu
+    reader.onload = (e) => {
+      newImagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
+    };
+
+    reader.readAsDataURL(file); // Lit le fichier comme une URL de données
+  }
+});
+
+const new_image_upload = document.getElementById('newImageUpload');
+const new_image_preview = document.getElementById('newImagePreview');
+
+// Écoute l'événement "change" sur l'input file
+image_upload.addEventListener('change', (event) => {
+  const file = event.target.files[0]; // Récupère le fichier sélectionné
+
+  if (file) {
+    const reader = new FileReader(); // Crée un FileReader
+
+    // Quand le fichier est chargé
+    reader.onload = (e) => {
+      new_image_preview.src = e.target.result; // Remplace l'image actuelle par la nouvelle
+    };
+
+    reader.readAsDataURL(file); // Lit le fichier comme URL de données
+  }
+});
+
 
 document.getElementById('save').addEventListener('click', () => {
 const _profileImage = document.getElementById('imageUpload');
