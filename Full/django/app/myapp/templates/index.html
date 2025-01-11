@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PONG</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+
+
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <div class="login-page">
+        <div class="overlap-wrapper">
+          <div class="overlap">
+            <img class="background-img" src="{% static 'img/back_img.webp' %}"/>
+            
+            <div id="login-page">
+                <div class="navbar"></div>
+                <p class="text-wrapper">PONG</p>
+                <div class="rectangle">
+                <p class="text-wrapper-5">LOGIN</p>
+                <form class="login-infos">
+                    <label for="username" class="text-wrapper-2">Username</label>
+                    <input type="text" id="username">
+                    <label for="password" class="text-wrapper-2">Password</label>
+                    <input type="password" id="password">
+                </form>
+                <div class="enter">
+                    <button id="homeButton" class="rectangle-4">ENTER</button>
+                </div>
+                <div class="or">
+                    <img class="line" src="{% static 'img/line1.png' %}" />
+                    <p class="text-wrapper-8">OR</p>
+                    <img class="img" src="{% static 'img/line1.png' %}" />
+                </div>
+                <div class="login">
+                    <button class="button2">
+                        <p class="text">Login with</p>
+                        <img class="element-icon" src="{% static 'img/42.png' %}" />
+                    </button>
+                </div>
+                <div class="account">
+                    <p class="p">You don't have an account ?</p>
+                    <button id="replaceButton" class="text-wrapper-6">Create an account</button>
+                </div>
+                </div>
+            </div>
+            <div id="create-account" class="hidden">
+                <div class="navbar"></div>
+                <p class="text-wrapper">PONG</p>
+                <div class="rectangle">
+                    <p class="text-wrapper-5">CREATE YOUR PROFILE</p>
+                    <div class="icon">
+                        <div class="people-contour">
+                            <img id="imagePreview" class="preview" src="{% static 'img/person.png' %}" >
+                        </div>
+                        <div class="file">
+                            <div class="upload">
+                                <input type="file" id="imageUpload" accept="image/*" hidden>
+                                <label for="imageUpload" class="custom-button">Choose File</label>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="infos">
+                        <label for="username" class="text-wrapper-2">Username</label>
+                        <input type="text" id="user">
+                        <label for="password" class="text-wrapper-2">Password</label>
+                        <input type="password" id="password2">
+                        <label for="confirm-password" class="text-wrapper-2">Confirm password</label>
+                        <input type="password" id="confirm-password">
+                        <label for="email" class="text-wrapper-2">Email</label>
+                        <input type="text" id="email">
+                    </form>
+                    <div class="enter">
+                        <button id="save" class="rectangle-4">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div id="home-page" class="hidden">
+                <div class="home-navbar">   
+                    <div class="navbar-left">
+                        <p class="text-wrapper">PONG</p>
+                        <a id="home" href="#home" class="navbar-item">HOME</a>
+                        <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                        <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+                      </div>
+                      <div class="navbar-right">
+                        <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                        <div class="profile-container">
+                          <img src="{% static 'img/42.png' %}" alt="Profile" class="profile-image">
+                        </div>
+                    </div>
+                </div>
+                <button class="game-rectangle">START A GAME</button>
+            </div>
+            <div id="settings-page" class="hidden">
+                <div class="home-navbar">   
+                    <div class="navbar-left">
+                        <p class="text-wrapper">PONG</p>
+                        <a id="home" href="#home" class="navbar-item">HOME</a>
+                        <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                        <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+                      </div>
+                      <div class="navbar-right">
+                        <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                        <div class="profile-container">
+                          <img src="{% static 'img/42.png' %}" alt="Profile" class="profile-image">
+                        </div>
+                    </div>
+                </div>
+                <div class="rectangle">
+                    <p class="text-wrapper-5">SETTINGS</p>
+                    <div class="profile">
+                        <div class="recap-infos">
+                            <div class="icon">
+                                <div class="people-contour">
+                                    <img id="imagePreview" class="preview" src="{% static 'img/person.png' %}" >
+                                </div>
+                                <div class="file">
+                                    <div class="upload">
+                                        <input type="file" id="imageUpload" accept="image/*" hidden>
+                                        <label for="imageUpload" class="custom-button">Choose File</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <form class="settings-infos">
+                                <label for="username" class="text">Username</label>
+                                <input type="text" id="username">
+                                <label for="email" class="text">Email</label>
+                                <input type="text" id="email">
+                            </form>
+                        </div>
+                        <button id="save" class="rectangle-4">Save</button>
+                    </div>
+                    <div class="change-password">
+                        <p class="settings-password">CHANGE YOUR PASSWORD</p>
+                        <form class="infos">
+                            <label for="password" class="text-wrapper-2">Enter your new password</label>
+                            <input type="password" id="password2">
+                            <label for="confirm-password" class="text-wrapper-2">Confirm your new password</label>
+                            <input type="password" id="confirm-password">
+                        </form>
+                    </div>
+                    <div class="a2f">
+                        
+                    </div>
+                    <button id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
+                </div>
+            </div>
+          </div>
+          
+        </div>
+        
+    </div>
+    
+    <script src="{% static 'js/script.js' %}"></script>
+      
+</body>
+</html>
