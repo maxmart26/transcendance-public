@@ -6,7 +6,6 @@ body {
   
 }
 
-
 .login-page {
   background-color: #ffffff;
   display: flex;
@@ -108,7 +107,7 @@ justify-content: center;
 }
 
 input {
-  width: 60%;
+  width: 90%;
   border: none;
   outline: none;
   font-size: 16px;
@@ -125,7 +124,7 @@ input {
   font-size: 15px;
   letter-spacing: 0;
   line-height: normal;
-  margin-top: 3%;
+  margin-top: 10%;
   margin-bottom: 3%;
 }
 
@@ -137,7 +136,7 @@ input {
 }
 
 .login-page .rectangle-4 {
-  width: 15%;
+  width: 115%;
   height: 110%;
   background-color: #51fbf2;
   color: #000000;
@@ -190,7 +189,7 @@ input {
 .login-page .button2 {
   background-color: #51fbf2;
   border-radius: 13px;
-  width: 30%;
+  width: 120%;
   height: 110%;
   align-items: center;
   justify-content: center;
@@ -296,12 +295,12 @@ input {
 }
 
 .people-contour {
-  width: 80%;
-  border-radius: 30%;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 2%;
+  margin-bottom: 10%;
+  overflow: hidden;
 }
 
 .people-icon {
@@ -357,9 +356,10 @@ input {
   color: #000000;
   font-size: 11px;
   font-family: 'Audiowide', sans-serif;
-  padding: 5px 10px;
+  padding: 5px 15px;
   border-radius: 15px;
   transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .custom-button:hover {
