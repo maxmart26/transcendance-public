@@ -34,7 +34,7 @@ urlpatterns = [
     path('add-player/', views.add_player, name='add_player'),
     path('update-player/', update_or_add_player, name='update-player'),
     path('get-all-players/', get_all_players, name='get_all_players'),
-
+    path('login/', views.login, name='login'),
 ]
 
 # Si des fichiers statiques sont nécessaires

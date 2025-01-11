@@ -6,6 +6,8 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from myapp.models import Player
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth import authenticate
+
 
 
 # route pour add un player
@@ -143,3 +145,60 @@ def update_or_add_player(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+import logging
+logger = logging.getLogger(__name__)
+
+@swagger_auto_schema(
+    method="post",
+    operation_description="Log in a user with username and password.",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'username': openapi.Schema(type=openapi.TYPE_STRING, description='The username of the user'),
+            'password': openapi.Schema(type=openapi.TYPE_STRING, description='The password of the user'),
+        },
+        required=['username', 'password'],
+    ),
+    responses={
+        200: openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'message': openapi.Schema(type=openapi.TYPE_STRING),
+                'token': openapi.Schema(type=openapi.TYPE_STRING),
+            }
+        ),
+        401: "Unauthorized: Invalid credentials.",
+    },
+)
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def login(request):
+    """
+    Login route to authenticate users.
+    """
+    data = request.data
+    username = data.get("username")
+    password = data.get("password")
+
+    # Vérification des champs obligatoires
+    if not username or not password:
+        return Response(
+            {"error": "Both username and password are required."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+        logger.debug(f"Username: {username}, Password: {password}")
+
+    # Authentification
+    user = authenticate(username=username, password=password)
+
+    if user is not None:
+        # Vérifiez si l'utilisateur existe dans la base
+        return Response(
+        {"message": "Login successful!", "username": user.username},
+        status=status.HTTP_200_OK,)
+    else:
+        return Response(
+            {"error": "Invalid username or password."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
