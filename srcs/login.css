@@ -316,13 +316,13 @@ input {
   margin-bottom: 0;
 }
 
-input {
+/* input {
   color: #000000;
   font-family: 'Audiowide', sans-serif;
   font-size: 85%;
   min-width: 8em;
   margin-bottom: 0;
-}
+} */
 
 .upload-icon {
   color: #fff;
@@ -405,7 +405,7 @@ input {
 .navbar-left {
   display: flex;
   gap: 13%; /* Space between links */
-  padding-left: 15%;
+  padding-left: 13em;
   align-items: center;
 }
 
@@ -413,7 +413,8 @@ input {
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 13%; /* Space between settings and profile */
+  gap: 18%; /* Space between settings and profile */
+  padding-right: 2em;
 }
 
 /* Navbar items (links) */
@@ -488,7 +489,7 @@ input {
 .game-rectangle {
   position: relative;
   width: 25%;
-  top: 186px;
+  margin-top: 18em;
   left: 2%;
   margin-left: auto;
   margin-right: auto;
@@ -549,13 +550,12 @@ input {
   align-items: center;
   justify-content: center;
   width: 80%;
-  height: 30%;
+  height: 28%;
   background-color: #E085CB;
   border-radius: 30px;
   font-family: 'Audiowide', sans-serif;
-  margin-top: 8%;
+  margin-top: 3%;
   flex-direction: column;
-  gap: 5%;
 }
 
 .recap-infos {
@@ -571,6 +571,21 @@ input {
   justify-content: center;
   flex-direction: column;
   gap: 10px;
+}
+
+.settings-title {
+  position: relative;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+  top: 3%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .settings-text {
@@ -611,7 +626,7 @@ input {
   font-size: 11px;
   letter-spacing: 0;
   line-height: normal;
-  margin-bottom: 3%;
+  margin-bottom: 2%;
   border-radius: 60px;
   background-color: #D25CB9;
   transition: all 0.3s ease;
@@ -632,11 +647,40 @@ input {
   align-items: center;
   justify-content: center;
   width: 80%;
-  height: 20%;
-  background-color: #51FBF2;
+  height: 32%;
+  background-color: #E085CB;
   border-radius: 30px;
   font-family: 'Audiowide', sans-serif;
+  margin-top: 2%;
+  color: #fff;
+  flex-direction: column;
+}
+
+.settings-password {
+  margin-bottom: 0;
   margin-top: 4%;
+  color: #000;
+  font-size: 90%;
+}
+
+.password-infos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 0%;
+  margin-bottom: 4%;
+}
+
+.password-text {
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #fff;
+  font-size: 15px;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-top: 7%;
+  margin-bottom: 3%;
 }
 
 .a2f {
@@ -644,15 +688,47 @@ input {
   align-items: center;
   justify-content: center;
   width: 80%;
-  height: 10%;
-  background-color: #51FBF2;
+  height: 18%;
+  background-color: #E085CB;
   border-radius: 30px;
   font-family: 'Audiowide', sans-serif;
-  margin-top: 4%;
+  margin-top: 2%;
+  color: #fff;
+  flex-direction: column;
+}
+
+.a2f-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 90%;
+  color: #000;
+  margin-top: 6%;
+  margin-bottom: 0;
+}
+
+#a2f-button {
+  font-size: 13px;
+  border: none;
+  background-color: transparent;
+  color: #000;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.switch-button {
+  font-size: 160%;
+  margin-right: 2%;
+}
+
+.a2f-explain {
+  font-size: 65%;
+  margin-left: 20%;
 }
 
 .logout {
-  margin-top: 5%;
+  margin-top: 1%;
   border: none;
   background-color: transparent;
   color: #fff;
@@ -662,6 +738,10 @@ input {
   align-items: center;
   justify-content: center;
   gap: 10px;
+}
+
+.logout:hover {
+  text-decoration: underline;
 }
 
 .logout-icon {

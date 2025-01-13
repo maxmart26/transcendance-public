@@ -1,52 +1,184 @@
+// Contenu HTML pour chaque "page"
+const pagesContent = {
+  "login-page": `
+      <div id="login-page">
+          <div class="navbar"></div>
+          <p class="text-wrapper">PONG</p>
+          <div class="rectangle">
+          <p class="text-wrapper-5">LOGIN</p>
+          <form class="login-infos">
+              <label for="username" class="text-wrapper-2">Username</label>
+              <input type="text" id="username">
+              <label for="password" class="text-wrapper-2">Password</label>
+              <input type="password" id="password">
+          </form>
+          <div class="enter">
+              <button id="homeButton" class="rectangle-4">ENTER</button>
+          </div>
+          <div class="or">
+              <img class="line" src="img/line1.png" />
+              <p class="text-wrapper-8">OR</p>
+              <img class="img" src="img/line1.png" />
+          </div>
+          <div class="login">
+              <button class="button2">
+                  <p class="text">Login with</p>
+                  <img class="element-icon" src="img/42.png" />
+              </button>
+          </div>
+          <div class="account">
+              <p class="p">You don't have an account ?</p>
+              <button id="replaceButton" class="text-wrapper-6">Create an account</button>
+          </div>
+          </div>
+      </div>`,
+  "create-account": `
+      <div id="create-account">
+          <div class="navbar"></div>
+          <p class="text-wrapper">PONG</p>
+          <div class="rectangle">
+              <p class="text-wrapper-5">CREATE YOUR PROFILE</p>
+              <div class="icon">
+                  <div class="people-contour">
+                      <img id="imagePreview" class="preview" src="img/person.png">
+                  </div>
+                  <div class="file">
+                      <div class="upload">
+                          <input type="file" id="imageUpload" accept="image/*" hidden>
+                          <label for="imageUpload" class="custom-button">Choose File</label>
+                      </div>
+                  </div>
+              </div>
+              <form class="infos">
+                  <label for="username" class="text-wrapper-2">Username</label>
+                  <input type="text" id="user">
+                  <label for="password" class="text-wrapper-2">Password</label>
+                  <input type="password" id="password2">
+                  <label for="confirm-password" class="text-wrapper-2">Confirm password</label>
+                  <input type="password" id="confirm-password">
+                  <label for="email" class="text-wrapper-2">Email</label>
+                  <input type="text" id="email">
+              </form>
+              <div class="enter">
+                  <button id="save" class="rectangle-4">Save</button>
+              </div>
+          </div>
+      </div>
+  `,
+  "home-page": `
+      <div id="home-page">
+          <div class="home-navbar">
+              <div class="navbar-left">
+                  <p class="text-wrapper">PONG</p>
+                  <a id="home" href="#home" class="navbar-item">HOME</a>
+                  <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                  <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+              </div>
+              <div class="navbar-right">
+                  <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                  <div class="profile-container">
+                      <img src="42.png" alt="Profile" class="profile-image">
+                  </div>
+              </div>
+          </div>
+          <button class="game-rectangle">START A GAME</button>
+      </div>
+  `,
+  "settings-page": `
+      <div id="settings-page">
+          <div class="home-navbar">
+              <div class="navbar-left">
+                  <p class="text-wrapper">PONG</p>
+                  <a id="home" href="#home" class="navbar-item">HOME</a>
+                  <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                  <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+              </div>
+              <div class="navbar-right">
+                  <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                  <div class="profile-container">
+                      <img src="42.png" alt="Profile" class="profile-image">
+                  </div>
+              </div>
+          </div>
+          <div class="rectangle">
+              <p class="settings-title">SETTINGS</p>
+              <div class="profile">
+                  <div class="recap-infos">
+                      <div class="icon">
+                          <div class="people-contour">
+                              <img id="newImagePreview" class="preview" src="img/person.png">
+                          </div>
+                          <div class="file">
+                              <div class="upload">
+                                  <input type="file" id="newImageUpload" accept="image/*" hidden>
+                                  <label for="newImageUpload" class="settings-profileImage">Choose File</label>
+                              </div>
+                          </div>
+                      </div>
+                      <form class="settings-infos">
+                          <label for="username" class="settings-text">Username</label>
+                          <input type="text" id="username">
+                          <label for="email" class="settings-text">Email</label>
+                          <input type="text" id="email">
+                      </form>
+                  </div>
+                  <button id="save" class="save-button">SAVE</button>
+              </div>
+              <div class="change-password">
+                  <p class="settings-password">CHANGE YOUR PASSWORD</p>
+                  <form class="password-infos">
+                      <label for="password" class="password-text">Enter new password</label>
+                      <input type="password" id="password2">
+                      <label for="confirm-password" class="password-text">Confirm new password</label>
+                      <input type="password" id="confirm-password">
+                  </form>
+                  <button id="save" class="save-button">SAVE</button>
+              </div>
+              <div class="a2f">
+                  <p class="a2f-title">TWO-FACTOR AUTHENTICATION</p>
+                  <button id="a2f-button"><i class="bi bi-toggle-off switch-button"></i>Enable Two-Factor Authentication (A2F)</button>
+                  <p class="a2f-explain">This method enhances security by requiring users to provide two distincts types of verification to confirm their identity.</p>
+              </div>
+              <button id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
+          </div>
+      </div>
+  `
+};
+
+// Sélectionnez le conteneur où le contenu sera injecté
+const contentContainer = document.getElementById("pong");
+
+// Fonction pour afficher une page
+function showPage(pageKey) {
+  if (pagesContent[pageKey]) {
+      contentContainer.innerHTML = pagesContent[pageKey]; // Injecte le contenu
+  } else {
+      console.error("Page not found!");
+  }
+}
+
+// Exemple d'utilisation
+showPage("login-page"); // Charge la page "login page"
+
 // JavaScript pour gérer le remplacement
 document.getElementById('replaceButton').addEventListener('click', () => {
-    // Cacher la section A
-    const sectionA = document.getElementById('login-page');
-    sectionA.classList.add('hidden');
-    
-    // Afficher la section B
-    const sectionB = document.getElementById('create-account');
-    sectionB.classList.remove('hidden');
+  showPage("create-account");
 });
 
 document.getElementById('homeButton').addEventListener('click', () => {
-  // Cacher la section A
-  const sectionA = document.getElementById('login-page');
-  sectionA.classList.add('hidden');
-  
-  // Afficher la section B
-  const sectionB = document.getElementById('home-page');
-  sectionB.classList.remove('hidden');
+  showPage("home-page");
 });
 
 document.getElementById('settings').addEventListener('click', () => {
-  // Cacher la section A
-  const sectionA = document.getElementById('home-page');
-  sectionA.classList.add('hidden');
-  
-  // Afficher la section B
-  const sectionB = document.getElementById('settings-page');
-  sectionB.classList.remove('hidden');
+  showPage("settings-page");
 });
 
 document.getElementById('logout').addEventListener('click', () => {
-  // Cacher la section A
-  const sectionA = document.getElementById('settings-page');
-  sectionA.classList.add('hidden');
-  
-  // Afficher la section B
-  const sectionB = document.getElementById('login-page');
-  sectionB.classList.remove('hidden');
+  showPage("login-page");
 });
 
 document.getElementById('save').addEventListener('click', () => {
-  // Cacher la section A
-  const sectionA = document.getElementById('create-account');
-  sectionA.classList.add('hidden');
-  
-  // Afficher la section B
-  const sectionB = document.getElementById('login-page');
-  sectionB.classList.remove('hidden');
+  showPage("login-page");
 });
 
 // Sélection des éléments
