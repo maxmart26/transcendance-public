@@ -77,7 +77,7 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <img src="42.png" alt="Profile" class="profile-image">
+                      <img src="img/person.png" alt="Profile" class="profile-image">
                   </div>
               </div>
           </div>
@@ -96,12 +96,16 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <img src="42.png" alt="Profile" class="profile-image">
+                      <img src="img/person.png" alt="Profile" class="profile-image">
                   </div>
               </div>
           </div>
           <div class="rectangle">
-              <p class="settings-title">SETTINGS</p>
+            <div class="title">
+                <p class="settings-title">SETTINGS</p>
+                <button class="lang"><img id="french" class="french-icon" src="img/french.png"></button>
+            </div>
+              
               <div class="profile">
                   <div class="recap-infos">
                       <div class="icon">
@@ -122,7 +126,7 @@ const pagesContent = {
                           <input type="text" id="email">
                       </form>
                   </div>
-                  <button id="save" class="save-button">SAVE</button>
+                  <button id="save-settings1" class="save-button">SAVE</button>
               </div>
               <div class="change-password">
                   <p class="settings-password">CHANGE YOUR PASSWORD</p>
@@ -132,7 +136,7 @@ const pagesContent = {
                       <label for="confirm-password" class="password-text">Confirm new password</label>
                       <input type="password" id="confirm-password">
                   </form>
-                  <button id="save" class="save-button">SAVE</button>
+                  <button id="save-settings2" class="save-button">SAVE</button>
               </div>
               <div class="a2f">
                   <p class="a2f-title">TWO-FACTOR AUTHENTICATION</p>
@@ -142,16 +146,102 @@ const pagesContent = {
               <button id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
           </div>
       </div>
+  `,
+  "leaderboard-page": `
+    <div id="leaderboard-page">
+        <div class="home-navbar">
+              <div class="navbar-left">
+                  <p class="text-wrapper">PONG</p>
+                  <a id="home" href="#home" class="navbar-item">HOME</a>
+                  <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                  <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+              </div>
+              <div class="navbar-right">
+                  <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                  <div class="profile-container">
+                      <img src="img/person.png" alt="Profile" class="profile-image">
+                  </div>
+              </div>
+        </div>
+        <div class="lead-rectangle">
+            <p class="lead-title">LEADERBOARD</p>
+            <div class="lead-players">
+                <div id="second" class="rank">
+                    <p class="rank-title">2nd</p>
+                    <img src="img/42.png" alt="Profile" class="lead-img">
+                    <p class="rank-username">Username</p>
+                </div>
+                <div id="first" class="rank">
+                    <p class="rank-title">1st</p>
+                    <img src="img/fox.png" alt="Profile" class="first-img">
+                    <p class="rank-username">Username</p>
+                </div>
+                <div id="third" class="rank">
+                    <p class="rank-title">3rd</p>
+                    <img src="img/fox.png" alt="Profile" class="lead-img">
+                    <p class="rank-username">Username</p>
+                </div>
+            </div>
+            <div class="scoreboard">
+                <div class="ranklist">
+                    <p class="ranklist-title">Rank</p>
+                    <p class="ranklist-player">1.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <p class="ranklist-player">2.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <p class="ranklist-player">3.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <p class="ranklist-player">4.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <p class="ranklist-player">5.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <p class="ranklist-player">6.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                </div>
+                <div class="score">
+                    <p class="ranklist-title">Score</p>
+                    <p class="score-nb">20</p>
+                    <p class="score-nb">18</p>
+                    <p class="score-nb">14</p>
+                    <p class="score-nb">6</p>
+                    <p class="score-nb">2</p>
+                    <p class="score-nb">1</p>
+                </div>
+            </div>
+        </div>
+    </div>
   `
 };
 
 // Sélectionnez le conteneur où le contenu sera injecté
 const contentContainer = document.getElementById("pong");
 
+function setupImageUpload(inputId, previewId) {
+    const imageUpload = document.getElementById(inputId);
+    const imagePreview = document.getElementById(previewId);
+  
+    if (imageUpload && imagePreview) {
+      // Écouteur d'événement pour le changement de fichier
+      imageUpload.addEventListener('change', (event) => {
+        const file = event.target.files[0]; // Récupère le premier fichier sélectionné
+  
+        if (file) {
+          const reader = new FileReader(); // Crée un FileReader
+  
+          // Quand le fichier est lu
+          reader.onload = (e) => {
+            imagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
+          };
+  
+          reader.readAsDataURL(file); // Lit le fichier comme une URL de données
+        }
+      });
+    }
+  }
+
 // Fonction pour afficher une page
 function showPage(pageKey) {
   if (pagesContent[pageKey]) {
       contentContainer.innerHTML = pagesContent[pageKey]; // Injecte le contenu
+      if (pageKey === 'create-account') {
+        setupImageUpload('imageUpload', 'imagePreview'); // Configure l'upload d'image uniquement pour la page "create-account"
+      } else if (pageKey === 'settings-page') {
+        setupImageUpload('newImageUpload', 'newImagePreview');
+      }
   } else {
       console.error("Page not found!");
   }
@@ -160,105 +250,25 @@ function showPage(pageKey) {
 // Exemple d'utilisation
 showPage("login-page"); // Charge la page "login page"
 
-// JavaScript pour gérer le remplacement
-document.getElementById('replaceButton').addEventListener('click', () => {
-  showPage("create-account");
-});
-
-document.getElementById('homeButton').addEventListener('click', () => {
-  showPage("home-page");
-});
-
-document.getElementById('settings').addEventListener('click', () => {
-  showPage("settings-page");
-});
-
-document.getElementById('logout').addEventListener('click', () => {
-  showPage("login-page");
-});
-
-document.getElementById('save').addEventListener('click', () => {
-  showPage("login-page");
-});
-
-// Sélection des éléments
-const imageUpload = document.getElementById('imageUpload');
-const imagePreview = document.getElementById('imagePreview');
-
-// Écouteur d'événement pour le changement de fichier
-imageUpload.addEventListener('change', (event) => {
-  const file = event.target.files[0]; // Récupère le premier fichier sélectionné
+contentContainer.addEventListener('click', (event) => {
+    const targetId = event.target.id;
   
-  if (file) {
-    const reader = new FileReader(); // Crée un FileReader
-
-    // Quand le fichier est lu
-    reader.onload = (e) => {
-      imagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
-    };
-
-    reader.readAsDataURL(file); // Lit le fichier comme une URL de données
-  }
-});
-
-const image_upload = document.getElementById('imageUpload');
-const image_preview = document.getElementById('imagePreview');
-
-// Écoute l'événement "change" sur l'input file
-image_upload.addEventListener('change', (event) => {
-  const file = event.target.files[0]; // Récupère le fichier sélectionné
-
-  if (file) {
-    const reader = new FileReader(); // Crée un FileReader
-
-    // Quand le fichier est chargé
-    reader.onload = (e) => {
-      image_preview.src = e.target.result; // Remplace l'image actuelle par la nouvelle
-    };
-
-    reader.readAsDataURL(file); // Lit le fichier comme URL de données
-  }
-});
-
-// Sélection des éléments
-const newImageUpload = document.getElementById('newImageUpload');
-const newImagePreview = document.getElementById('newImagePreview');
-
-// Écouteur d'événement pour le changement de fichier
-imageUpload.addEventListener('change', (event) => {
-  const file = event.target.files[0]; // Récupère le premier fichier sélectionné
-  
-  if (file) {
-    const reader = new FileReader(); // Crée un FileReader
-
-    // Quand le fichier est lu
-    reader.onload = (e) => {
-      newImagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
-    };
-
-    reader.readAsDataURL(file); // Lit le fichier comme une URL de données
-  }
-});
-
-const new_image_upload = document.getElementById('newImageUpload');
-const new_image_preview = document.getElementById('newImagePreview');
-
-// Écoute l'événement "change" sur l'input file
-image_upload.addEventListener('change', (event) => {
-  const file = event.target.files[0]; // Récupère le fichier sélectionné
-
-  if (file) {
-    const reader = new FileReader(); // Crée un FileReader
-
-    // Quand le fichier est chargé
-    reader.onload = (e) => {
-      new_image_preview.src = e.target.result; // Remplace l'image actuelle par la nouvelle
-    };
-
-    reader.readAsDataURL(file); // Lit le fichier comme URL de données
-  }
-});
-
+    if (targetId === 'replaceButton') {
+      showPage("create-account");
+    } else if (targetId === 'homeButton') {
+      showPage("home-page");
+    } else if (targetId === 'settings') {
+      showPage("settings-page");
+    } else if (targetId === 'logout') {
+      showPage("login-page");
+    } else if (targetId === 'save') {
+      showPage("login-page");
+    } else if (targetId === 'home') {
+        showPage("home-page");
+    } else if (targetId === 'leaderboard') {
+        showPage("leaderboard-page");
+    }
+  });
 
 document.getElementById('save').addEventListener('click', () => {
 const _profileImage = document.getElementById('imageUpload');
@@ -276,7 +286,6 @@ if (_password.value != _confirmPassword.value)
 const formData = new FormData();
     formData.append('username', _username.value.trim());
     formData.append('password', _password.value.trim());
-    formData.append('confirm-password', _confirmPassword.value.trim());
     formData.append('email', _email.value.trim());
     formData.append('imageUpload', _profileImage.files[0]);
 

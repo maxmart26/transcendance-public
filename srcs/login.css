@@ -316,14 +316,6 @@ input {
   margin-bottom: 0;
 }
 
-/* input {
-  color: #000000;
-  font-family: 'Audiowide', sans-serif;
-  font-size: 85%;
-  min-width: 8em;
-  margin-bottom: 0;
-} */
-
 .upload-icon {
   color: #fff;
   font-size: 1.2rem;
@@ -573,6 +565,11 @@ input {
   gap: 10px;
 }
 
+.title {
+  display: flex;
+  justify-content: center;
+}
+
 .settings-title {
   position: relative;
   font-family: 'Audiowide', sans-serif;
@@ -586,10 +583,21 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 0;
+  margin-left: 15%;
 }
 
 .settings-text {
   color: #fff;
+}
+
+.lang {
+  border: none;
+  background-color: transparent;
+}
+
+.french-icon {
+  margin-left: 290%;
 }
 
 .settings-profileImage {
@@ -746,4 +754,137 @@ input {
 
 .logout-icon {
   font-size: 170%;
+}
+
+.lead-rectangle {
+  position: relative;
+  width: 552px;
+  height: 672px;
+  top: 186px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lead-title {
+  position: relative;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lead-players {
+  flex-direction: row;
+  display: flex;
+  gap: 30%;
+  align-items: center;
+  justify-content: center;
+}
+
+.rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.rank-title {
+  color: #EFDA37;
+  font-size: 18px;
+  text-align: center;
+  justify-content: center;
+  margin-bottom: 8%;
+  font-family: 'Audiowide', sans-serif;
+}
+
+.rank-username {
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  justify-content: center;
+  margin-top: 8%;
+  font-family: 'Audiowide', sans-serif;
+}
+
+.first-img {
+  justify-content: center;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  width: 100px;
+}
+
+.lead-img {
+  justify-content: center;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  width: 58px;
+}
+
+#second, #third {
+  margin-top: 40%;
+}
+
+.scoreboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 80%;
+  white-space: nowrap;
+}
+
+.ranklist {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: 'Audiowide', sans-serif;
+  margin-top: 15%;
+}
+
+.ranklist-title {
+  color: #fff;
+  font-size: 13px;
+}
+
+.ranklist-player {
+  color: #fff;
+  font-size: 13px;
+  margin-top: 4%;
+}
+
+.ranklist-img {
+  width: 22%;
+  border-radius: 50%;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: 'Audiowide', sans-serif;
+  margin-top: 15%;
+}
+
+.score-nb {
+  color: #fff;
+  font-size: 13px;
+  margin-top: 10%;
 }
