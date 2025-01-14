@@ -77,8 +77,10 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <img src="img/person.png" alt="Profile" class="profile-image">
+                      <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
+                  <button id="profile-img">Test Profile</button>
+
               </div>
           </div>
           <button class="game-rectangle">START A GAME</button>
@@ -96,7 +98,7 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <img src="img/person.png" alt="Profile" class="profile-image">
+                      <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
           </div>
@@ -159,7 +161,7 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <img src="img/person.png" alt="Profile" class="profile-image">
+                      <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
         </div>
@@ -202,6 +204,27 @@ const pagesContent = {
                     <p class="score-nb">1</p>
                 </div>
             </div>
+        </div>
+    </div>
+  `,
+  "profile-page": `
+    <div id="profile-page">
+        <div class="home-navbar">
+              <div class="navbar-left">
+                  <p class="text-wrapper">PONG</p>
+                  <a id="home" href="#home" class="navbar-item">HOME</a>
+                  <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                  <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+              </div>
+              <div class="navbar-right">
+                  <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                  <div class="profile-container">
+                      <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
+                  </div>
+              </div>
+        </div>
+        <div class="lead-rectangle">
+            <p class="lead-title">PROFILE</p>
         </div>
     </div>
   `
@@ -267,6 +290,8 @@ contentContainer.addEventListener('click', (event) => {
         showPage("home-page");
     } else if (targetId === 'leaderboard') {
         showPage("leaderboard-page");
+    } else if (targetId === 'profile-img') {
+        showPage("profile-page");
     }
   });
 
