@@ -7,12 +7,11 @@ import json
 import cv2
 import os
 import numpy as np
-import pickle
+import random
 
 def print_ball(x, y):
 	print("Ball's coords: ", x, ", ", y)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 env = gym.make("Pong-v4")
 
 def get_coords(picture):
@@ -40,9 +39,9 @@ def get_coords(picture):
 class PongNet(nn.Module):
 	def __init__(self, input_size, hidden_size, output_size):
 		super(PongNet, self).__init__()
-		self.fc1 = nn.Linear(input_size, hidden_size)  #3 entrees (raquette y et balle x y), 128 neuronnes
+		self.fc1 = nn.Linear(input_size, hidden_size)
 		self.relu =  nn.ReLU()
-		self.fc2 = nn.Linear(hidden_size, output_size) #128 entrees (les neuronnes), 3 sorties (up, down et nothing)
+		self.fc2 = nn.Linear(hidden_size, output_size)
 
 	def forward(self, x):
 		x = self.fc1(x)
@@ -51,50 +50,74 @@ class PongNet(nn.Module):
 		return x
 	
 #Hyperparameters
-learning_rate = 0.001
-num_episodes = 1 #nb d'iteration apprentissage
+num_episodes = 10 #nb d'iteration apprentissage
 gamma = 0.99
+epsilon = 1.0
+epsilon_min = 0.01
+epsilon_decay = 0.995
 
 model = PongNet(3, 128, 3)
-optimizer = optim.Adam(model.parameters(), lr = learning_rate)
-criterion = nn.CrossEntropyLoss()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
+optimizer = optim.Adam(model.parameters(), lr = 0.001)
+criterion = nn.MSELoss()
 
 def select_action(coords):
 	with torch.no_grad():
-		state = torch.tensor(coords, dtype=torch.float32).unsqueeze(0)
 		q_values = model(state)
 		action = torch.argmax(q_values).item()
 		return action
 	
 #Training loop:
 for episode in range(num_episodes):
-	state, _ = env.reset()
+	state, info = env.reset()
 	coords = get_coords(state)
-	state = torch.from_numpy(coords).float().unsqueeze(0).unsqueeze(0).to(device)
+	state = torch.from_numpy(coords).float().unsqueeze(0).to(device)
 	print("def_coords: ", coords)
+	total_reward = 0
 	done = False
-	while not done:
-		action = select_action(state)
+	trunc = False
+	while not done and not trunc:
+		if random.random() < epsilon:
+			action = env.action_space.sample()
+		else:
+			action = select_action(state)
+		if action == 1 or action == 4 or action == 5:
+			action = 0
 		print("action: ", action)
-		next_state, reward, done, trunc, _ = env.step(action)
+		
+		next_state, reward, done, trunc, info = env.step(action)
 		coords = get_coords(next_state)
-		next_state = torch.from_numpy(coords).float().unsqueeze(0).unsqueeze(0).to(device)
-		if not done:
-			target = reward + gamma * torch.max(model(torch.tensor(next_state, dtype=torch.float32).unsqueeze(0))).item()
-		action = torch.tensor([action], dtype=torch.long)
-		#loss = criterion(model(torch.tensor(state, dtype=torch.float32).unsqueeze(0)), action)
+		print("coords: ", coords)
+		next_state = torch.from_numpy(coords).float().unsqueeze(0).to(device)
+		total_reward += reward
+
+		with torch.no_grad():
+			next_q_values = model(next_state)
+			max_next_q = torch.max(next_q_values).item()
+
+		if done or trunc:
+   			target = reward
+		else:
+			target = reward + gamma * max_next_q
+		q_values = model(state)
+		#loss = criterion(q_values[0][action], torch.tensor(target).float().to(device))
 		optimizer.zero_grad()
 		#loss.backward()
 		optimizer.step()
-		#state = next_state
-		print("new_coords: ", coords)
+		state = next_state
 
-def play():
-	state, _ = env.reset()
-	done = False
-	while not done:
-		env.render()
-		action = select_action(state)
-		state, reward, done, _ = env.step(action)
+	epsilon = max(epsilon_min, epsilon * epsilon_decay)
+	print(f"Episode: {episode * 1}, Total Reward: {total_reward}, Epsilon: {epsilon}")
 
-play()
+env.close()
+
+# def play():
+# 	state, _ = env.reset()
+# 	done = False
+# 	while not done:
+# 		env.render()
+# 		action = select_action(state)
+# 		state, reward, done, _ = env.step(action)
+
+# play()
