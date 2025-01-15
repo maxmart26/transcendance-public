@@ -79,8 +79,6 @@ const pagesContent = {
                   <div class="profile-container">
                       <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
-                  <button id="profile-img">Test Profile</button>
-
               </div>
           </div>
           <button class="game-rectangle">START A GAME</button>
@@ -165,7 +163,7 @@ const pagesContent = {
                   </div>
               </div>
         </div>
-        <div class="lead-rectangle">
+        <div class="rectangle">
             <p class="lead-title">LEADERBOARD</p>
             <div class="lead-players">
                 <div id="second" class="rank">
@@ -225,6 +223,15 @@ const pagesContent = {
         </div>
         <div class="lead-rectangle">
             <p class="lead-title">PROFILE</p>
+            <div class="profile-infos">
+                <div class="profile-recap">
+                </div>
+                <div class="profile-stats">
+                </div>
+            </div>
+            <div class="achievements">
+                <p class="achiev-title">ACHIEVEMENTS (0/7)</p>
+            </div>
         </div>
     </div>
   `
