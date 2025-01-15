@@ -81,7 +81,7 @@ const pagesContent = {
                   </div>
               </div>
           </div>
-          <button class="game-rectangle">START A GAME</button>
+          <button id="game" class="game-rectangle">START A GAME</button>
       </div>
   `,
   "settings-page": `
@@ -222,9 +222,33 @@ const pagesContent = {
               </div>
         </div>
         <div class="lead-rectangle">
-            <p class="lead-title">PROFILE</p>
+            <p class="profile-title">PROFILE</p>
             <div class="profile-infos">
                 <div class="profile-recap">
+                    <div class="user">
+                        <img src="img/fox.png" alt="Profile" class="first-img">
+                        <div class="user-online">
+                            <p class="profile-username">Username</p>
+                            <div class="online">ONLINE</div>
+                        </div>
+                    </div>
+                    <div class="recap-items">
+                        <div class="item-infos">
+                            <img src="img/dice.png" alt="Profile" class="profile-icon">
+                            <p class="item-nb">3</p>
+                            <p class="item-title">Games</p>
+                        </div>
+                        <div class="item-infos">
+                            <img src="img/trophy.png" alt="Profile" class="profile-icon">
+                            <p class="item-nb">1</p>
+                            <p class="item-title">Victories</p>
+                        </div>
+                        <div class="item-infos">
+                            <img src="img/heart.png" alt="Profile" class="profile-icon">
+                            <p class="item-nb">5</p>
+                            <p class="item-title">Friends</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="profile-stats">
                 </div>
@@ -233,6 +257,29 @@ const pagesContent = {
                 <p class="achiev-title">ACHIEVEMENTS (0/7)</p>
             </div>
         </div>
+    </div>
+  `,
+  "game-page": `
+    <div id="game-page">
+        <div class="home-navbar">
+              <div class="navbar-left">
+                  <p class="text-wrapper">PONG</p>
+                  <a id="home" href="#home" class="navbar-item">HOME</a>
+                  <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                  <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+              </div>
+              <div class="navbar-right">
+                  <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                  <div class="profile-container">
+                      <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
+                  </div>
+              </div>
+        </div>
+        <div id="game-container">
+            <div id="score">Joueur 1: 0 | Joueur 2: 0</div>
+            
+        </div>
+        <script src="pong3d/pong.js"></script>
     </div>
   `
 };
@@ -299,6 +346,8 @@ contentContainer.addEventListener('click', (event) => {
         showPage("leaderboard-page");
     } else if (targetId === 'profile-img') {
         showPage("profile-page");
+    } else if (targetId === 'game') {
+        showPage("game-page");
     }
   });
 
