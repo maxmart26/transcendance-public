@@ -316,14 +316,6 @@ input {
   margin-bottom: 0;
 }
 
-input {
-  color: #000000;
-  font-family: 'Audiowide', sans-serif;
-  font-size: 85%;
-  min-width: 8em;
-  margin-bottom: 0;
-}
-
 .upload-icon {
   color: #fff;
   font-size: 1.2rem;
@@ -405,7 +397,7 @@ input {
 .navbar-left {
   display: flex;
   gap: 13%; /* Space between links */
-  padding-left: 15%;
+  padding-left: 13em;
   align-items: center;
 }
 
@@ -413,7 +405,8 @@ input {
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 13%; /* Space between settings and profile */
+  gap: 18%; /* Space between settings and profile */
+  padding-right: 2em;
 }
 
 /* Navbar items (links) */
@@ -472,6 +465,8 @@ input {
   background-color: #D25CB9;
 }
 
+
+
 /* Profile image styling */
 .profile-container {
   display: flex;
@@ -483,12 +478,23 @@ input {
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  pointer-events: none;
+}
+
+#profile-img {
+  position: relative;
+  display: inline-flex; /* Permet de gérer le contenu interne correctement */
+  align-items: center; /* Centrer l'image */
+  justify-content: center; /* Centrer l'image */
+  border: none;
+  background: none; /* Supprime l'arrière-plan par défaut */
+  cursor: pointer; /* Garde le curseur de clic */
 }
 
 .game-rectangle {
   position: relative;
   width: 25%;
-  top: 186px;
+  margin-top: 18em;
   left: 2%;
   margin-left: auto;
   margin-right: auto;
@@ -549,19 +555,19 @@ input {
   align-items: center;
   justify-content: center;
   width: 80%;
-  height: 30%;
-  background-color: #51FBF2;
+  height: 28%;
+  background-color: #E085CB;
   border-radius: 30px;
   font-family: 'Audiowide', sans-serif;
-  margin-top: 8%;
+  margin-top: 3%;
   flex-direction: column;
-  gap: 5%;
 }
 
 .recap-infos {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 15%;
 }
 
 .settings-infos {
@@ -572,8 +578,89 @@ input {
   gap: 10px;
 }
 
-.text {
+.title {
+  display: flex;
+  justify-content: center;
+}
+
+.settings-title {
+  position: relative;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+  top: 3%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+  margin-left: 15%;
+}
+
+.settings-text {
   color: #fff;
+}
+
+.lang {
+  border: none;
+  background-color: transparent;
+}
+
+.french-icon {
+  margin-left: 290%;
+}
+
+.settings-profileImage {
+  display: inline-block;
+  background-color: #fff;
+  color: #000000;
+  font-size: 11px;
+  font-family: 'Audiowide', sans-serif;
+  padding: 5px 15px;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.settings-profileImage:hover {
+  background-color: #281f79;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.settings-profileImage:active {
+  background-color: #281f79;
+  color: #ffffff;
+  transform: scale(0.95);
+}
+
+.save-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-bottom: 2%;
+  border-radius: 60px;
+  background-color: #D25CB9;
+  transition: all 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: #281f79;
+  transform: scale(1.05);
+}
+
+.save-button:active {
+  background-color: #281f79;
+  transform: scale(0.95);
 }
 
 .change-password {
@@ -581,11 +668,40 @@ input {
   align-items: center;
   justify-content: center;
   width: 80%;
-  height: 20%;
-  background-color: #51FBF2;
+  height: 32%;
+  background-color: #E085CB;
   border-radius: 30px;
   font-family: 'Audiowide', sans-serif;
+  margin-top: 2%;
+  color: #fff;
+  flex-direction: column;
+}
+
+.settings-password {
+  margin-bottom: 0;
   margin-top: 4%;
+  color: #000;
+  font-size: 90%;
+}
+
+.password-infos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 0%;
+  margin-bottom: 4%;
+}
+
+.password-text {
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #fff;
+  font-size: 15px;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-top: 7%;
+  margin-bottom: 3%;
 }
 
 .a2f {
@@ -593,15 +709,47 @@ input {
   align-items: center;
   justify-content: center;
   width: 80%;
-  height: 10%;
-  background-color: #51FBF2;
+  height: 18%;
+  background-color: #E085CB;
   border-radius: 30px;
   font-family: 'Audiowide', sans-serif;
-  margin-top: 4%;
+  margin-top: 2%;
+  color: #fff;
+  flex-direction: column;
+}
+
+.a2f-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 90%;
+  color: #000;
+  margin-top: 6%;
+  margin-bottom: 0;
+}
+
+#a2f-button {
+  font-size: 13px;
+  border: none;
+  background-color: transparent;
+  color: #000;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.switch-button {
+  font-size: 160%;
+  margin-right: 2%;
+}
+
+.a2f-explain {
+  font-size: 65%;
+  margin-left: 20%;
 }
 
 .logout {
-  margin-top: 5%;
+  margin-top: 1%;
   border: none;
   background-color: transparent;
   color: #fff;
@@ -613,6 +761,273 @@ input {
   gap: 10px;
 }
 
+.logout:hover {
+  text-decoration: underline;
+}
+
 .logout-icon {
   font-size: 170%;
+}
+
+.lead-rectangle {
+  position: relative;
+  width: 70%;
+  height: 672px;
+  top: 186px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lead-title {
+  position: relative;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2%;
+}
+
+.lead-players {
+  flex-direction: row;
+  display: flex;
+  gap: 30%;
+  align-items: center;
+  justify-content: center;
+}
+
+.rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.rank-title {
+  color: #EFDA37;
+  font-size: 18px;
+  text-align: center;
+  justify-content: center;
+  margin-bottom: 8%;
+  font-family: 'Audiowide', sans-serif;
+}
+
+.rank-username {
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  justify-content: center;
+  margin-top: 8%;
+  font-family: 'Audiowide', sans-serif;
+}
+
+.first-img {
+  justify-content: center;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  width: 100px;
+}
+
+.lead-img {
+  justify-content: center;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  width: 58px;
+}
+
+#second, #third {
+  margin-top: 40%;
+}
+
+.scoreboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 80%;
+  white-space: nowrap;
+}
+
+.ranklist {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: 'Audiowide', sans-serif;
+  margin-top: 15%;
+}
+
+.ranklist-title {
+  color: #fff;
+  font-size: 13px;
+}
+
+.ranklist-player {
+  color: #fff;
+  font-size: 13px;
+  margin-top: 4%;
+}
+
+.ranklist-img {
+  width: 22%;
+  border-radius: 50%;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: 'Audiowide', sans-serif;
+  margin-top: 15%;
+}
+
+.score-nb {
+  color: #fff;  
+  font-size: 13px;
+  margin-top: 10%;
+}
+
+.profile-title {
+  position: relative;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2%;
+  margin-bottom: 3%;
+}
+
+.profile-infos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 17%;
+  margin-bottom: 5%;
+}
+
+.profile-recap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.user-online {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-left: 20%;
+}
+
+.online {
+  color: #fff;
+  background-color: #61EA76;
+  border-radius: 60px;
+  border: 1px solid #61EA76;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 70%;
+  padding: 3% 10%;
+  box-shadow: 0px 0px 4px 2px #61EA76;
+}
+
+.recap-items {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 50%;
+  margin-top: 15%;
+}
+
+.item-infos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.profile-icon {
+  font-size: 144%;
+  margin-left: 20%;
+}
+
+.item-nb {
+  color: #FAB005;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 100%;
+}
+
+.item-title {
+  color: #FAB005;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 70%;
+}
+
+.profile-stats {
+  position: relative;
+  width: 680px;
+  height: 380px;
+  background-color: #FAB005;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.profile-username {
+  color: #fff;
+  font-family: 'Audiowide', sans-serif;
+}
+
+.achievements {
+  display: flex;
+  justify-content: center;
+}
+
+.achiev-title {
+  color: #FAB005;
+  font-size: 94%;
+  font-family: 'Audiowide', sans-serif;
+}
+
+#game-container {
+  width: 100%;
+  height: 500px; /* Taille du conteneur */
+  background-color: black; /* Couleur de fond pour différencier */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
