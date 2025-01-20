@@ -4,3 +4,5 @@ import asyncio
 
 from Values import *
 
+def play():
+	print("pouet")
