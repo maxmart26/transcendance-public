@@ -1,123 +1,105 @@
-import gym
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
-import json
-import cv2
-import os
+
+import gym
 import numpy as np
 import random
 
-def print_ball(x, y):
-	print("Ball's coords: ", x, ", ", y)
+env = gym.make("Pong-ram-v4", render_mode='rgb_array')
 
-env = gym.make("Pong-v4")
+class Net(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(Net, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, output_size)
 
-def get_coords(picture):
-	gray = cv2.cvtColor(picture, cv2.COLOR_RGB2GRAY)
-	_, ball_mask = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY)
-	ball_contours, _ = cv2.findContours(ball_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-	if ball_contours:
-		ball_x, ball_y, _, _ = cv2.boundingRect(ball_contours[0])
-		ball_x += 2
-		ball_y += 2
-	else:
-		ball_x = -1
-		ball_y = -1
-	_, paddle_mask = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
-	paddle_mask = paddle_mask[:, :20]
-	paddle_contours, _ = cv2.findContours(paddle_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-	if paddle_contours:
-		paddle_x, paddle_y, _, _ = cv2.boundingRect(paddle_contours[0])
-		paddle_y += 5
-	else:
-		paddle_y = -1
-	return np.array([paddle_y, ball_x, ball_y])
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        return x
 
+input_size = 4  # Position balle (x, y), position raquette joueur (y), position raquette adversaire (y)
+hidden_size = 128
+output_size = 3  # 0: rien, 2: haut, 3: bas
+net = Net(input_size, hidden_size, output_size)
 
-class PongNet(nn.Module):
-	def __init__(self, input_size, hidden_size, output_size):
-		super(PongNet, self).__init__()
-		self.fc1 = nn.Linear(input_size, hidden_size)
-		self.relu =  nn.ReLU()
-		self.fc2 = nn.Linear(hidden_size, output_size)
+optimizer = optim.Adam(net.parameters(), lr=0.001)
+criterion = nn.CrossEntropyLoss()
 
-	def forward(self, x):
-		x = self.fc1(x)
-		x = torch.relu(x)
-		x = self.fc2(x)
-		return x
-	
-#Hyperparameters
-num_episodes = 10 #nb d'iteration apprentissage
+# Paramètres d'entraînement
+env = gym.make("Pong-ram-v4", render_mode='rgb_array')
+num_episodes = 5000
 gamma = 0.99
 epsilon = 1.0
-epsilon_min = 0.01
-epsilon_decay = 0.995
+epsilon_min = 0.05
+epsilon_decay = .9/100000
+batch_size = 32
 
-model = PongNet(3, 128, 3)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model.to(device)
-optimizer = optim.Adam(model.parameters(), lr = 0.001)
-criterion = nn.MSELoss()
-
-def select_action(coords):
-	with torch.no_grad():
-		q_values = model(state)
-		action = torch.argmax(q_values).item()
-		return action
-	
-#Training loop:
 for episode in range(num_episodes):
-	state, info = env.reset()
-	coords = get_coords(state)
-	state = torch.from_numpy(coords).float().unsqueeze(0).to(device)
-	print("def_coords: ", coords)
-	total_reward = 0
-	done = False
-	trunc = False
-	while not done and not trunc:
-		if random.random() < epsilon:
-			action = env.action_space.sample()
-		else:
-			action = select_action(state)
-		if action == 1 or action == 4 or action == 5:
-			action = 0
-		print("action: ", action)
-		
-		next_state, reward, done, trunc, info = env.step(action)
-		coords = get_coords(next_state)
-		print("coords: ", coords)
-		next_state = torch.from_numpy(coords).float().unsqueeze(0).to(device)
-		total_reward += reward
+    obs, info = env.reset() # Initialisation de obs ici
+    done = False
+    total_reward = 0
+    state = None
+    states_list = []
+    actions_list = []
+    rewards_list = []
+    next_states_list = []
 
-		with torch.no_grad():
-			next_q_values = model(next_state)
-			max_next_q = torch.max(next_q_values).item()
+    while not done:
+        # Extraction des données
+        ball_x = obs[49]
+        ball_y = obs[54]
+        player_y = obs[51]
+        opponent_y = obs[50]
+        new_state = np.array([ball_x, ball_y, player_y, opponent_y], dtype=np.float32)
 
-		if done or trunc:
-   			target = reward
-		else:
-			target = reward + gamma * max_next_q
-		q_values = model(state)
-		#loss = criterion(q_values[0][action], torch.tensor(target).float().to(device))
-		optimizer.zero_grad()
-		#loss.backward()
-		optimizer.step()
-		state = next_state
+        new_obs = obs #Initialisation de new_obs ici
+        if state is not None:
+            state_tensor = torch.from_numpy(state).float().unsqueeze(0)
+            if random.random() < epsilon:
+                action = env.action_space.sample()
+            else:
+                with torch.no_grad():
+                    q_values = net(state_tensor)
+                    action = torch.argmax(q_values).item()
+                    
+            action_mapping = {0:0, 2:1, 3:2}
+            mapped_action = action_mapping.get(action,0) #gestion du cas ou l'action n'est pas dans le mapping
 
-	epsilon = max(epsilon_min, epsilon * epsilon_decay)
-	print(f"Episode: {episode * 1}, Total Reward: {total_reward}, Epsilon: {epsilon}")
+            new_obs, reward, done, _, info = env.step(action)
+            total_reward += reward
+
+            states_list.append(state)
+            actions_list.append(mapped_action) #stock l'action mapper
+            rewards_list.append(reward)
+            next_states_list.append(new_state)
+
+            if len(states_list) >= batch_size or done:
+                batch_states = torch.from_numpy(np.stack(states_list)).float()
+                batch_actions = torch.tensor(actions_list, dtype=torch.long)
+                batch_rewards = torch.tensor(rewards_list, dtype=torch.float)
+                batch_next_states = torch.from_numpy(np.stack(next_states_list)).float()
+                
+                with torch.no_grad():
+                    next_q_values = net(batch_next_states).max(1)[0]
+                    target_q_values = batch_rewards + gamma * next_q_values * (1 - torch.tensor(done, dtype=torch.float))
+
+                q_values = net(batch_states).gather(1, batch_actions.unsqueeze(1)).squeeze(1)
+                loss = criterion(q_values, target_q_values)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+                states_list = []
+                actions_list = []
+                rewards_list = []
+                next_states_list = []
+        state = new_state
+        obs = new_obs
+    epsilon = max(epsilon_min, epsilon * epsilon_decay)
+    print(f"Episode: {episode + 1}, Reward: {total_reward}, Epsilon: {epsilon}")
 
 env.close()
-
-# def play():
-# 	state, _ = env.reset()
-# 	done = False
-# 	while not done:
-# 		env.render()
-# 		action = select_action(state)
-# 		state, reward, done, _ = env.step(action)
-
-# play()
