@@ -16,5 +16,5 @@ def join_match(request, game_id):
 	"""
 
 def DEBUGgame(request):
-	Pong.play()
+	Pong.PongGame()
 	return render(request, "game-page.html")
