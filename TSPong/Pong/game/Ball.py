@@ -4,36 +4,36 @@ import random
 from Values import FIELD_HEIGHT, FIELD_WIDTH, BALL_SIZE, BALL_SPEED
 
 class Ball:
-	def __init__(self):
+	def __init__(self, difficulty):
 		self.x = 0
-		self.y = random.randrange(FIELD_HEIGHT / 2, -FIELD_HEIGHT / 2)
+		self.y = random.randrange(-FIELD_HEIGHT / 2, FIELD_HEIGHT / 2)
 
-		self.vx = random.choice(1, -1)
-		#self.vy = 
+		self.vx = random.choice([1, -1])
+		self.vy = random.choice([1, -1])
 
 		self.size = BALL_SIZE
-		self.speed = BALL_SPEED
+		self.speed = BALL_SPEED[difficulty]
 		#self.accel = faire en sorte que l'accel soit plus forte au moment de l'impact avec raquette
 
-def reset(self):
-	self.x = 0
-	self.y = random.randrange(FIELD_HEIGHT / 2, -FIELD_HEIGHT / 2)
+	def reset(self, difficulty):
+		self.x = 0
+		self.y = random.randrange(-FIELD_HEIGHT / 2, FIELD_HEIGHT / 2)
 
-	self.vx = random.choice(1, -1)
-	#self.vy =
+		self.vx = random.choice([1, -1])
+		#self.vy =
 
-	self.speed = BALL_SPEED
+		self.speed = BALL_SPEED[difficulty]
 
-def move(self):
-	self.x += self.vx * self.speed
-	self.y += self.vy * self.speed
+	def move(self):
+		self.x += self.vx * self.speed
+		self.y += self.vy * self.speed
 
 
-def wall_bounce(self):
-	if self.y + self.size >= FIELD_HEIGHT / 2:
-		self.vy = -abs(self.vy)
-	elif self.y - self.size <= -FIELD_HEIGHT / 2:
-		self.vy = abs(self.vy)
+	def wall_bounce(self):
+		if self.y + self.size >= FIELD_HEIGHT / 2:
+			self.vy = -abs(self.vy)
+		elif self.y - self.size <= -FIELD_HEIGHT / 2:
+			self.vy = abs(self.vy)
 
-#def paddle_bounce(self, paddle):
+	#def paddle_bounce(self, paddle):
 	
