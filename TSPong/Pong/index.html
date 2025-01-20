@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pong</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="pongCanvas" width="700" height="500"></canvas>
+    <script>
+        const canvas = document.getElementById('pongCanvas');
+        const ctx = canvas.getContext('2d');
+        const socket = new WebSocket("ws://" + window.location.host + "/ws/game/");
+
+        function draw(gameState) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+
+            ctx.beginPath();
+            ctx.arc(gameState.ball.x, gameState.ball.y, gameState.ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillRect(gameState.paddle1.x, gameState.paddle1.y, gameState.paddle1.width, gameState.paddle1.height);
+            ctx.fillRect(gameState.paddle2.x, gameState.paddle2.y, gameState.paddle2.width, gameState.paddle2.height);
+        }
+
+        socket.onmessage = function(e) {
+            const gameState = JSON.parse(e.data);
+            draw(gameState);
+        };
+
+		window.addEventListener('keydown', function(event) {
+		if (event.key === "ArrowUp") {
+			socket.send(JSON.stringify({'key': 'up', 'player': player_id}));
+		} else if (event.key === "ArrowDown") {
+			socket.send(JSON.stringify({'key': 'down', 'player': player_id}));
+		}
+		});
+    </script>
+</body>
+</html>
