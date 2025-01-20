@@ -34,12 +34,13 @@ env = gym.make("Pong-ram-v4", render_mode='rgb_array')
 num_episodes = 5000
 gamma = 0.99
 epsilon = 1.0
-epsilon_min = 0.05
-epsilon_decay = .9/100000
+epsilon_min = 0.01
+epsilon_decay = 0.995
 batch_size = 32
 
 for episode in range(num_episodes):
     obs, info = env.reset() # Initialisation de obs ici
+    obs, reward, done, _, info = env.step(1)
     done = False
     total_reward = 0
     state = None
