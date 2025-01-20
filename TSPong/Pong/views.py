@@ -1,8 +1,16 @@
 from django.shortcuts import render, HttpResponse
 
 # Create your views here.
-def queue():
+def search_match(request):
+	"""
+	Check the database of created matches currently waiting for opponents
+	if database is empty, creates a new match
+	"""
 	return HttpResponse("Looking for an opponent...")
 
-def game():
-	return HttpResponse("Game found, have fun!")
+def join_match(request, game_id):
+	"""
+	Match is found, player joins it
+	Match is being deleted from the database of created matches currently waiting for opponents
+	"""
+	return render(request, "game-page.html")
