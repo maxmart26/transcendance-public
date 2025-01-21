@@ -13,8 +13,7 @@ ball_size = 20;
 paddle_height = 120;
 paddle_width = 15; 
 
-let ballX = this.canvas.width / 2 - (ball_size / 2);
-let ballY = this.canvas.height / 2 - (ball_size / 2);
+let ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height / 2 - (ball_size / 2)};
 
 let player1Y = this.canvas.height / 2 - (paddle_height / 2);
 let player2Y = this.canvas.height / 2 - (paddle_height / 2);
@@ -76,8 +75,8 @@ function draw() {
 
 	// Draw the Ball
 	this.context.fillRect(
-		ballX,
-		ballY,
+		ball.x,
+		ball.y,
 		ball_size,
 		ball_size
 	);
@@ -107,32 +106,31 @@ function draw() {
 	);
 }
 
-// // WebSocket
-// const socket = new WebSocket('ws://' + window.location.host + '/ws/pong/'); // Assurez-vous que l'URL est correcte
+// WebSocket
+const socket = new WebSocket('ws://' + window.location.host + '/ws/pong/'); // Assurez-vous que l'URL est correcte
 
-// socket.onopen = function(e) {
-//     console.log("Connexion WebSocket ouverte");
-// };
+socket.onopen = function(e) {
+    console.log("Connexion WebSocket ouverte");
+};
 
-// socket.onmessage = function(e) {
-//     const data = JSON.parse(e.data);
-//     // Mettre à jour les coordonnées avec les données reçues
-//     ballX = data.ball_x;
-//     ballY = data.ball_y;
-//     player1Y = data.player1_y;
-//     player2Y = data.player2_y;
+socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    // Mettre à jour les coordonnées avec les données reçues
+    ball = data.ball;
+    player1Y = data.player1_y;
+    player2Y = data.player2_y;
 
-//     // Redessiner le jeu
-//     draw();
-// };
+    // Redessiner le jeu
+    draw();
+};
 
-// socket.onclose = function(e) {
-//     console.error('Socket WebSocket fermé inopinément');
-// };
+socket.onclose = function(e) {
+    console.error('Socket WebSocket fermé inopinément');
+};
 
-// socket.onerror = function(err) {
-//     console.error('Erreur WebSocket observée :', err);
-// };
+socket.onerror = function(err) {
+    console.error('Erreur WebSocket observée :', err);
+};
 
 // Dessin initial
 draw();

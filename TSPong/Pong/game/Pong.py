@@ -13,8 +13,9 @@ class PongGame:
 		player_2 = Paddle('right')
 		game_over = False
 
-	# async def send_state(self):
-	# 	await
+	async def send_state(self):
+		state = {"ball": {"x": self.ball.x, "y": self.ball.y}}
+		await self.send(json.dumps(state))
 
 	def play(self):
 		while not self.game_over:
