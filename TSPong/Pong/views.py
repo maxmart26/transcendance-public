@@ -1,5 +1,4 @@
 from django.shortcuts import render, HttpResponse
-from game import Pong
 
 # Create your views here.
 def search_match(request):
@@ -16,5 +15,4 @@ def join_match(request, game_id):
 	"""
 
 def DEBUGgame(request):
-	Pong.PongGame()
-	return render(request, "game-page.html")
+	return render(request, "Pong/game-page.html")

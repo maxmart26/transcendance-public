@@ -7,10 +7,6 @@
 	<title>ft_PONG</title>
 </head>
 <style>
-	@import url('httpsL//fonts.googleapis.com/css2?family=Poppins&display=swap');
-	* {
-		font-family: 'Poppins', sans-serif;
-	}
 	body {
 		text-align: center;
 		background-color: ghostwhite;
@@ -27,7 +23,7 @@
 	<h1>ft_PONG</h1>
 	<canvas></canvas>
 	<p>C'est bon transcendence c fini.</p>
-	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-	<script src="./Pong.js"></script>
+	{% load static %} 
+	<script src="{% static 'Pong/js/drawGame.js' %}"></script>
 </body>
 </html>

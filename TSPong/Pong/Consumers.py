@@ -4,8 +4,14 @@ from channels.layers import get_channel_layer
 
 from Pong.Values import TICK_RATE
 
+class PongConsumer(AsyncWebsocketConsumer):
+    async def receive(self, data):
+        data_json = json.loads(data)
+        action = data_json.get('action')
+
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        #self.game_id = recuperer dans la base de donnee
         await self.accept()
         self.game = PongGame()
         asyncio.create_task(self.game_loop())
