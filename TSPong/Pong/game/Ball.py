@@ -31,12 +31,21 @@ class Ball:
 		elif self.y + BALL_SIZE >= FIELD_HEIGHT or self.y <= 0:
 			self.vy *= -1
 
-	def paddle_bounce(self, paddle_x, paddle_y):
-		if paddle_x > (FIELD_WIDTH / 2) and (self.x + BALL_SIZE) >= paddle_x and (self.y + BALL_SIZE) >= paddle_y and self.y <= (paddle_y + PADDLE_HEIGHT):
+	def paddle_bounce(self, paddle):
+		if paddle.x > (FIELD_WIDTH / 2) and (self.x + BALL_SIZE) >= paddle.x and (self.y + BALL_SIZE / 2) >= paddle.y \
+			and self.y + (BALL_SIZE / 2) <= (paddle.y + PADDLE_HEIGHT):
 			self.vx *= -1
-			self.speed += 0.7
-		elif (paddle_x < FIELD_WIDTH / 2) and self.x <= (paddle_x + PADDLE_WIDTH) and (self.y + BALL_SIZE) >= paddle_y and self.y <= (paddle_y + PADDLE_HEIGHT):
+			if self.vy != 0:
+				self.speed += 0.85
+			else:
+				self.speed += 0.5
+
+		elif (paddle.x < FIELD_WIDTH / 2) and self.x <= (paddle.x + PADDLE_WIDTH) and (self.y + BALL_SIZE / 2) >= paddle.y \
+			and self.y + (BALL_SIZE / 2) <= (paddle.y + PADDLE_HEIGHT):
 			self.vx *= -1
-			self.speed += 0.7
+			if self.vy != 0:
+				self.speed += 0.85
+			else:
+				self.speed += 0.5
 
 	

@@ -70,8 +70,8 @@ class PongGame(AsyncWebsocketConsumer):
 			self.ball.move()
 			self.p1.move()
 			self.ball.wall_bounce()
-			self.ball.paddle_bounce(self.p1.x, self.p1.y)
-			self.ball.paddle_bounce(self.p2.x, self.p2.y)
+			self.ball.paddle_bounce(self.p1)
+			self.ball.paddle_bounce(self.p2)
 			
 			await self.check_score()
 			await self.send_state()
