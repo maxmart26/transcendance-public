@@ -16,14 +16,14 @@ const pagesContent = {
               <button onclick="navigateTo('home-page')" class="rectangle-4">ENTER</button>
           </div>
           <div class="or">
-              <img class="line" src="{% static 'img/line1.png' %}" /> 
+              <img class="line" src="static/img/line1.png" /> 
               <p class="text-wrapper-8">OR</p>
-              <img class="img" src="{% static 'img/line1.png' %}" />
+              <img class="img" src="static/img/line1.png" />
           </div>
           <div class="login">
               <button class="button2">
                   <p class="text">Login with</p>
-                  <img class="element-icon" src="{% static 'img/42.png' %}" />
+                  <img class="element-icon" src="static/img/42.png" />
               </button>
           </div>
           <div class="account">
@@ -32,7 +32,7 @@ const pagesContent = {
           </div>
           </div>
       </div>`,
-  "create-account": `
+  "create-account-page": `
       <div id="create-account">
           <div class="navbar"></div>
           <p class="text-wrapper">PONG</p>
@@ -40,7 +40,7 @@ const pagesContent = {
               <p class="text-wrapper-5">CREATE YOUR PROFILE</p>
               <div class="icon">
                   <div class="people-contour">
-                      <img id="imagePreview" class="preview" src="{% static 'img/person.png' %}">
+                      <img id="imagePreview" class="preview" src="static/img/person.png">
                   </div>
                   <div class="file">
                       <div class="upload">
@@ -77,7 +77,7 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
+                      <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image" /></button>
                   </div>
               </div>
         </div>
@@ -96,21 +96,21 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
+                      <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
           </div>
           <div class="rectangle">
             <div class="title">
                 <p class="settings-title">SETTINGS</p>
-                <button class="lang"><img id="french" class="french-icon" src="img/french.png"></button>
+                <button class="lang"><img id="french" class="french-icon" src="static/img/french.png"></button>
             </div>
               
               <div class="profile">
                   <div class="recap-infos">
                       <div class="icon">
                           <div class="people-contour">
-                              <img id="newImagePreview" class="preview" src="{% static 'img/person.png' %}">
+                              <img id="newImagePreview" class="preview" src="static/img/person.png">
                           </div>
                           <div class="file">
                               <div class="upload">
@@ -159,7 +159,7 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
+                      <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
         </div>
@@ -168,29 +168,29 @@ const pagesContent = {
             <div class="lead-players">
                 <div id="second" class="rank">
                     <p class="rank-title">2nd</p>
-                    <img src="{% static 'img/42.png' %}" alt="Profile" class="lead-img">
+                    <img src="static/img/42.png" alt="Profile" class="lead-img">
                     <p class="rank-username">Username</p>
                 </div>
                 <div id="first" class="rank">
                     <p class="rank-title">1st</p>
-                    <img src="{% static 'img/fox.png' %}" alt="Profile" class="first-img">
+                    <img src="static/img/fox.png" alt="Profile" class="first-img">
                     <p class="rank-username">Username</p>
                 </div>
                 <div id="third" class="rank">
                     <p class="rank-title">3rd</p>
-                    <img src="{% static 'img/fox.png' %}" alt="Profile" class="lead-img">
+                    <img src="static/img/fox.png" alt="Profile" class="lead-img">
                     <p class="rank-username">Username</p>
                 </div>
             </div>
             <div class="scoreboard">
                 <div class="ranklist">
                     <p class="ranklist-title">Rank</p>
-                    <p class="ranklist-player">1.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                    <p class="ranklist-player">2.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                    <p class="ranklist-player">3.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                    <p class="ranklist-player">4.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                    <p class="ranklist-player">5.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                    <p class="ranklist-player">6.<img src="img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <p class="ranklist-player">1.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <p class="ranklist-player">2.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <p class="ranklist-player">3.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <p class="ranklist-player">4.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <p class="ranklist-player">5.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <p class="ranklist-player">6.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
                 </div>
                 <div class="score">
                     <p class="ranklist-title">Score</p>
@@ -217,7 +217,7 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
+                      <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
         </div>
@@ -226,7 +226,7 @@ const pagesContent = {
             <div class="profile-infos">
                 <div class="profile-recap">
                     <div class="user">
-                        <img src="{% static 'img/fox.png' %}" alt="Profile" class="first-img">
+                        <img src="static/img/fox.png" alt="Profile" class="first-img">
                         <div class="user-online">
                             <p class="profile-username">Username</p>
                             <div class="online">ONLINE</div>
@@ -234,17 +234,17 @@ const pagesContent = {
                     </div>
                     <div class="recap-items">
                         <div class="item-infos">
-                            <img src="{% static 'img/dice.png' %}" alt="Profile" class="profile-icon">
+                            <img src="static/img/dice.png" alt="Profile" class="profile-icon">
                             <p class="item-nb">3</p>
                             <p class="item-title">Games</p>
                         </div>
                         <div class="item-infos">
-                            <img src="{% static 'img/trophy.png' %}" alt="Profile" class="profile-icon">
+                            <img src="static/img/trophy.png" alt="Profile" class="profile-icon">
                             <p class="item-nb">1</p>
                             <p class="item-title">Victories</p>
                         </div>
                         <div class="item-infos">
-                            <img src="{% static 'img/heart.png' %}" alt="Profile" class="profile-icon">
+                            <img src="static/img/heart.png" alt="Profile" class="profile-icon">
                             <p class="item-nb">5</p>
                             <p class="item-title">Friends</p>
                         </div>
@@ -271,14 +271,32 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
+                      <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
         </div>
         <div id="game-container"></div>
-        <script type="module" src="{% static 'js/pong.js' %}"></script> 
+        <script type="module" src="static/js/pong.js"></script> 
     </div>
-  `
+  `,
+  "friends-page": `
+    <div id="friends-page">
+            <div class="home-navbar">
+                <div class="navbar-left">
+                    <p class="text-wrapper">PONG</p>
+                    <a id="home" href="#home" class="navbar-item">HOME</a>
+                    <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                    <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+                </div>
+                <div class="navbar-right">
+                    <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                    <div class="profile-container">
+                        <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                    </div>
+                </div>
+            </div>
+    </div>
+    `
 };
 
 function getPageName(page) {
