@@ -3,29 +3,29 @@ from .Values import FIELD_HEIGHT, FIELD_WIDTH, PADDLE_HEIGHT, PADDLE_WIDTH, PADD
 class Paddle:
 	def __init__(self, side):
 		self.y = FIELD_HEIGHT / 2 - (PADDLE_HEIGHT / 2)
+		self.x = 0
 
 		if side == 'left':
-			self.x = 50,
+			self.x = 50
 		elif side == 'right':
 			self.x = FIELD_WIDTH - 50 - PADDLE_WIDTH
 
 		self.vy = 0
+		self.score = 0
 
 	def reset(self):
 		self.y = FIELD_HEIGHT / 2 - (PADDLE_HEIGHT / 2)
 		self.vy = 0
+		self.score = 0
 
-	def move_up(self, keypressed):
-		if keypressed:
-			self.vy = PADDLE_SPEED
-		else:
-			self.vy = 0
+	def still(self):
+		self.vy = 0
 
-	def move_down(self, keypressed):
-		if keypressed:
-			self.vy = -PADDLE_SPEED
-		else:
-			self.vy = 0
+	def move_up(self):
+		self.vy = -PADDLE_SPEED
+
+	def move_down(self):
+		self.vy = PADDLE_SPEED
 
 	def move(self):
 		self.y += self.vy

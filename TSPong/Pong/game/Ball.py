@@ -19,6 +19,8 @@ class Ball:
 		self.vx = random.choice([1, -1])
 		self.vy = random.choice([1, -1])
 
+		self.speed = BALL_SPEED[difficulty]
+
 	def move(self):
 		self.x += self.vx * self.speed
 		self.y += self.vy * self.speed
@@ -30,11 +32,11 @@ class Ball:
 			self.vy *= -1
 
 	def paddle_bounce(self, paddle_x, paddle_y):
-		if paddle_x > FIELD_WIDTH / 2 and self.x + BALL_SIZE >= paddle_x and self.y + BALL_SIZE >= paddle_y and self.y <= (paddle_y + PADDLE_HEIGHT):
+		if paddle_x > (FIELD_WIDTH / 2) and (self.x + BALL_SIZE) >= paddle_x and (self.y + BALL_SIZE) >= paddle_y and self.y <= (paddle_y + PADDLE_HEIGHT):
 			self.vx *= -1
-			self.speed += 0.5
-		elif paddle_x < FIELD_WIDTH / 2 and self.x <= paddle_x + PADDLE_WIDTH and self.y + BALL_SIZE >= paddle_y and self.y <= (paddle_y + PADDLE_HEIGHT):
+			self.speed += 0.7
+		elif (paddle_x < FIELD_WIDTH / 2) and self.x <= (paddle_x + PADDLE_WIDTH) and (self.y + BALL_SIZE) >= paddle_y and self.y <= (paddle_y + PADDLE_HEIGHT):
 			self.vx *= -1
-			self.speed += 0.5
+			self.speed += 0.7
 
 	

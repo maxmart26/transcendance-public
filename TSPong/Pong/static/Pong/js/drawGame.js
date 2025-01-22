@@ -17,6 +17,9 @@ let ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height / 
 
 let player1Y = this.canvas.height / 2 - (paddle_height / 2);
 let player2Y = this.canvas.height / 2 - (paddle_height / 2);
+let p1_score = 0
+let p2_score = 0
+let round_nb = 0
 
 // Fonction pour dessiner le jeu
 function draw() {
@@ -83,12 +86,12 @@ function draw() {
 
 	// Draw the players score
 	this.context.fillText(
-		"9", // Left score
+		p1_score, // Left score
 		(this.canvas.width / 2) - 300,
 		200
 	);
 	this.context.fillText(
-		"5", // Right score
+		p2_score, // Right score
 		(this.canvas.width / 2) + 300,
 		200
 	);
@@ -100,7 +103,7 @@ function draw() {
 
 	// Draw the current round number
 	this.context.fillText(
-		"Round 4", //Round number
+		"Round " + round_nb,
 		(this.canvas.width / 2),
 		100
 	);
@@ -117,8 +120,11 @@ socket.onmessage = function(event) {
     const data = JSON.parse(event.data);
     // Mettre à jour les coordonnées avec les données reçues
     ball = data.ball;
-    //player1Y = data.player1_y;
-	//player2Y = data.player2_y;
+    player1Y = data.player1_y;
+	player2Y = data.player2_y;
+	p1_score = data.p1_score;
+	p2_score = data.p2_score;
+	round_nb = data.round_nb;
 
     // Redessiner le jeu
     draw();
@@ -128,9 +134,30 @@ socket.onclose = function(e) {
     console.error('Socket WebSocket closed (error)');
 };
 
-// socket.onerror = function(err) {
-//     console.error('Error WebSocket :', err);
-// };
+socket.onerror = function(err) {
+    console.error('Error WebSocket :', err);
+};
+
+document.addEventListener('keydown', (event) => {
+	let action = null;
+    if (event.key === 'ArrowUp') {
+        action = 'move_up';
+    } else if (event.key === 'ArrowDown') {
+        action = 'move_down';
+    }
+
+	if (action){
+		socket.send(JSON.stringify({
+			'action': action
+		}));
+	}
+});
+
+document.addEventListener('keyup', (event) => {
+	socket.send(JSON.stringify({
+		'action': 'noo'
+	}));
+});
 
 // Dessin initial
 draw();
