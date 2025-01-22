@@ -1,7 +1,7 @@
 import math
 import random
 
-from Values import FIELD_HEIGHT, FIELD_WIDTH, BALL_SIZE, BALL_SPEED
+from .Values import FIELD_HEIGHT, FIELD_WIDTH, BALL_SIZE, BALL_SPEED
 
 class Ball:
 	def __init__(self, difficulty):

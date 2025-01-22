@@ -1,5 +1,4 @@
-from Ball import Ball
-from Values import FIELD_HEIGHT, FIELD_WIDTH, PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_SPEED
+from .Values import FIELD_HEIGHT, FIELD_WIDTH, PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_SPEED
 
 class Paddle:
 	def __init__(self, side):
