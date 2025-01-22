@@ -76,8 +76,8 @@ const pagesContent = {
               </div>
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                  <div class="profile-container">
-                      <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image" /></button>
+                  <div class="profile-container>
+                    <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
         </div>
@@ -96,7 +96,7 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
           </div>
@@ -159,7 +159,7 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
         </div>
@@ -217,7 +217,7 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
         </div>
@@ -271,7 +271,7 @@ const pagesContent = {
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div class="profile-container">
-                      <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
         </div>
@@ -291,7 +291,7 @@ const pagesContent = {
                 <div class="navbar-right">
                     <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                     <div class="profile-container">
-                        <button id="profile-img"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                        <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                     </div>
                 </div>
             </div>
@@ -333,11 +333,6 @@ document.querySelectorAll('a.nav-link').forEach(link => {
     });
 });
 
-  
-
-
-// // Sélectionnez le conteneur où le contenu sera injecté
-// const contentContainer = document.getElementById('pong');
 
 // function setupImageUpload(inputId, previewId) {
 //     const imageUpload = document.getElementById(inputId);
