@@ -13,7 +13,7 @@ const pagesContent = {
               <input type="password" id="password">
           </form>
           <div class="enter">
-              <button id="homeButton" class="rectangle-4">ENTER</button>
+              <button onclick="navigateTo('home-page')" class="rectangle-4">ENTER</button>
           </div>
           <div class="or">
               <img class="line" src="{% static 'img/line1.png' %}" /> 
@@ -28,7 +28,7 @@ const pagesContent = {
           </div>
           <div class="account">
               <p class="p">You don't have an account ?</p>
-              <button id="replaceButton" class="text-wrapper-6">Create an account</button>
+              <button onclick="navigateTo('create-account')" id="replaceButton" class="text-wrapper-6">Create an account</button>
           </div>
           </div>
       </div>`,
@@ -60,7 +60,7 @@ const pagesContent = {
                   <input type="text" id="email">
               </form>
               <div class="enter">
-                  <button id="save" class="rectangle-4">Save</button>
+                  <button onclick="navigateTo('login-page')" id="save" class="rectangle-4">Save</button>
               </div>
           </div>
       </div>
@@ -80,8 +80,8 @@ const pagesContent = {
                       <button id="profile-img"><img src="img/fox.png" alt="Profile" class="profile-image"></button>
                   </div>
               </div>
-          </div>
-          <button id="game" class="game-rectangle">START A GAME</button>
+        </div>
+          <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">START A GAME</button>
       </div>
   `,
   "settings-page": `
@@ -143,7 +143,7 @@ const pagesContent = {
                   <button id="a2f-button"><i class="bi bi-toggle-off switch-button"></i>Enable Two-Factor Authentication (A2F)</button>
                   <p class="a2f-explain">This method enhances security by requiring users to provide two distincts types of verification to confirm their identity.</p>
               </div>
-              <button id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
+              <button onclick="navigateTo('login-page')" id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
           </div>
       </div>
   `,
@@ -281,78 +281,68 @@ const pagesContent = {
   `
 };
 
-// Sélectionnez le conteneur où le contenu sera injecté
-const contentContainer = document.getElementById("pong");
-
-function setupImageUpload(inputId, previewId) {
-    const imageUpload = document.getElementById(inputId);
-    const imagePreview = document.getElementById(previewId);
-  
-    if (imageUpload && imagePreview) {
-      // Écouteur d'événement pour le changement de fichier
-      imageUpload.addEventListener('change', (event) => {
-        const file = event.target.files[0]; // Récupère le premier fichier sélectionné
-  
-        if (file) {
-          const reader = new FileReader(); // Crée un FileReader
-  
-          // Quand le fichier est lu
-          reader.onload = (e) => {
-            imagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
-          };
-  
-          reader.readAsDataURL(file); // Lit le fichier comme une URL de données
-        }
-      });
-    }
-  }
-
-// Fonction pour afficher une page
-function showPage(pageKey) {
-  if (pagesContent[pageKey]) {
-      contentContainer.innerHTML = pagesContent[pageKey]; // Injecte le contenu
-      if (pageKey === 'create-account') {
-        setupImageUpload('imageUpload', 'imagePreview'); // Configure l'upload d'image uniquement pour la page "create-account"
-      } else if (pageKey === 'settings-page') {
-        setupImageUpload('newImageUpload', 'newImagePreview');
-      }
-  } else {
-      console.error("Page not found!");
-  }
+function getPageName(page) {
+    return page.endsWith('-page') ? page : `${page}-page`;
 }
 
-// Exemple d'utilisation
-window.onload = function() {
-document.addEventListener("DOMContentLoaded", () => {
-    showPage("login-page");
-    console.log("DOM chargé !");
+// Fonction pour gérer la navigation avec l'historique
+function navigateTo(page, addToHistory = true) {
+    const normalizedPage = getPageName(page);
+    if (addToHistory) {
+        window.history.pushState({ normalizedPage }, normalizedPage, `#${normalizedPage}`);
+    }
+    const app = document.getElementById('pong');
+    app.innerHTML = pagesContent[normalizedPage] || `<h1>Page not found</h1>`;
+}
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+    const initialPage = window.location.hash.replace('#', '') || 'login-page';
+    navigateTo(initialPage, false); // Pas besoin d'ajouter dans l'historique au chargement
 });
+
+// Rechargement de la page en arrière/avant dans l'historique
+window.onpopstate = (event) => {
+    const page = window.location.hash.replace('#', '') || 'login-page';
+    navigateTo(page, false); // Pas d'ajout à l'historique ici non plus
 };
 
+document.querySelectorAll('a.nav-link').forEach(link => {
+    link.addEventListener('click', (event) => {
+        event.preventDefault(); // Empêche le comportement par défaut
+        const page = link.getAttribute('href').replace('#', '');
+        navigateTo(page); // Navigue vers la page
+    });
+});
 
-contentContainer.addEventListener('click', (event) => {
-    const targetId = event.target.id;
   
-    if (targetId === 'replaceButton') {
-      showPage("create-account");
-    } else if (targetId === 'homeButton') {
-      showPage("home-page");
-    } else if (targetId === 'settings') {
-      showPage("settings-page");
-    } else if (targetId === 'logout') {
-      showPage("login-page");
-    } else if (targetId === 'save') {
-      showPage("login-page");
-    } else if (targetId === 'home') {
-        showPage("home-page");
-    } else if (targetId === 'leaderboard') {
-        showPage("leaderboard-page");
-    } else if (targetId === 'profile-img') {
-        showPage("profile-page");
-    } else if (targetId === 'game') {
-        showPage("game-page");
-    }
-  });
+
+
+// // Sélectionnez le conteneur où le contenu sera injecté
+// const contentContainer = document.getElementById('pong');
+
+// function setupImageUpload(inputId, previewId) {
+//     const imageUpload = document.getElementById(inputId);
+//     const imagePreview = document.getElementById(previewId);
+  
+//     if (imageUpload && imagePreview) {
+//       // Écouteur d'événement pour le changement de fichier
+//       imageUpload.addEventListener('change', (event) => {
+//         const file = event.target.files[0]; // Récupère le premier fichier sélectionné
+  
+//         if (file) {
+//           const reader = new FileReader(); // Crée un FileReader
+  
+//           // Quand le fichier est lu
+//           reader.onload = (e) => {
+//             imagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
+//           };
+  
+//           reader.readAsDataURL(file); // Lit le fichier comme une URL de données
+//         }
+//       });
+//     }
+//   }
 
 document.getElementById('save').addEventListener('click', () => {
 const _profileImage = document.getElementById('imageUpload');
