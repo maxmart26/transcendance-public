@@ -1,11 +1,11 @@
-FIELD_HEIGHT = 500
-FIELD_WIDTH = 700
+FIELD_HEIGHT = 1000
+FIELD_WIDTH = 1400
 
 BALL_SIZE = 1
 BALL_SPEED = {
-	'easy': 1,
-	'medium': 2,
-	'hard': 3
+	'easy': 5,
+	'medium': 10,
+	'hard': 15
 }
 
 PADDLE_HEIGHT = 3

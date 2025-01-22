@@ -44,7 +44,7 @@ function draw() {
 
 	// Draw the Player1
 	this.context.fillRect(
-		this.canvas.width / 2 - 610 - paddle_width,
+		50,
 		player1Y,
 		paddle_width,
 		paddle_height
@@ -52,7 +52,7 @@ function draw() {
 
 	// Draw the Player
 	this.context.fillRect(
-		this.canvas.width / 2 + 610,
+		this.canvas.width - 50 - paddle_width,
 		player2Y,
 		paddle_width,
 		paddle_height

@@ -41,5 +41,7 @@ class PongGame(AsyncWebsocketConsumer):
 		while not self.game_over:
 			self.ball.move()
 			self.ball.wall_bounce()
+			# self.ball.paddle_bounce(self.players['1'].x, self.players['1'].y)
+			# self.ball.paddle_bounce(self.players['2'].x, self.players['2'].y)
 			await self.send_state()
 			await asyncio.sleep(1/TICK_RATE)
