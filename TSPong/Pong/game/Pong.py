@@ -2,6 +2,8 @@ import json
 import random
 import asyncio
 
+from channels.auth import login_user
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .Values import *
@@ -11,8 +13,8 @@ from .Paddles import Paddle
 class PongGame(AsyncWebsocketConsumer):
 	async def connect(self):
 		#a determiner selon le choix du joueur
-		self.difficulty = 'easy'
-		self.ball = Ball('easy')
+		self.difficulty = 'medium'
+		self.ball = Ball(self.difficulty)
 		#remplacer '1' et '2' par les ID des joueurs
 		self.p1 = Paddle('left')
 		self.p2 = Paddle('right')
