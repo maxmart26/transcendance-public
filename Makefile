@@ -11,16 +11,16 @@
 # **************************************************************************** #
 
 all:
-	sudo docker compose -f ./Full/docker-compose.yml up -d --build
+	docker compose -f ./Full/docker-compose.yml up -d --build
 
 down:
-	sudo docker compose -f ./Full/docker-compose.yml down
+	docker compose -f ./Full/docker-compose.yml down
 
 re:
-	sudo docker compose -f ./Full/docker-compose.yml up -d --build --force-recreate
+	docker compose -f ./Full/docker-compose.yml up -d --build --force-recreate
 
 clean:
-	sudo docker system prune -af
+	docker system prune -af
 
 .PHONY:
 	all down re clear
