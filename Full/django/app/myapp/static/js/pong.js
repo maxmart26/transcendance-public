@@ -1,4 +1,5 @@
-import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r146/three.module.min.js';
+import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.172.0/three.module.min.js"
+
 
 let scene, renderer;
 let cameraP1, cameraP2;
@@ -9,6 +10,7 @@ let scoreP1 = 0;
 let scoreP2 = 0;
 const MAX_SCORE = 5;
 let gameOver = false; // Indicateur de fin de jeu
+
 
 function init() {
     // 1. Créer une scène
@@ -26,8 +28,14 @@ function init() {
     // 3. Créer le renderer
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById('game-container').appendChild(renderer.domElement);
-
+    window.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('game-container');
+        if (!container) {
+            console.error('Element #game-container not found');
+            return;
+        }
+        container.appendChild(renderer.domElement);
+    });
     // Activer le test de scissor une seule fois
     renderer.setScissorTest(true);
     renderer.shadowMap.enabled = true;
@@ -99,7 +107,7 @@ function init() {
 
     // ===============================8. Ajouter les bordures =========================
     const borderGeometry = new THREE.BoxGeometry(20, 0.5, 0.5);
-    const borderMaterial = new THREE.MeshBasicMaterial({ color: 0xAA0100,
+    const borderMaterial = new THREE.MeshStandardMaterial({ color: 0xAA0100,
         roughness: 1,
         metalness: 1,
         emissive: 0x404040
@@ -266,7 +274,36 @@ function updateScoreDisplay() {
     }
 }
 
+
 init();
 createBall();
 updateScoreDisplay(); // Initialiser l'affichage des scores
 animate();
+
+let isGameRunning = true; // Drapeau pour contrôler l'animation
+
+// Fonction pour nettoyer le jeu
+function cleanupGame() {
+    isGameRunning = false; // Arrête l'animation
+    const container = document.getElementById('game-container');
+    if (container) {
+        container.innerHTML = ''; // Vide le conteneur du jeu
+    }
+    const gameOverElement = document.getElementById('gameOver');
+    if (gameOverElement) {
+        gameOverElement.remove(); // Supprime le message de fin si présent
+    }
+    const scoreElement = document.getElementById('score');
+    if (scoreElement) {
+        scoreElement.remove(); // Supprime le score
+    }
+}
+
+// Détecte le changement de page en surveillant le hash dans l'URL
+window.addEventListener('hashchange', () => {
+    const currentHash = window.location.hash;
+    if (currentHash !== '#game-page') {
+        cleanupGame();
+    }
+});
+

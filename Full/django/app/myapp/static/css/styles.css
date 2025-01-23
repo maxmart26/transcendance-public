@@ -1024,10 +1024,23 @@ input {
 }
 
 #game-container {
-  width: 100%;
-  height: 500px; /* Taille du conteneur */
-  background-color: black; /* Couleur de fond pour différencier */
+  width: 100vw;
+  height: 100vh; /* Taille du conteneur */
+  background-color: #000; /* Couleur de fond pour différencier */
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#score {
+  position: absolute;
+  top: 100px;
+  width: 100%;
+  text-align: center;
+  font-size: 24px;
+  color: #ffffff;
+  z-index: 1;
+  font-family: Arial, sans-serif;
 }

@@ -276,7 +276,8 @@ const pagesContent = {
               </div>
         </div>
         <div id="game-container"></div>
-        <script type="module" src="static/js/pong.js"></script> 
+        <div id="score">Joueur 1: 0 | Joueur 2: 0</div>
+        
     </div>
   `,
   "friends-page": `
