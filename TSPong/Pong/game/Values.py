@@ -4,8 +4,8 @@ FIELD_WIDTH = 1400
 BALL_SIZE = 20
 BALL_SPEED = {
 	'easy': 5,
-	'medium': 10,
-	'hard': 15
+	'medium': 8,
+	'hard': 12
 }
 
 PADDLE_HEIGHT = 120

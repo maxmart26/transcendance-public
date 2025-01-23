@@ -42,8 +42,11 @@ function draw() {
 		this.canvas.height
 	);
 
-	// Set the fill style to white (For the paddles and the ball)
-	this.context.fillStyle = '#c156b2';
+	this.context.fillStyle = '#ff79d1';
+	this.context.shadowOffsetX = -1;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 15;
+	this.context.shadowColor = '#ff79d1';
 
 	// Draw the Player1
 	this.context.fillRect(
@@ -53,13 +56,17 @@ function draw() {
 		paddle_height
 	);
 
-	// Draw the Player
+	// Draw the Player2
 	this.context.fillRect(
 		this.canvas.width - 50 - paddle_width,
 		player2Y,
 		paddle_width,
 		paddle_height
 	);
+
+	this.context.shadowOffsetX = 0;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 0;
 
 	// Draw the net (Line in the middle)
 	this.context.beginPath();
@@ -71,10 +78,14 @@ function draw() {
 	this.context.stroke();
 
 	// Set the default canvas font and align it to the center
-	this.context.font = '100px Courier New';
+	this.context.font = '100px Impact';
 	this.context.textAlign = 'center';
 
 	this.context.fillStyle = '#ffffff';
+	this.context.shadowOffsetX = -1;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 15;
+	this.context.shadowColor = '#ffffff';
 
 	// Draw the Ball
 	this.context.fillRect(
@@ -83,6 +94,10 @@ function draw() {
 		ball_size,
 		ball_size
 	);
+
+	this.context.shadowOffsetX = 0;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 0;
 
 	// Draw the players score
 	this.context.fillText(
@@ -96,10 +111,14 @@ function draw() {
 		200
 	);
 
-	this.context.font = '50px Courier New';
+	this.context.font = '50px Impact';
 	this.context.textAlign = 'center';
 
 	this.context.fillStyle = '#eba811';
+	this.context.shadowOffsetX = -1;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 15;
+	this.context.shadowColor = '#eba811';
 
 	// Draw the current round number
 	this.context.fillText(
@@ -107,6 +126,10 @@ function draw() {
 		(this.canvas.width / 2),
 		100
 	);
+
+	this.context.shadowOffsetX = 0;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 0;
 }
 
 // WebSocket

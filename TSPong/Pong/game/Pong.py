@@ -2,8 +2,6 @@ import json
 import random
 import asyncio
 
-from channels.auth import login_user
-from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .Values import *

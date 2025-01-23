@@ -1,6 +1,9 @@
 from django.shortcuts import render, HttpResponse
 
 # Create your views here.
+def index(request):
+	return render(request, "Pong/index.html")
+
 def search_match(request):
 	"""
 	Check the database of created matches currently waiting for opponents
