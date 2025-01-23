@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+	'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'drf_yasg', 
+	'channels',
     'myapp',
 ]
 
@@ -161,3 +163,11 @@ SWAGGER_SETTINGS = {
     'DEFAULT_INFO': 'myproject.urls.schema_view',
     'STATIC_URL': '/staticfiles/drf-yasg/swagger-ui-dist/',
 }
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+ASGI_APPLICATION = 'routing.application'
