@@ -170,4 +170,4 @@ CHANNEL_LAYERS = {
     },
 }
 
-ASGI_APPLICATION = 'routing.application'
+ASGI_APPLICATION = 'myproject.routing.application'

@@ -19,5 +19,4 @@ python manage.py collectstatic --noinput
 
 # Démarrer le serveur
 echo "Starting Django server..."
-python daphne myapp.asgi:application --bind 0.0.0.0 --port 8000
 exec "$@"

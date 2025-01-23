@@ -14,7 +14,7 @@ services:
     build:
       context: ./django
     container_name: django-container
-    command: bash -c " python manage.py runserver 0.0.0.0:8000"
+    command: ["daphne", "-b", "0.0.0.0", "-p", "8000", "myproject.asgi:application"]
     volumes:
       - ./django/app:/app
       - ./static:/app/static

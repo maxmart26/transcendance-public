@@ -25,4 +25,4 @@ def homepage(request):
     return render(request, 'index.html')
 
 def DEBUGgame(request):
-	return render(request, "myapp/game-page.html")
+	return render(request, 'game-page.html')
