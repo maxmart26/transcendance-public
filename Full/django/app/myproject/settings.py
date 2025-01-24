@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +29,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +51,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_yasg', 
     'myapp',
+    'social_django',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'myproject.urls'
@@ -98,9 +113,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Répertoire où les fichiers ser
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
+    'myapp.backend_42.Intra42OAuth2',  # Backend spécifique à l'API 42
+    'django.contrib.auth.backends.ModelBackend',  # Authentification classique
 ]
+SOCIAL_AUTH_INTRA42_KEY = 'u-s4t2ud-740be05e283130d59321a2b45f94cc9f8d7c90cce47668da972834e6b5ce5492'
+SOCIAL_AUTH_INTRA42_SECRET = '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'
 
+# URL de redirection configurée dans l'API 42
+SOCIAL_AUTH_INTRA42_REDIRECT_URI = 'http://localhost:8080/auth/complete/intra42/'
+# Scopes demandés
+SOCIAL_AUTH_INTRA42_SCOPE = ['public']
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -160,4 +183,18 @@ SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,
     'DEFAULT_INFO': 'myproject.urls.schema_view',
     'STATIC_URL': '/staticfiles/drf-yasg/swagger-ui-dist/',
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
 }
