@@ -7,6 +7,11 @@ from drf_yasg import openapi
 from myapp.models import Player
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
+from django.shortcuts import redirect
+from django.http import JsonResponse
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 
 
@@ -187,18 +192,79 @@ def login(request):
             {"error": "Both username and password are required."},
             status=status.HTTP_400_BAD_REQUEST,
         )
-        logger.debug(f"Username: {username}, Password: {password}")
-
     # Authentification
     user = authenticate(username=username, password=password)
-
+    
     if user is not None:
         # Vérifiez si l'utilisateur existe dans la base
-        return Response(
-        {"message": "Login successful!", "username": user.username},
-        status=status.HTTP_200_OK,)
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        response = Response(
+            {
+                "message": "Login successful!",
+                "access": access_token,
+                "refresh": str(refresh),
+            },
+            status=status.HTTP_200_OK,
+        )
+
+        # Définition d'un cookie contenant le token d'accès
+        response.set_cookie(
+            key='access_token',  # Nom du cookie
+            value=access_token,  # Valeur (ici le token JWT)
+            httponly=True,       # HTTPOnly pour la sécurité (non accessible en JS)
+            secure=True,         # True si vous utilisez HTTPS
+            samesite='Strict',   # Protéger contre les attaques CSRF
+            max_age=3600,        # Durée de vie du cookie (en secondes, ici 1 heure)
+        )
+        response.set_cookie(
+            key='user_id',       # Nom du cookie
+            value=user.id,       # ID de l'utilisateur connecté
+            httponly=False,      # Accessible via JavaScript si besoin (optionnel)
+            secure=True,         # True si vous utilisez HTTPS
+            samesite='Strict',   # Protéger contre les attaques CSRF
+            max_age=3600,        # Durée de vie du cookie (en secondes, ici 1 heure)
+        )
+        return response
     else:
         return Response(
             {"error": "Invalid username or password."},
             status=status.HTTP_401_UNAUTHORIZED,
         )
+    
+def login_42(request):
+    oauth_url = (
+        "https://api.intra.42.fr/oauth/authorize"
+        f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code"
+    )
+    return redirect(oauth_url)
+
+
+def callback_42(request):
+    code = request.GET.get('code')
+    if not code:
+        return JsonResponse({'error': 'Code not provided'}, status=400)
+
+    token_url = "https://api.intra.42.fr/oauth/token"
+    data = {
+        'grant_type': 'authorization_code',
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+        'code': code,
+        'redirect_uri': REDIRECT_URI,
+    }
+
+    response = requests.post(token_url, data=data)
+    if response.status_code == 200:
+        token_data = response.json()
+        # Sauvegarder ou traiter le token ici
+        return JsonResponse({'token_data': token_data})
+    return JsonResponse({'error': 'Failed to fetch token'}, status=response.status_code)
+
+
+class ProtectedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"message": "You are authenticated!"})
+    
