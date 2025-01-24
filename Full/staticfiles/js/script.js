@@ -12,9 +12,10 @@ const pagesContent = {
               <label for="password" class="text-wrapper-2">Password</label>
               <input type="password" id="password">
           </form>
+          <p id="error-message" class="error-message"></p>
           <div class="enter">
-              <button onclick="navigateTo('home-page')" class="rectangle-4">ENTER</button>
-          </div>
+            <button id="enter-button" class="rectangle-4">ENTER</button>
+        </div>
           <div class="or">
               <img class="line" src="static/img/line1.png" /> 
               <p class="text-wrapper-8">OR</p>
@@ -297,7 +298,7 @@ const pagesContent = {
             </div>
         </div>
         <div class="friends-rectangle">
-            <p class="profile-title">FRIENDS</p>
+            <p class="friends-title">FRIENDS</p>
             <label for="username" class="friend-user">Add a new friend</label>
             <input class="friend-searchbox" type="text" id="user">
             <button class="add-friend">ADD</button>
@@ -359,6 +360,46 @@ document.querySelectorAll('a.nav-link').forEach(link => {
         const page = link.getAttribute('href').replace('#', '');
         navigateTo(page); // Navigue vers la page
     });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+document.getElementById("enter-button").addEventListener("click", async function (e) {
+    e.preventDefault(); // Empêche le comportement par défaut du bouton
+
+    // Récupère les valeurs du formulaire
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const errorMessage = document.getElementById("error-message");
+
+    // Vérifie que les champs ne sont pas vides
+    if (username === "" || password === "") {
+        errorMessage.textContent = "Both username and password are required.";
+        return;
+    }
+
+    try {
+        // Envoie une requête POST à l'API
+        const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+        });
+
+        // Analyse la réponse
+        if (response.ok) {
+            const data = await response.json();
+            alert(data.message); // Affiche "Login successful"
+            navigateTo("home-page"); // Redirige l'utilisateur
+        } else {
+            const errorData = await response.json();
+            errorMessage.textContent = errorData.error; // Affiche l'erreur retournée
+        }
+    } catch (err) {
+        errorMessage.textContent = "Server error. Please try again later.";
+    }
+});
 });
 
 
