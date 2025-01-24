@@ -219,9 +219,17 @@ function connect_socket()
 
 function startGame(gameData)
 {
+	draw();
 	console.log("status: " + gameData.status);
-	while (gameData.status === 'waiting'){
-		draw();
-	}
-	connect_socket();
+	
+	let checkStatus = setInterval(() => {
+		if (gameData.status === 'start_game') {
+			clearInterval(checkStatus);
+			console.log("Game is starting.");
+			connect_socket();
+		}
+		else{
+            fetch('/game_status/'+gameData.roomId).then(response => response.json()).then(data => gameData.status = data.status);
+        }
+	}, 500);
 }

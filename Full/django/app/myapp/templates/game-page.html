@@ -34,10 +34,10 @@
 	<script>
         const gameDataElement = document.getElementById('game-data');
         const gameData = {
+        	status: gameDataElement.dataset.status,
             roomId: gameDataElement.dataset.roomId,
             player1: gameDataElement.dataset.player1,
-            player2: gameDataElement.dataset.player2,
-            playerId: gameDataElement.dataset.playerId
+            player2: gameDataElement.dataset.player2
         };
         const script = document.createElement('script');
         script.src = "{% static 'js/drawGame.js' %}";
