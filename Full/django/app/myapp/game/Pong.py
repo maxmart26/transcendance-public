@@ -10,82 +10,92 @@ from .Ball import Ball
 from .Paddles import Paddle
 
 class Player:
-	def __init__(self):
-		self.id = str(uuid.uuid4()) #a remplacer par l'id dans la db
-		self.color = '#ff79d1' #a remplacer par la color dans la db
-		self.difficulty = 'medium' #a remplacer """"""
+	def __init__(self, name, id, color, difficulty):
+		self.name = name
+		self.id = id #a remplacer par l'id dans la db
+		self.color = color #a remplacer par la color dans la db
+		self.difficulty = difficulty #a remplacer """"""
 
 
 class PongGame(AsyncWebsocketConsumer):
-	connected_players = {}
 	async def connect(self):
+		self.room_id = self.scope['url_route']['kwargs']['room_id']
+		self.room_group_name = f'game_{self.room_id}'
+		self.player1 = self.scope['query_string'].decode().split('&')[0].split('=')[1]
+		self.player2 = self.scope['query_string'].decode().split('&')[1].split('=')[1]
+
 		await self.accept()
+		await self.channel_layer.group_add(
+			self.room_group_name,
+			self.channel_name
+		)
 
-		self.p1 = Paddle('left')
-		self.p2 = Paddle('right')
-		self.player_1 = Player()
-		self.player_2 = Player()
+		self.p1 = Player("Player1", str(uuid.uuid4()), '#ff79d1', 'medium') #A modif: recup les infos via la db
+		self.p2 = Player("Player2", str(uuid.uuid4()), '#ff79d1', 'medium') #same
+		self.players[self.p1.id] = Paddle('left')
+		self.players[self.p2.id] = Paddle('right')
 
-		if (self.p1.free):
-			self.connected_players()
+		await self.send(json.dump({
+				'type': 'game_info',
+				'player_id' : self.p1.id,
+				'player_name' : self.p1.name,
+				'player_color' : self.p1.color,
+				'opp_color' : self.p2.color,
+				'opp_name' : self.p2.name,
+				'difficulty': self.p1.difficulty
+			}))
 		
-		await()
-
-		self.difficulty = 'medium'
+		self.difficulty = self.p1.difficulty
 		self.ball = Ball(self.difficulty)
-
 		self.game_over = False
 		self.round_nb = 1
+
 		await self.send_state()
 		asyncio.create_task(self.play())
 
 	async def disconnect(self):
-		pass
+		await self.channel_layer.group_discard(
+			self.room_group_name,
+			self.channel_name
+		)
 
 	async def receive(self, text_data):
 		action_json = json.loads(text_data)
 		action = action_json.get('action')
-		#remplacer tout le systeme de player id
 		player_id = action_json.get('player_id')
-		print("data: \n	action: %s\n id: %s", action, player_id)
 
 		if action == 'move_up':
-			if (player_id == '1'):
-				self.p1.move_up()
-			else:
-				self.p2.move_up()
+				self.players[player_id].move_up()
 		elif action == 'move_down':
-			if (player_id == '1'):
-				self.p1.move_down()
-			else:
-				self.p2.move_down()
+				self.players[player_id].move_down()
 		elif action == 'noo':
-			self.p1.still()
+				self.players[player_id].still()
 		await self.send_state()
 
 	async def send_state(self):
-		state = {"ball": {"x": self.ball.x, "y": self.ball.y},
+		state = {'type': 'game_state',
+				"ball": {"x": self.ball.x, "y": self.ball.y},
 		   		"player1_y": self.p1.y,
 				"player2_y": self.p2.y,
 				"p1_score": self.p1.score,
 				"p2_score": self.p2.score,
 				"round_nb": self.round_nb}
-		await self.send(json.dumps(state))
+		await self.channel_layer.group_send(json.dumps(state))
 
 	async def reset_round(self):
-		self.p1.reset()
-		self.p2.reset()
+		self.players[self.p1.id].reset()
+		self.players[self.p1.id].reset()
 		self.ball.reset(self.difficulty)
 		await self.send_state()
 
 	async def check_score(self):
 		if self.ball.x <= 0:
-			self.p2.score += 1
+			self.players[self.p2.id].score += 1
 			self.ball.reset(self.difficulty)
 		elif self.ball.x + BALL_SIZE >= FIELD_WIDTH:
-			self.p1.score += 1
+			self.players[self.p1.id].score += 1
 			self.ball.reset(self.difficulty)
-		if (self.p1.score >= 7 or self.p2.score >=7):
+		if (self.players[self.p1.id].score >= 7 or self.players[self.p2.id].score >=7):
 			self.round_nb += 1
 			await self.reset_round()
 
@@ -96,8 +106,8 @@ class PongGame(AsyncWebsocketConsumer):
 			self.p1.move()
 			self.p2.move()
 			self.ball.wall_bounce()
-			self.ball.paddle_bounce(self.p1)
-			self.ball.paddle_bounce(self.p2)
+			self.ball.paddle_bounce(self.players[self.p1.id])
+			self.ball.paddle_bounce(self.players[self.p2.id])
 			
 			await self.check_score()
 			await self.send_state()

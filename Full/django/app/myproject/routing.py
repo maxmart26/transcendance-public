@@ -2,14 +2,12 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 
 from django.core.asgi import get_asgi_application
-from django.urls import path
+from django.urls import path, re_path
 
 from myapp.game.Pong import *
-from myapp.consumers import GameConsumer
 
 websocket_urlpatterns = [
-    path("ws/myapp/game/state", PongGame.as_asgi()),
-    path("ws/myapp/game/player_info", GameConsumer.as_asgi()),
+    re_path("ws/myapp/game/", PongGame.as_asgi()),
 ]
 
 application = ProtocolTypeRouter({

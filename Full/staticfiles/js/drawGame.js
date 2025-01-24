@@ -28,7 +28,6 @@ let opp_color = '#ff79d1';
 
 // Fonction pour dessiner le jeu
 function draw() {
-    // Clear the Canvas
 	this.context.clearRect(
 		0,
 		0,
@@ -36,7 +35,6 @@ function draw() {
 		this.canvas.height
 	);
 
-	// Set the fill style to black
 	this.context.fillStyle = this.color;
 
 	// Draw the background
@@ -140,94 +138,90 @@ function draw() {
 	this.context.shadowBlur = 0;
 }
 
-// WebSocket playerid
-const socket_player = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/player_info');
-socket_player.onopen = function(e) {
-    console.log("WebSocket drawGame open");
-};
-socket_player.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-    // Mettre à jour les coordonnées avec les données reçues
-    player_id = data.player_id;
-	player_name = data.player_name;
-    player_color = data.player1_color;
-	opp_color = data.opp_color;
-	opp_name = data.opp_name;
-    // Redessiner le jeu
-    draw();
-};
-socket_player.onclose = function(e) {
-    console.error('Socket WebSocket closed (error)');
-};
-socket_player.onerror = function(err) {
-    console.error('Error WebSocket :', err);
-};
+function connect_socket()
+{	// WebSocket game_state
+	const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/');
 
-// WebSocket game_state
-const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/state');
+	socket.onopen = function(e) {
+		console.log("WebSocket drawGame open");
+	};
 
-socket.onopen = function(e) {
-    console.log("WebSocket drawGame open");
-};
+	socket.onmessage = function(event) {
+		const data = JSON.parse(event.data);
 
-socket.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-    // Mettre à jour les coordonnées avec les données reçues
-    ball = data.ball;
-    player1Y = data.player1_y;
-	player2Y = data.player2_y;
-	p1_score = data.p1_score;
-	p2_score = data.p2_score;
-	round_nb = data.round_nb;
+		switch (data.type) {
+			case 'game_info':
+				player_id = data.player_id;
+				player_name = data.player_name;
+				player_color = data.player1_color;
+				opp_color = data.opp_color;
+				opp_name = data.opp_name;
+				draw();
+				check_input();
+				break;
+			case 'game_state':
+				ball = data.ball;
+				player1Y = data.player1_y;
+				player2Y = data.player2_y;
+				p1_score = data.p1_score;
+				p2_score = data.p2_score;
+				round_nb = data.round_nb;
+				draw();
+				break;
+		}
+	};
 
-    // Redessiner le jeu
-    draw();
-};
+	socket.onclose = function(e) {
+		console.error('Socket WebSocket closed (error)');
+	};
 
-socket.onclose = function(e) {
-    console.error('Socket WebSocket closed (error)');
-};
+	socket.onerror = function(err) {
+		console.error('Error WebSocket :', err);
+	};
 
-socket.onerror = function(err) {
-    console.error('Error WebSocket :', err);
-};
+	function check_input(){
+		document.addEventListener('keydown', (event) => {
+			let action = null;
+			if (event.key === 'ArrowUp') {
+				action = 'move_up';
+			} else if (event.key === 'ArrowDown') {
+				action = 'move_down';
+			}
+			if (action){
+				socket.send(JSON.stringify({
+					'action': action,
+					'player_id': '2'
+				}));
+			}
+		
+			action = null;
+			if (event.key === 'w') {
+				action = 'move_up';
+			} else if (event.key === 's') {
+				action = 'move_down';
+			}
+			if (action){
+				socket.send(JSON.stringify({
+					'action': action,
+					'player_id': '1'
+				}));
+			}
+		});
 
-//Enlever les ID 1 et 2
-// et remplacer par un vrai ID pour chaque navigateur ouvert
-document.addEventListener('keydown', (event) => {
-	let action = null;
-    if (event.key === 'ArrowUp') {
-        action = 'move_up';
-    } else if (event.key === 'ArrowDown') {
-        action = 'move_down';
-    }
-	if (action){
-		socket.send(JSON.stringify({
-			'action': action,
-			'player_id': '2'
-		}));
+		document.addEventListener('keyup', (event) => {
+			socket.send(JSON.stringify({
+				'action': 'noo',
+				'player_id' : '1'
+			}));
+		});
 	}
+}
 
-	action = null;
-	if (event.key === 'w') {
-        action = 'move_up';
-    } else if (event.key === 's') {
-        action = 'move_down';
-    }
-	if (action){
-		socket.send(JSON.stringify({
-			'action': action,
-			'player_id': '1'
-		}));
+function startGame(gameData)
+{
+	console.log("status: " + gameData.status);
+	while (gameData.status === 'waiting'){
+		draw();
 	}
-});
-
-document.addEventListener('keyup', (event) => {
-	socket.send(JSON.stringify({
-		'action': 'noo',
-		'player_id' : '1'
-	}));
-});
-
-// Dessin initial
-draw();
+	connect_socket();
+}
