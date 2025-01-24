@@ -12,6 +12,7 @@ class Paddle:
 
 		self.vy = 0
 		self.score = 0
+		self.free = True
 
 	def reset(self):
 		self.y = FIELD_HEIGHT / 2 - (PADDLE_HEIGHT / 2)

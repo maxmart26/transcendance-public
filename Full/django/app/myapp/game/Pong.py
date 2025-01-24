@@ -1,6 +1,7 @@
 import json
 import random
 import asyncio
+import uuid
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 
@@ -8,17 +9,33 @@ from .Values import *
 from .Ball import Ball
 from .Paddles import Paddle
 
+class Player:
+	def __init__(self):
+		self.id = str(uuid.uuid4()) #a remplacer par l'id dans la db
+		self.color = '#ff79d1' #a remplacer par la color dans la db
+		self.difficulty = 'medium' #a remplacer """"""
+
+
 class PongGame(AsyncWebsocketConsumer):
+	connected_players = {}
 	async def connect(self):
-		#a determiner selon le choix du joueur
-		self.difficulty = 'medium'
-		self.ball = Ball(self.difficulty)
-		#remplacer '1' et '2' par les ID des joueurs
+		await self.accept()
+
 		self.p1 = Paddle('left')
 		self.p2 = Paddle('right')
+		self.player_1 = Player()
+		self.player_2 = Player()
+
+		if (self.p1.free):
+			self.connected_players()
+		
+		await()
+
+		self.difficulty = 'medium'
+		self.ball = Ball(self.difficulty)
+
 		self.game_over = False
 		self.round_nb = 1
-		await self.accept()
 		await self.send_state()
 		asyncio.create_task(self.play())
 
@@ -28,12 +45,20 @@ class PongGame(AsyncWebsocketConsumer):
 	async def receive(self, text_data):
 		action_json = json.loads(text_data)
 		action = action_json.get('action')
-		#player_id = action_json.get('player_id')
+		#remplacer tout le systeme de player id
+		player_id = action_json.get('player_id')
+		print("data: \n	action: %s\n id: %s", action, player_id)
 
 		if action == 'move_up':
-			self.p1.move_up()
+			if (player_id == '1'):
+				self.p1.move_up()
+			else:
+				self.p2.move_up()
 		elif action == 'move_down':
-			self.p1.move_down()
+			if (player_id == '1'):
+				self.p1.move_down()
+			else:
+				self.p2.move_down()
 		elif action == 'noo':
 			self.p1.still()
 		await self.send_state()
@@ -69,6 +94,7 @@ class PongGame(AsyncWebsocketConsumer):
 
 			self.ball.move()
 			self.p1.move()
+			self.p2.move()
 			self.ball.wall_bounce()
 			self.ball.paddle_bounce(self.p1)
 			self.ball.paddle_bounce(self.p2)

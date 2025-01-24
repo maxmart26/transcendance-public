@@ -21,6 +21,11 @@ let p1_score = 0
 let p2_score = 0
 let round_nb = 0
 
+let player_id;
+let player_name, opp_name;
+let player_color = '#ff79d1';
+let opp_color = '#ff79d1';
+
 // Fonction pour dessiner le jeu
 function draw() {
     // Clear the Canvas
@@ -42,11 +47,11 @@ function draw() {
 		this.canvas.height
 	);
 
-	this.context.fillStyle = '#ff79d1';
+	this.context.fillStyle = player_color;
 	this.context.shadowOffsetX = -1;
 	this.context.shadowOffsetY = 0;
 	this.context.shadowBlur = 15;
-	this.context.shadowColor = '#ff79d1';
+	this.context.shadowColor = player_color;
 
 	// Draw the Player1
 	this.context.fillRect(
@@ -55,6 +60,9 @@ function draw() {
 		paddle_width,
 		paddle_height
 	);
+
+	this.context.fillStyle = opp_color;
+	this.context.shadowColor = opp_color;
 
 	// Draw the Player2
 	this.context.fillRect(
@@ -132,8 +140,31 @@ function draw() {
 	this.context.shadowBlur = 0;
 }
 
-// WebSocket
-const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/');
+// WebSocket playerid
+const socket_player = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/player_info');
+socket_player.onopen = function(e) {
+    console.log("WebSocket drawGame open");
+};
+socket_player.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    // Mettre à jour les coordonnées avec les données reçues
+    player_id = data.player_id;
+	player_name = data.player_name;
+    player_color = data.player1_color;
+	opp_color = data.opp_color;
+	opp_name = data.opp_name;
+    // Redessiner le jeu
+    draw();
+};
+socket_player.onclose = function(e) {
+    console.error('Socket WebSocket closed (error)');
+};
+socket_player.onerror = function(err) {
+    console.error('Error WebSocket :', err);
+};
+
+// WebSocket game_state
+const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/state');
 
 socket.onopen = function(e) {
     console.log("WebSocket drawGame open");
@@ -161,6 +192,8 @@ socket.onerror = function(err) {
     console.error('Error WebSocket :', err);
 };
 
+//Enlever les ID 1 et 2
+// et remplacer par un vrai ID pour chaque navigateur ouvert
 document.addEventListener('keydown', (event) => {
 	let action = null;
     if (event.key === 'ArrowUp') {
@@ -168,17 +201,31 @@ document.addEventListener('keydown', (event) => {
     } else if (event.key === 'ArrowDown') {
         action = 'move_down';
     }
-
 	if (action){
 		socket.send(JSON.stringify({
-			'action': action
+			'action': action,
+			'player_id': '2'
+		}));
+	}
+
+	action = null;
+	if (event.key === 'w') {
+        action = 'move_up';
+    } else if (event.key === 's') {
+        action = 'move_down';
+    }
+	if (action){
+		socket.send(JSON.stringify({
+			'action': action,
+			'player_id': '1'
 		}));
 	}
 });
 
 document.addEventListener('keyup', (event) => {
 	socket.send(JSON.stringify({
-		'action': 'noo'
+		'action': 'noo',
+		'player_id' : '1'
 	}));
 });
 
