@@ -23,3 +23,6 @@ def get_all_players(request):
 
 def homepage(request):
     return render(request, 'index.html')
+
+def DEBUGgame(request):
+	return render(request, 'game-page.html')

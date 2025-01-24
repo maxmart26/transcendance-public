@@ -15,6 +15,9 @@ COPY app/requirements.txt /app/requirements.txt
 # Installer les dépendances Python
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
+# Installer les dépendances Channels et Daphne (websockets)
+RUN pip install channels && pip install daphne
+
 # Copier le reste de l'application
 COPY app /app
 
@@ -22,4 +25,4 @@ COPY app /app
 EXPOSE 8000
 
 # Commande par défaut
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "myproject.asgi:application"]
