@@ -31,25 +31,25 @@ waiting_games = {}
 def create_game(request):
     player_id = str(uuid.uuid4()) #A remplacer par son id dans la db
     if waiting_games:
-        room_id, waiting_player = waiting_games.popitem()
-        return redirect(f'/game/{room_id}/?player1={waiting_player}&player2={player_id}')
+        match_id, waiting_player = waiting_games.popitem()
+        return redirect(f'/game/{match_id}/?player1={waiting_player}&player2={player_id}')
     else:
-        room_id = str(uuid.uuid4())
-        waiting_games[room_id] = player_id
-        return redirect(f'/game/{room_id}/?player1={player_id}')
+        match_id = str(uuid.uuid4())
+        waiting_games[match_id] = player_id
+        return redirect(f'/game/{match_id}/?player1={player_id}')
         #A remplacer par un beau script JS qui cherche un joueur
         #return render(request, 'index.html', {'status': 'waiting'})
         #On envoie le status au .html qui pourra afficher la bonne page avec un if
     
-def game(request, room_id):
+def game(request, match_id):
     player1 = request.GET.get('player1')
     player2 = request.GET.get('player2')
 
     if player1 and player2:
-        return render(request, 'game-page.html', {'status': 'start_game', 'room_id': room_id, 'player1': player1, 'player2': player2})
-        #return render(request, 'index.html', {'status': 'play', 'room_id': room_id, 'player1': player1, 'player2': player2})
+        return render(request, 'game-page.html', {'status': 'start_game', 'match_id': match_id, 'player_id': player2})
+        #return render(request, 'index.html', {'status': 'play', 'match_id': match_id, 'player_id': player2})
     elif player1:
-        return render(request, 'game-page.html', {'status': 'waiting'})
+        return render(request, 'game-page.html', {'status': 'waiting', 'match_id': match_id, 'player_id': player1})
     else:
         return Http404("Game not found.")
 

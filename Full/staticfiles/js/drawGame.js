@@ -220,16 +220,42 @@ function connect_socket()
 function startGame(gameData)
 {
 	draw();
-	console.log("status: " + gameData.status);
-	
-	let checkStatus = setInterval(() => {
-		if (gameData.status === 'start_game') {
-			clearInterval(checkStatus);
+	let status = gameData.status
+
+	console.log("Match_id: " + gameData.matchID);
+	console.log("Status: " + gameData.status);
+	console.log("Player_id: " + gameData.player1);
+
+	const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/' + gameData.matchID);
+
+	socket.onopen = function(e) {
+		console.log("WebSocket drawGame open");
+		socket.send(JSON.stringify({
+			'match_id': gameData.matchID,
+			'player_id': gameData.player1
+		}))
+	};
+
+	socket.onmessage = function(event) {
+		const data = JSON.parse(event.data);
+		status = data.status;
+
+		if (status === 'ready')
+		{
 			console.log("Game is starting.");
 			connect_socket();
 		}
-		else{
-            fetch('/game_status/'+gameData.roomId).then(response => response.json()).then(data => gameData.status = data.status);
-        }
-	}, 500);
+		else if (status === 'full')
+		{
+			console.log("Game is full, exiting");
+			return;
+		}
+	};
+
+	socket.onclose = function(e) {
+		console.error('Socket WebSocket closed (error)');
+	};
+	socket.onerror = function(err) {
+		console.error('Error WebSocket :', err);
+	};
 }
