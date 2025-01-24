@@ -60,8 +60,9 @@ const pagesContent = {
                   <label for="email" class="text-wrapper-2">Email</label>
                   <input type="text" id="email">
               </form>
+              <p id="account-error" class="error-message"></p>
               <div class="enter">
-                  <button onclick="navigateTo('login-page')" id="save" class="rectangle-4">Save</button>
+                  <button id="save-button" class="rectangle-4">Save</button>
               </div>
           </div>
       </div>
@@ -426,33 +427,54 @@ document.getElementById("enter-button").addEventListener("click", async function
 //     }
 //   }
 
-document.getElementById('save').addEventListener('click', () => {
-const _profileImage = document.getElementById('imageUpload');
-const _username = document.getElementById('user');
-const _password = document.getElementById('password2');
-const _confirmPassword = document.getElementById('confirm-password');
-const _email = document.getElementById('email');
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById("save-button").addEventListener("click", async function (e) {
+    e.preventDefault(); // Empêche le comportement par défaut du bouton
+    const _profileImage = document.getElementById('imageUpload');
+    const _username = document.getElementById('user');
+    const _password = document.getElementById('password2');
+    const _confirmPassword = document.getElementById('confirm-password');
+    const _email = document.getElementById('email');
+    const errorMessage = document.getElementById('error-message');
 
-if (_username.value.trim() === "" || _password.value.trim() === "" || _confirmPassword.value.trim() === "" || _email.value.trim() === "")
-    console.log("Invalid field !");
+    if (_username.value.trim() === "") {
+        errorMessage.textContent = "Username is required.";
+    }
 
-if (_password.value != _confirmPassword.value)
-    console.log("Passwords are not the same !");
+    if (_password.value.trim() === "") {
+        errorMessage.textContent = "Password is required.";
+    }
 
-const formData = new FormData();
+    if (_confirmPassword.value.trim() === "") {
+        errorMessage.textContent = "Please confirm password.";
+    } else if (_password.value !== _confirmPassword.value) {
+        errorMessage.textContent = "Passwords are not the same.";
+    }
+
+    if (_email.value.trim() === "") {
+        errorMessage.textContent = "Email is required.";
+    }
+
+    if (!_profileImage.files[0]) {
+        errorMessage.textContent = "Please choose a profile image.";
+    }
+
+
+    const formData = new FormData();
     formData.append('username', _username.value.trim());
     formData.append('password', _password.value.trim());
     formData.append('email', _email.value.trim());
-    formData.append('imageUpload', _profileImage.files[0]);
+    formData.append('image_avatar', _profileImage.files[0]);
 
     console.table(Array.from(formData.entries()));
 
-fetch('https://localhost:8080/add-player/', {
-    method: 'POST',
-    body: formData,
-})
+    fetch('https://localhost:8080/add-player/', {
+        method: 'POST',
+        body: formData,
+    })
     .then(response => {
         if (response.ok) {
+            navigateTo("login-page"); // Redirige l'utilisateur
             return response.json();
         } else {
             throw new Error('Erreur lors de l\'envoi des données');
@@ -465,4 +487,4 @@ fetch('https://localhost:8080/add-player/', {
         console.error('Erreur:', error);
     });
 });
-
+});

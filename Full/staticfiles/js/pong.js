@@ -1,6 +1,5 @@
 import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.172.0/three.module.min.js"
 
-
 let scene, renderer;
 let cameraP1, cameraP2;
 let paddle1, paddle2;
@@ -11,6 +10,7 @@ let scoreP2 = 0;
 const MAX_SCORE = 5;
 let gameOver = false; // Indicateur de fin de jeu
 
+let isInitialized = false; // Variable globale pour indiquer si l'initialisation a réussi
 
 function init() {
     // 1. Créer une scène
@@ -32,10 +32,14 @@ function init() {
         const container = document.getElementById('game-container');
         if (!container) {
             console.error('Element #game-container not found');
+            isInitialized = false;
             return;
         }
+        isInitialized = true;
         container.appendChild(renderer.domElement);
     });
+
+    
     // Activer le test de scissor une seule fois
     renderer.setScissorTest(true);
     renderer.shadowMap.enabled = true;
@@ -276,11 +280,14 @@ function updateScoreDisplay() {
 
 
 init();
-createBall();
-updateScoreDisplay(); // Initialiser l'affichage des scores
-animate();
 
-let isGameRunning = true; // Drapeau pour contrôler l'animation
+if (isInitialized) {
+    // Si l'initialisation a réussi, exécuter les autres fonctions
+    createBall();
+    updateScoreDisplay();
+    animate();
+
+    let isGameRunning = true; // Drapeau pour contrôler l'animation
 
 // Fonction pour nettoyer le jeu
 function cleanupGame() {
@@ -299,6 +306,7 @@ function cleanupGame() {
     }
 }
 
+
 // Détecte le changement de page en surveillant le hash dans l'URL
 window.addEventListener('hashchange', () => {
     const currentHash = window.location.hash;
@@ -306,4 +314,8 @@ window.addEventListener('hashchange', () => {
         cleanupGame();
     }
 });
+} else {
+    console.warn('Game initialization failed. Other functions will not be executed.');
+}
+
 
