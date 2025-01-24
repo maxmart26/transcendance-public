@@ -7,6 +7,7 @@ from .models import Player
 from .permissions import IsAdminOrReadOnly
 from .serializers import PlayerSerializer
 from django.shortcuts import render
+from rest_framework.views import APIView
 
 @api_view(["GET"])
 @permission_classes([IsAdminOrReadOnly])
@@ -23,3 +24,13 @@ def get_all_players(request):
 
 def homepage(request):
     return render(request, 'index.html')
+
+
+
+from .serializers import PlayerAll
+
+class PlayerListView(APIView):
+    def get(self, request):
+        players = Player.objects.all()
+        serializer = PlayerAll(players, many=True)
+        return Response(serializer.data)

@@ -267,3 +267,4 @@ class ProtectedView(APIView):
 
     def get(self, request):
         return Response({"message": "You are authenticated!"})
+    

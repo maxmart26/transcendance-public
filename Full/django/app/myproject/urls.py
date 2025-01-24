@@ -11,7 +11,7 @@ from .views import add_player, update_or_add_player,ProtectedView
 from myapp.views import get_all_players
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
+from myapp.views import PlayerListView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -43,7 +43,7 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/protected/', ProtectedView.as_view(), name='protected_view'),
-    
+    path('players/', PlayerListView.as_view(), name='player-list'),
     
 ]
 
