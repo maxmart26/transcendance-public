@@ -50,3 +50,12 @@ class Player(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+    
+class Match(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    player1 = models.CharField(max_length=255)
+    player2 = models.CharField(max_length=255, null=True, blank=True)
+    status = models.CharField(max_length=20, default='waiting')
+
+    def __str__(self):
+        return str(self.id)
