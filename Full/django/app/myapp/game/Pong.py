@@ -41,7 +41,7 @@ class PongGame(AsyncWebsocketConsumer):
 		
 	async def disconnect(self):
 		await self.channel_layer.group_discard(
-			self.match_group_name,
+			self.group_name,
 			self.channel_name
 		)
 
@@ -51,7 +51,7 @@ class PongGame(AsyncWebsocketConsumer):
 		if data_json.get('type') == 'game_init':
 			self.id = data_json.get('player_id')
 			#A modif, recup les infos dans la db
-			self.player = Player("Player", self.id, '#ff79d1', 'medium', data_json.get('player_nb'))
+			self.player = Player("Player1", self.id, '#ff79d1', 'medium', data_json.get('player_nb'))
 			self.status = data_json.get('status')
 			print("Game init:\n", file=sys.stderr)
 			if self.player.nb == '1':
@@ -120,7 +120,7 @@ class PongGame(AsyncWebsocketConsumer):
 	async def game_info(self, event):
 		print(self.player.nb, "Received game info from ", event["player_nb"], file=sys.stderr)
 		#if (event["player_nb"] != self.player.nb):
-		self.opponent = Opponent('Opponent', event["player_id"], '#ff79d1')
+		self.opponent = Opponent('Player2', event["player_id"], '#ff79d1')
 		if (event["player_nb"] == '1'): self.opponent.paddle = Paddle('left') 
 		else: self.opponent.paddle = Paddle('right')
 		if self.player.nb == '1': self.difficulty = self.player.difficulty
@@ -132,7 +132,6 @@ class PongGame(AsyncWebsocketConsumer):
 			print("Player2: ", self.opponent.id, "\n", file=sys.stderr)
 			print("Difficulty: ", self.difficulty, "\n", file=sys.stderr)
 			self.ball = Ball(self.difficulty)
-			self.game_over = False
 			self.round_nb = 1
 			self.status = 'playing'
 			asyncio.create_task(self.play())
@@ -181,7 +180,6 @@ class PongGame(AsyncWebsocketConsumer):
 		
 	async def end_game(self):
 		self.status = 'over'
-		self.game_over = True
 		self.winner = self.player.name
 		if (self.opponent.score > self.player.score):
 			self.winner = self.opponent.name
@@ -194,13 +192,14 @@ class PongGame(AsyncWebsocketConsumer):
 			})
 		
 	async def game_over(self, event):
+		print(self.player.nb, " sent game over.", file=sys.stderr)
 		await self.send(text_data=json.dumps({'type': event["info"],
 											'status': event['status'],
 											'winner': event['winner']}))
 		await self.disconnect()
 
 	async def play(self):
-		while not self.game_over:
+		while self.status != 'over':
 
 			self.ball.move()
 			self.player.paddle.move()

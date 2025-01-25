@@ -121,7 +121,7 @@ function draw(status) {
 		this.context.fillStyle = '#ffffff';
 		this.context.font = '50px Impact';
 		this.context.fillText(winner + ' won!',
-			this.canvas.width / 2 - 50,
+			this.canvas.width / 2 - 25,
 			this.canvas.height / 2 + 15);
 	}
 
