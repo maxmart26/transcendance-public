@@ -22,5 +22,8 @@ re:
 clean:
 	docker system prune -af
 
+clean-db:
+	docker compose -f ./Full/docker-compose.yml down -v
+
 .PHONY:
-	all down re clear
+	all down re clean clean-db
