@@ -3,28 +3,21 @@ this.context = this.canvas.getContext('2d');
 
 this.canvas.width = 1400;
 this.canvas.height = 1000;
-this.color = '#281f79'
+this.color = '#281f79' //background color
 
 this.canvas.style.width = (this.canvas.width / 2) + 'px';
 this.canvas.style.height = (this.canvas.height / 2) + 'px';
 
-// Paramètres initiaux (seront mis à jour par les données du WebSocket)
-ball_size = 20;
-paddle_height = 120;
-paddle_width = 15; 
+this.ball_size = 20;
+this.paddle_height = 120;
+this.paddle_width = 15; 
 
-let ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height / 2 - (ball_size / 2)};
-
-let player1Y = this.canvas.height / 2 - (paddle_height / 2);
-let player2Y = this.canvas.height / 2 - (paddle_height / 2);
-let p1_score = 0
-let p2_score = 0
-let round_nb = 0
-
-let player_id;
-let player_name, opp_name;
-let player_color = '#ff79d1';
-let opp_color = '#ff79d1';
+this.ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height / 2 - (ball_size / 2)};
+this.player1 = {};
+this.player2 = {};
+this.difficulty = 'medium';
+this.round_nb = 0
+this.game_status = 'waiting'
 
 // Fonction pour dessiner le jeu
 function draw() {
@@ -45,29 +38,29 @@ function draw() {
 		this.canvas.height
 	);
 
-	this.context.fillStyle = player_color;
+	this.context.fillStyle = this.player1.color;
 	this.context.shadowOffsetX = -1;
 	this.context.shadowOffsetY = 0;
 	this.context.shadowBlur = 15;
-	this.context.shadowColor = player_color;
+	this.context.shadowColor = this.player1.color;
 
 	// Draw the Player1
 	this.context.fillRect(
 		50,
-		player1Y,
-		paddle_width,
-		paddle_height
+		this.player1.y,
+		this.paddle_width,
+		this.paddle_height
 	);
 
-	this.context.fillStyle = opp_color;
-	this.context.shadowColor = opp_color;
+	this.context.fillStyle = this.player2.color;
+	this.context.shadowColor = this.player2.color;
 
 	// Draw the Player2
 	this.context.fillRect(
-		this.canvas.width - 50 - paddle_width,
-		player2Y,
-		paddle_width,
-		paddle_height
+		this.canvas.width - 50 - this.paddle_width,
+		this.player2.y,
+		this.paddle_width,
+		this.paddle_height
 	);
 
 	this.context.shadowOffsetX = 0;
@@ -95,10 +88,10 @@ function draw() {
 
 	// Draw the Ball
 	this.context.fillRect(
-		ball.x,
-		ball.y,
-		ball_size,
-		ball_size
+		this.ball.x,
+		this.ball.y,
+		this.ball_size,
+		this.ball_size
 	);
 
 	this.context.shadowOffsetX = 0;
@@ -107,12 +100,12 @@ function draw() {
 
 	// Draw the players score
 	this.context.fillText(
-		p1_score, // Left score
+		this.player1.score, // Left score
 		(this.canvas.width / 2) - 300,
 		200
 	);
 	this.context.fillText(
-		p2_score, // Right score
+		this.player2.score, // Right score
 		(this.canvas.width / 2) + 300,
 		200
 	);
@@ -128,7 +121,7 @@ function draw() {
 
 	// Draw the current round number
 	this.context.fillText(
-		"Round " + round_nb,
+		"Round " + this.round_nb,
 		(this.canvas.width / 2),
 		100
 	);
@@ -140,10 +133,15 @@ function draw() {
 
 function connect_socket()
 {	// WebSocket game_state
-	const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/' + gameData.matchID);
+	const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/' + gameData.matchID + '/');
 
 	socket.onopen = function(e) {
 		console.log("WebSocket drawGame open");
+		socket.send(JSON.stringify({
+			'type': 'game_init',
+			'player_id': gameData.player1,
+			'status': 'waiting'
+		}));
 	};
 
 	socket.onmessage = function(event) {
@@ -151,21 +149,50 @@ function connect_socket()
 
 		switch (data.type) {
 			case 'game_info':
-				player_id = data.player_id;
-				player_name = data.player_name;
-				player_color = data.player1_color;
-				opp_color = data.opp_color;
-				opp_name = data.opp_name;
+				if (Object.keys(player1).length === 0){
+					player1.id = data.player_id;
+					player1.name = data.player_name;
+					player1.color = data.player_color;
+					difficulty = data.difficulty;
+					player1.y = 1000 / 2 - (120 / 2);
+					player1.side = 'left';
+					player1.score = 0;
+				}
+				else{
+					player2.id = data.player_id;
+					player2.name = data.player_name;
+					player2.color = data.player_color;
+					player2.y = 1000 / 2 - (120 / 2);
+					player2.side = 'right'
+					player2.score = 0;
+				}
+				socket.send(JSON.stringify({
+					'type': 'check_side',
+					'left': player1.id
+				}));
 				draw();
-				check_input();
 				break;
+
 			case 'game_state':
+				if (data.status === 'over')
+					console.log("c fini\n");
 				ball = data.ball;
-				player1Y = data.player1_y;
-				player2Y = data.player2_y;
-				p1_score = data.p1_score;
-				p2_score = data.p2_score;
-				round_nb = data.round_nb;
+				if (data.player_id === player1.id){
+					player1.y = data.player_y;
+					player1.score = data.player_score;
+					round_nb = data.round_nb;
+					game_status = data.status
+				}
+				else if (data.player_id === player2.id){
+					player2.y = data.player_y;
+					player2.score = data.player_score;
+					round_nb = data.round_nb;
+					game_status = data.status
+				}
+				socket.send(JSON.stringify({
+					'type': 'game_state',
+					'round_nb': round_nb
+				}));
 				draw();
 				break;
 		}
@@ -179,47 +206,31 @@ function connect_socket()
 		console.error('Error WebSocket :', err);
 	};
 
-	function check_input(){
-		document.addEventListener('keydown', (event) => {
-			let action = null;
-			if (event.key === 'ArrowUp') {
-				action = 'move_up';
-			} else if (event.key === 'ArrowDown') {
-				action = 'move_down';
-			}
-			if (action){
-				socket.send(JSON.stringify({
-					'action': action,
-					'player_id': '2'
-				}));
-			}
-		
-			action = null;
-			if (event.key === 'w') {
-				action = 'move_up';
-			} else if (event.key === 's') {
-				action = 'move_down';
-			}
-			if (action){
-				socket.send(JSON.stringify({
-					'action': action,
-					'player_id': '1'
-				}));
-			}
-		});
-
-		document.addEventListener('keyup', (event) => {
+	document.addEventListener('keydown', (event) => {
+		let action = null;
+		if (event.key === 'ArrowUp') {
+			action = 'move_up';
+		} else if (event.key === 'ArrowDown') {
+			action = 'move_down';
+		}
+		if (action){
 			socket.send(JSON.stringify({
-				'action': 'noo',
-				'player_id' : '1'
+				'action': action,
+				'player_id': gameData.id
 			}));
-		});
-	}
+		}
+	});
+
+	document.addEventListener('keyup', (event) => {
+		socket.send(JSON.stringify({
+			'action': 'noo',
+			'player_id' : '1'
+		}));
+	});
 }
 
 function startGame(gameData)
 {
-	draw();
 	let status = gameData.status
 
 	console.log("Match_id: " + gameData.matchID);

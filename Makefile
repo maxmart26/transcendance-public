@@ -24,6 +24,7 @@ clean:
 
 clean-db:
 	docker compose -f ./Full/docker-compose.yml down -v
+	#Attention en cleanant la db il faut refaire les migrations Django
 
 .PHONY:
 	all down re clean clean-db
