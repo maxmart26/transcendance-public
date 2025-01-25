@@ -17,6 +17,7 @@ class Player:
 		self.difficulty = difficulty #a remplacer """"""
 		self.nb = nb
 		self.paddle = None
+		self.score = 0
 
 class Opponent:
 	def __init__(self, name, id, color):
@@ -25,6 +26,7 @@ class Opponent:
 		self.name = name
 		self.color = color #a remplacer par la color dans la db
 		self.paddle = None
+		self.score = 0
 
 class PongGame(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -171,7 +173,31 @@ class PongGame(AsyncWebsocketConsumer):
 
 		if (self.player.paddle.score >= 7 or self.opponent.paddle.score >= 7):
 			self.round_nb += 1
+			if (self.player.paddle.score >= 7):
+				self.player.score += 1 #nb rounds gagnes
+			if (self.opponent.paddle.score >= 7):
+				self.opponent.score += 1
 			await self.reset_round()
+		
+	async def end_game(self):
+		self.status = 'over'
+		self.game_over = True
+		self.winner = self.player.name
+		if (self.opponent.score > self.player.score):
+			self.winner = self.opponent.name
+		await self.channel_layer.group_send(
+						self.group_name,
+			{	'type': 'game.over',
+				'info': 'game_over',
+				"status": 'over',
+				"winner": self.winner,
+			})
+		
+	async def game_over(self, event):
+		await self.send(text_data=json.dumps({'type': event["info"],
+											'status': event['status'],
+											'winner': event['winner']}))
+		await self.disconnect()
 
 	async def play(self):
 		while not self.game_over:
@@ -184,7 +210,8 @@ class PongGame(AsyncWebsocketConsumer):
 			self.ball.paddle_bounce(self.opponent.paddle)
 
 			await self.check_score()
-			if (self.round_nb >= 3):
-				self.status = 'over'
-			await self.send_state()
-			await asyncio.sleep(1/TICK_RATE)
+			if (self.player.score >= 2 or self.opponent.score >= 2):
+				await self.end_game()
+			else:
+				await self.send_state()
+				await asyncio.sleep(1/TICK_RATE)

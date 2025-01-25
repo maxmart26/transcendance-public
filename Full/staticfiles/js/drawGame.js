@@ -18,6 +18,7 @@ this.player2 = {};
 let player_nb = '1';
 let round_nb = 0
 this.game_status = 'waiting'
+let winner = 'Michel'
 
 // Fonction pour dessiner le jeu
 function draw(status) {
@@ -100,6 +101,28 @@ function draw(status) {
 			this.canvas.width / 2 - 200,
 			this.canvas.height / 2 + 15);
 		return;
+	}
+
+	if (status == 'over')
+	{
+		this.context.fillStyle = '#ff79d1';
+		this.context.shadowOffsetX = -1;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 15;
+		this.context.shadowColor = '#ff79d1';
+			this.context.fillRect(
+				this.canvas.width / 2 - 350,
+				this.canvas.height / 2 - 48,
+				700,
+				100);
+		this.context.shadowOffsetX = 0;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 0;
+		this.context.fillStyle = '#ffffff';
+		this.context.font = '50px Impact';
+		this.context.fillText(winner + ' won!',
+			this.canvas.width / 2 - 50,
+			this.canvas.height / 2 + 15);
 	}
 
 	// Set the default canvas font and align it to the center
@@ -216,8 +239,6 @@ function connect_socket()
 				break;
 
 			case 'game_state':
-				if (data.status === 'over')
-					console.log("c fini\n");
 				ball = data.ball;
 				player1.y = data.player1_y;
 				player2.y = data.player2_y;
@@ -226,6 +247,12 @@ function connect_socket()
 				round_nb = data.round_nb;
 				this.game_status = data.status
 				draw(this.game_status);
+				break;
+			
+			case 'game_over':
+				winner = data.winner;
+				console.log(player_nb + " received a game over notification.\n");
+				draw('over');
 				break;
 		}
 	};
