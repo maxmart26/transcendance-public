@@ -133,7 +133,7 @@ function draw() {
 }
 
 // WebSocket
-const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/');
+const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/state');
 
 socket.onopen = function(e) {
     console.log("WebSocket drawGame open");
@@ -161,6 +161,8 @@ socket.onerror = function(err) {
     console.error('Error WebSocket :', err);
 };
 
+//Enlever les ID 1 et 2
+// et remplacer par un vrai ID pour chaque navigateur ouvert
 document.addEventListener('keydown', (event) => {
 	let action = null;
     if (event.key === 'ArrowUp') {
@@ -168,17 +170,31 @@ document.addEventListener('keydown', (event) => {
     } else if (event.key === 'ArrowDown') {
         action = 'move_down';
     }
-
 	if (action){
 		socket.send(JSON.stringify({
-			'action': action
+			'action': action,
+			'player_id': '2'
+		}));
+	}
+
+	action = null;
+	if (event.key === 'w') {
+        action = 'move_up';
+    } else if (event.key === 's') {
+        action = 'move_down';
+    }
+	if (action){
+		socket.send(JSON.stringify({
+			'action': action,
+			'player_id': '1'
 		}));
 	}
 });
 
 document.addEventListener('keyup', (event) => {
 	socket.send(JSON.stringify({
-		'action': 'noo'
+		'action': 'noo',
+		'player_id' : '1'
 	}));
 });
 
