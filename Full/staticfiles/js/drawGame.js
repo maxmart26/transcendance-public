@@ -240,6 +240,8 @@ function startGame(gameData)
 		const data = JSON.parse(event.data);
 		status = data.status;
 
+		console.log("Received new match status: " + status);
+
 		if (status === 'ready')
 		{
 			console.log("Game is starting.");
