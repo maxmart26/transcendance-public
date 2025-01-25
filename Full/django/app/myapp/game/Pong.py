@@ -49,21 +49,17 @@ class PongGame(AsyncWebsocketConsumer):
 			self.game_over = False
 			self.round_nb = 1
 			self.status = data_json.get('status')
-			if self.status == 'playing':
-				await self.send_state()
-				asyncio.create_task(self.play())
-			else:
-				await self.channel_layer.group_send(
-					self.group_name,
-					{
-					'type': 'game.info',
-					'info': 'game_info',
-					'player_nb' : self.nb_player,
-					'player_id' : self.player.id,
-					'player_name' : self.player.name,
-					'player_color' : self.player.color,
-					'difficulty': self.player.difficulty
-					})
+			await self.channel_layer.group_send(
+				self.group_name,
+				{
+				'type': 'game.info',
+				'info': 'game_info',
+				'player_nb' : self.nb_player,
+				'player_id' : self.player.id,
+				'player_name' : self.player.name,
+				'player_color' : self.player.color,
+				'difficulty': self.player.difficulty
+				})
 		
 		elif data_json.get('type') == 'check_side':
 			if data_json.get('left') == self.id:
@@ -71,6 +67,7 @@ class PongGame(AsyncWebsocketConsumer):
 			else:
 				self.paddle = Paddle('right')
 			await self.send_state()
+			asyncio.create_task(self.play())
 
 		elif data_json.get('type') == 'game_state':
 			if data_json.get('round_nb') > self.round_nb:
@@ -118,18 +115,18 @@ class PongGame(AsyncWebsocketConsumer):
 											'difficulty': event['difficulty']}))
 
 	async def reset_round(self):
-		self.player.reset()
+		self.paddle.reset()
 		self.ball.reset(self.difficulty)
 		await self.send_state()
 
 	async def check_score(self):
 		if self.paddle.y < FIELD_WIDTH / 2 and self.ball.x <= 0:
-			self.player.score += 1
+			self.paddle.score += 1
 			self.ball.reset(self.difficulty)
 		elif self.paddle.y > FIELD_WIDTH / 2 and self.ball.x + BALL_SIZE >= FIELD_WIDTH:
-			self.player.score += 1
+			self.paddle.score += 1
 			self.ball.reset(self.difficulty)
-		if (self.player.score >= 7):
+		if (self.paddle.score >= 7):
 			self.round_nb += 1
 			await self.reset_round()
 
@@ -142,7 +139,7 @@ class PongGame(AsyncWebsocketConsumer):
 			self.ball.paddle_bounce(self.paddle)
 
 			await self.check_score()
-			if (self.nb_round >= 3):
+			if (self.round_nb >= 3):
 				self.status = 'over'
 			await self.send_state()
 			await asyncio.sleep(1/TICK_RATE)
