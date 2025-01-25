@@ -99,9 +99,10 @@ class PongGame(AsyncWebsocketConsumer):
 			{	'type': 'game.state',
 				'info': 'game_state',
 				"ball": {"x": self.ball.x, "y": self.ball.y},
-		   		"player_y": self.player.paddle.y,
-				"player_id": self.player.id,
-				"player_score": self.player.paddle.score,
+		   		"player1_y": self.player.paddle.y,
+		   		"player2_y": self.opponent.paddle.y,
+				"player1_score": self.player.paddle.score,
+				"player2_score": self.opponent.paddle.score,
 				"round_nb": self.round_nb,
 				'status': self.status
 			})
@@ -109,9 +110,10 @@ class PongGame(AsyncWebsocketConsumer):
 	async def game_state(self, event):
 		await self.send(text_data=json.dumps({'type': event["info"],
 											'ball': event["ball"],
-											'player_y': event["player_y"],
-											'player_id': event["player_id"],
-											'player_score': event["player_score"],
+											'player1_y': event["player1_y"],
+											'player2_y': event["player2_y"],
+											'player1_score': event["player1_score"],
+											'player2_score': event["player2_score"],
 											'round_nb': event["round_nb"],
 											'status': event['status']}))
 	
@@ -130,6 +132,7 @@ class PongGame(AsyncWebsocketConsumer):
 			self.ball = Ball(self.difficulty)
 			self.game_over = False
 			self.round_nb = 1
+			self.status = 'playing'
 			asyncio.create_task(self.play())
 
 		await self.send(text_data=json.dumps({'type': event["info"],
@@ -150,6 +153,7 @@ class PongGame(AsyncWebsocketConsumer):
 				self.player.paddle.move_down() if event["player_nb"] == self.player.nb else self.opponent.paddle.move_down()
 			elif event["action"] == 'noo':
 				self.player.paddle.still() if event["player_nb"] == self.player.nb else self.opponent.paddle.still()
+			await self.send_state()
 
 	async def reset_round(self):
 		self.player.paddle.reset()

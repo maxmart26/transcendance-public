@@ -202,18 +202,12 @@ function connect_socket()
 				if (data.status === 'over')
 					console.log("c fini\n");
 				ball = data.ball;
-				if (data.player_id === player1.id){
-					player1.y = data.player_y;
-					player1.score = data.player_score;
-					this.round_nb = data.round_nb;
-					this.game_status = data.status
-				}
-				else if (data.player_id === player2.id){
-					player2.y = data.player_y;
-					player2.score = data.player_score;
-					this.round_nb = data.round_nb;
-					this.game_status = data.status
-				}
+				player1.y = data.player1_y;
+				player2.y = data.player2_y;
+				player1.score = data.player1_score;
+				player1.score = data.player2_score;
+				this.round_nb = data.round_nb;
+				this.game_status = data.status
 				draw();
 				break;
 		}
@@ -245,6 +239,7 @@ function connect_socket()
 
 	document.addEventListener('keyup', (event) => {
 		socket.send(JSON.stringify({
+			'type': 'action',
 			'action': 'noo',
 			'player_nb': player_nb
 		}));
