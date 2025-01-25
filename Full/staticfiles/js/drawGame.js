@@ -16,12 +16,11 @@ this.ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height /
 this.player1 = {};
 this.player2 = {};
 let player_nb = '1';
-this.difficulty = 'medium';
-this.round_nb = 0
+let round_nb = 0
 this.game_status = 'waiting'
 
 // Fonction pour dessiner le jeu
-function draw() {
+function draw(status) {
 	this.context.clearRect(
 		0,
 		0,
@@ -39,34 +38,37 @@ function draw() {
 		this.canvas.height
 	);
 
-	this.context.fillStyle = this.player1.color;
-	this.context.shadowOffsetX = -1;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 15;
-	this.context.shadowColor = this.player1.color;
-
-	// Draw the Player1
-	this.context.fillRect(
-		50,
-		this.player1.y,
-		this.paddle_width,
-		this.paddle_height
-	);
-
-	this.context.fillStyle = this.player2.color;
-	this.context.shadowColor = this.player2.color;
-
-	// Draw the Player2
-	this.context.fillRect(
-		this.canvas.width - 50 - this.paddle_width,
-		this.player2.y,
-		this.paddle_width,
-		this.paddle_height
-	);
-
-	this.context.shadowOffsetX = 0;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 0;
+	if (status == 'playing')
+	{
+		this.context.fillStyle = this.player1.color;
+		this.context.shadowOffsetX = -1;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 15;
+		this.context.shadowColor = this.player1.color;
+	
+		// Draw the Player1
+		this.context.fillRect(
+			50,
+			this.player1.y,
+			this.paddle_width,
+			this.paddle_height
+		);
+	
+		this.context.fillStyle = this.player2.color;
+		this.context.shadowColor = this.player2.color;
+	
+		// Draw the Player2
+		this.context.fillRect(
+			this.canvas.width - 50 - this.paddle_width,
+			this.player2.y,
+			this.paddle_width,
+			this.paddle_height
+		);
+	
+		this.context.shadowOffsetX = 0;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 0;
+	}
 
 	// Draw the net (Line in the middle)
 	this.context.beginPath();
@@ -76,6 +78,29 @@ function draw() {
 	this.context.lineWidth = 10;
 	this.context.strokeStyle = '#4bdae0';
 	this.context.stroke();
+
+	if (status == 'waiting')
+	{
+		this.context.fillStyle = '#ff79d1';
+		this.context.shadowOffsetX = -1;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 15;
+		this.context.shadowColor = '#ff79d1';
+			this.context.fillRect(
+				this.canvas.width / 2 - 350,
+				this.canvas.height / 2 - 48,
+				700,
+				100);
+		this.context.shadowOffsetX = 0;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 0;
+		this.context.fillStyle = '#ffffff';
+		this.context.font = '50px Impact';
+		this.context.fillText('Waiting for players...',
+			this.canvas.width / 2 - 200,
+			this.canvas.height / 2 + 15);
+		return;
+	}
 
 	// Set the default canvas font and align it to the center
 	this.context.font = '100px Impact';
@@ -122,7 +147,7 @@ function draw() {
 
 	// Draw the current round number
 	this.context.fillText(
-		"Round " + this.round_nb,
+		"Round " + round_nb,
 		(this.canvas.width / 2),
 		100
 	);
@@ -139,8 +164,9 @@ function connect_socket()
 	socket.onopen = function(e) {
 		console.log("WebSocket drawGame open");
 		player_id = gameData.player1;
-		if (player_nb == '2')
+		if (player_nb == '2'){
 			player_id = gameData.player2;
+		}
 		socket.send(JSON.stringify({
 			'type': 'game_init',
 			'player_id': player_id,
@@ -163,7 +189,6 @@ function connect_socket()
 					player2.name = data.opp_name;
 					player2.color = data.opp_color;
 
-					this.difficulty = data.difficulty;
 					player1.y = 1000 / 2 - (120 / 2);
 					player1.side = 'left';
 					player1.score = 0;
@@ -180,7 +205,6 @@ function connect_socket()
 					player2.name = data.player_name;
 					player2.color = data.player_color;
 
-					this.difficulty = data.difficulty;
 					player1.y = 1000 / 2 + (120 / 2);
 					player1.side = 'right';
 					player1.score = 0;
@@ -188,14 +212,7 @@ function connect_socket()
 					player2.side = 'left'
 					player2.score = 0;
 				}
-				socket.send(JSON.stringify({
-					'type': 'start_game',
-					'player1_id': player1.id,
-					'player2_id': player2.id,
-					'player_nb': player_nb,
-					'difficulty': this.difficulty
-				}));
-				draw();
+				draw('playing');
 				break;
 
 			case 'game_state':
@@ -205,10 +222,10 @@ function connect_socket()
 				player1.y = data.player1_y;
 				player2.y = data.player2_y;
 				player1.score = data.player1_score;
-				player1.score = data.player2_score;
-				this.round_nb = data.round_nb;
+				player2.score = data.player2_score;
+				round_nb = data.round_nb;
 				this.game_status = data.status
-				draw();
+				draw(this.game_status);
 				break;
 		}
 	};
@@ -275,6 +292,7 @@ function startGame(gameData)
 
 		console.log("Received new match status: " + status);
 
+		draw('waiting');
 		if (status === 'ready')
 		{
 			console.log("Game is starting.");

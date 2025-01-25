@@ -1,7 +1,5 @@
 import json
-import random
 import asyncio
-import uuid
 import sys
 
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -51,7 +49,7 @@ class PongGame(AsyncWebsocketConsumer):
 		if data_json.get('type') == 'game_init':
 			self.id = data_json.get('player_id')
 			#A modif, recup les infos dans la db
-			self.player = Player("Player", self.id, '#ff79d1', 'medium', data_json.get('player_nb'))
+			self.player = Player("Player", self.id, '#52e3e2', 'medium', data_json.get('player_nb'))
 			self.status = data_json.get('status')
 			print("Game init:\n", file=sys.stderr)
 			if self.player.nb == '1':
@@ -118,13 +116,15 @@ class PongGame(AsyncWebsocketConsumer):
 											'status': event['status']}))
 	
 	async def game_info(self, event):
-		self.opponent = Opponent('Opponent', event["player_id"], '#ff79d1')
+		print(self.player.nb, "Received game info from ", event["player_nb"], file=sys.stderr)
+		#if (event["player_nb"] != self.player.nb):
+		self.opponent = Opponent('Opponent', event["player_id"], '#e9234f')
 		if (event["player_nb"] == '1'): self.opponent.paddle = Paddle('left') 
 		else: self.opponent.paddle = Paddle('right')
 		if self.player.nb == '1': self.difficulty = self.player.difficulty
 		else: self.difficulty = event['difficulty']
 
-		if (self.player.nb == '1'):
+		if (self.player.nb == '1' and self.player.id != self.opponent.id):
 			print("Game start: (host)\n", file=sys.stderr)
 			print("Player1: ", self.player.id, "\n", file=sys.stderr)
 			print("Player2: ", self.opponent.id, "\n", file=sys.stderr)
@@ -162,18 +162,11 @@ class PongGame(AsyncWebsocketConsumer):
 		await self.send_state()
 
 	async def check_score(self):
-		if self.player.paddle.y < FIELD_WIDTH / 2 and self.ball.x <= 0:
-			self.player.paddle.score += 1
-			self.ball.reset(self.difficulty)
-		elif self.player.paddle.y > FIELD_WIDTH / 2 and self.ball.x + BALL_SIZE >= FIELD_WIDTH:
-			self.player.paddle.score += 1
-			self.ball.reset(self.difficulty)
-
-		if self.opponent.paddle.y < FIELD_WIDTH / 2 and self.ball.x <= 0:
+		if self.ball.x <= 0:
 			self.opponent.paddle.score += 1
 			self.ball.reset(self.difficulty)
-		elif self.opponent.paddle.y > FIELD_WIDTH / 2 and self.ball.x + BALL_SIZE >= FIELD_WIDTH:
-			self.opponent.paddle.score += 1
+		elif self.ball.x + BALL_SIZE >= FIELD_WIDTH:
+			self.player.paddle.score += 1
 			self.ball.reset(self.difficulty)
 
 		if (self.player.paddle.score >= 7 or self.opponent.paddle.score >= 7):
