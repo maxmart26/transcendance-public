@@ -25,7 +25,8 @@
 	<div id="game-data"
 		data-status="{{ status }}"
         data-matchid="{{ match_id }}"
-        data-player1="{{ player_id }}"
+        data-player1="{{ player1_id }}"
+        data-player2="{{ player2_id }}"
         style="display: none;"></div>
 	<p>C'est bon transcendence c fini.</p>
 
@@ -36,6 +37,7 @@
         	status: gameDataElement.dataset.status,
             matchID: gameDataElement.dataset.matchid,
             player1: gameDataElement.dataset.player1,
+            player2: gameDataElement.dataset.player2
         };
         const script = document.createElement('script');
         script.src = "{% static 'js/drawGame.js' %}";

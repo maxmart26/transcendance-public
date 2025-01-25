@@ -19,7 +19,7 @@ down:
 re:
 	docker compose -f ./Full/docker-compose.yml up -d --build --force-recreate
 
-log:	re
+logs:
 	docker logs django-container -f
 
 clean:

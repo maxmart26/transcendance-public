@@ -15,6 +15,7 @@ this.paddle_width = 15;
 this.ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height / 2 - (ball_size / 2)};
 this.player1 = {};
 this.player2 = {};
+let player_nb = '1';
 this.difficulty = 'medium';
 this.round_nb = 0
 this.game_status = 'waiting'
@@ -137,11 +138,15 @@ function connect_socket()
 
 	socket.onopen = function(e) {
 		console.log("WebSocket drawGame open");
+		player_id = gameData.player1;
+		if (player_nb == '2')
+			player_id = gameData.player2;
 		socket.send(JSON.stringify({
 			'type': 'game_init',
-			'player_id': gameData.player1,
-			'status': 'waiting'
+			'player_id': player_id,
+			'player_nb': player_nb
 		}));
+		console.log("sent:\nplayer_id: " + player_id + "\nplayer_nb: " + player_nb + "\n");
 	};
 
 	socket.onmessage = function(event) {
@@ -149,26 +154,46 @@ function connect_socket()
 
 		switch (data.type) {
 			case 'game_info':
-				if (Object.keys(player1).length === 0){
+				if (player_nb === '1'){
 					player1.id = data.player_id;
 					player1.name = data.player_name;
 					player1.color = data.player_color;
-					difficulty = data.difficulty;
+
+					player2.id = data.opp_id;
+					player2.name = data.opp_name;
+					player2.color = data.opp_color;
+
+					this.difficulty = data.difficulty;
 					player1.y = 1000 / 2 - (120 / 2);
 					player1.side = 'left';
 					player1.score = 0;
-				}
-				else{
-					player2.id = data.player_id;
-					player2.name = data.player_name;
-					player2.color = data.player_color;
-					player2.y = 1000 / 2 - (120 / 2);
+					player2.y = 1000 / 2 + (120 / 2);
 					player2.side = 'right'
 					player2.score = 0;
 				}
+				else{
+					player1.id = data.opp_id;
+					player1.name = data.opp_name;
+					player1.color = data.opp_color;
+					
+					player2.id = data.player_id;
+					player2.name = data.player_name;
+					player2.color = data.player_color;
+
+					this.difficulty = data.difficulty;
+					player1.y = 1000 / 2 + (120 / 2);
+					player1.side = 'right';
+					player1.score = 0;
+					player2.y = 1000 / 2 - (120 / 2);
+					player2.side = 'left'
+					player2.score = 0;
+				}
 				socket.send(JSON.stringify({
-					'type': 'check_side',
-					'left': player1.id
+					'type': 'start_game',
+					'player1_id': player1.id,
+					'player2_id': player2.id,
+					'player_nb': player_nb,
+					'difficulty': this.difficulty
 				}));
 				draw();
 				break;
@@ -180,19 +205,15 @@ function connect_socket()
 				if (data.player_id === player1.id){
 					player1.y = data.player_y;
 					player1.score = data.player_score;
-					round_nb = data.round_nb;
-					game_status = data.status
+					this.round_nb = data.round_nb;
+					this.game_status = data.status
 				}
 				else if (data.player_id === player2.id){
 					player2.y = data.player_y;
 					player2.score = data.player_score;
-					round_nb = data.round_nb;
-					game_status = data.status
+					this.round_nb = data.round_nb;
+					this.game_status = data.status
 				}
-				socket.send(JSON.stringify({
-					'type': 'game_state',
-					'round_nb': round_nb
-				}));
 				draw();
 				break;
 		}
@@ -215,8 +236,9 @@ function connect_socket()
 		}
 		if (action){
 			socket.send(JSON.stringify({
+				'type': 'action',
 				'action': action,
-				'player_id': gameData.id
+				'player_nb': player_nb
 			}));
 		}
 	});
@@ -224,7 +246,7 @@ function connect_socket()
 	document.addEventListener('keyup', (event) => {
 		socket.send(JSON.stringify({
 			'action': 'noo',
-			'player_id' : '1'
+			'player_nb': player_nb
 		}));
 	});
 }
@@ -235,7 +257,12 @@ function startGame(gameData)
 
 	console.log("Match_id: " + gameData.matchID);
 	console.log("Status: " + gameData.status);
-	console.log("Player_id: " + gameData.player1);
+	player_id = gameData.player1;
+	if (gameData.player2.length){
+		player_id = gameData.player2;
+		player_nb = '2';
+	}
+	console.log("Player_id: " + player_id);
 
 	const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/');
 
@@ -243,7 +270,7 @@ function startGame(gameData)
 		console.log("WebSocket state open");
 		socket.send(JSON.stringify({
 			'match_id': gameData.matchID,
-			'player_id': gameData.player1
+			'player_id': player_id
 		}))
 	};
 

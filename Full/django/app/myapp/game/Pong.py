@@ -2,6 +2,7 @@ import json
 import random
 import asyncio
 import uuid
+import sys
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 
@@ -10,12 +11,22 @@ from .Ball import Ball
 from .Paddles import Paddle
 
 class Player:
-	def __init__(self, name, id, color, difficulty):
-		self.name = name
+	def __init__(self, name, id, color, difficulty, nb):
 		self.id = id #a remplacer par l'id dans la db
+		#self.name, self.color, self.difficulty = getPlayerinfo(self.id)
+		self.name = name
 		self.color = color #a remplacer par la color dans la db
 		self.difficulty = difficulty #a remplacer """"""
+		self.nb = nb
+		self.paddle = None
 
+class Opponent:
+	def __init__(self, name, id, color):
+		self.id = id #a remplacer par l'id dans la db
+		#self.name, self.color, self.difficulty = getPlayerinfo(self.id)
+		self.name = name
+		self.color = color #a remplacer par la color dans la db
+		self.paddle = None
 
 class PongGame(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -27,8 +38,6 @@ class PongGame(AsyncWebsocketConsumer):
 			self.group_name,
 			self.channel_name
 		)
-
-		self.paddle = None
 		
 	async def disconnect(self):
 		await self.channel_layer.group_discard(
@@ -42,47 +51,47 @@ class PongGame(AsyncWebsocketConsumer):
 		if data_json.get('type') == 'game_init':
 			self.id = data_json.get('player_id')
 			#A modif, recup les infos dans la db
-			self.player = Player("Player", self.id, '#ff79d1', 'medium')
-			self.nb_player = 1
-			self.difficulty = self.player.difficulty
-			self.ball = Ball(self.difficulty)
-			self.game_over = False
-			self.round_nb = 1
+			self.player = Player("Player", self.id, '#ff79d1', 'medium', data_json.get('player_nb'))
 			self.status = data_json.get('status')
+			print("Game init:\n", file=sys.stderr)
+			if self.player.nb == '1':
+				self.player.paddle = Paddle('left')
+				print("Host: ", self.player.id, "\n", file=sys.stderr)
+			else:
+				self.player.paddle = Paddle('right')
+				print("Joiner: ", self.player.id, "\n", file=sys.stderr)
+
 			await self.channel_layer.group_send(
 				self.group_name,
 				{
 				'type': 'game.info',
 				'info': 'game_info',
-				'player_nb' : self.nb_player,
+				'player_nb' : self.player.nb,
 				'player_id' : self.player.id,
 				'player_name' : self.player.name,
 				'player_color' : self.player.color,
 				'difficulty': self.player.difficulty
 				})
-		
-		elif data_json.get('type') == 'check_side':
-			if data_json.get('left') == self.id:
-				self.paddle = Paddle('left')
-			else:
-				self.paddle = Paddle('right')
-			await self.send_state()
-			asyncio.create_task(self.play())
-
-		elif data_json.get('type') == 'game_state':
-			if data_json.get('round_nb') > self.round_nb:
-				await self.reset_round()
-
+			
 		elif data_json.get('type') == 'action':
 			action = data_json.get('action')
-
-			if action == 'move_up':
-					self.paddle.move_up()
-			elif action == 'move_down':
-					self.paddle.move_down()
-			elif action == 'noo':
-					self.paddle.still()
-			await self.send_state()
+			print(self.player.nb, "Received:\naction: ", action, "by player: ", data_json.get('player'), file=sys.stderr)
+			if (self.player.nb == '2'):
+				await self.channel_layer.group_send(
+							self.group_name,
+				{	'type': 'player.action',
+					'info': 'action',
+					"action": action,
+					"player_nb": self.player.nb
+				})
+			else:
+				if action == 'move_up':
+						self.player.paddle.move_up() if data_json.get('player_nb') == self.player.nb else self.opponent.paddle.move_up()
+				elif action == 'move_down':
+						self.player.paddle.move_down() if data_json.get('player_nb') == self.player.nb else self.opponent.paddle.move_down()
+				elif action == 'noo':
+						self.player.paddle.still() if data_json.get('player_nb') == self.player.nb else self.opponent.paddle.still()
+				await self.send_state()
 
 	async def send_state(self):
 		await self.channel_layer.group_send(
@@ -90,9 +99,9 @@ class PongGame(AsyncWebsocketConsumer):
 			{	'type': 'game.state',
 				'info': 'game_state',
 				"ball": {"x": self.ball.x, "y": self.ball.y},
-		   		"player_y": self.paddle.y,
+		   		"player_y": self.player.paddle.y,
 				"player_id": self.player.id,
-				"player_score": self.paddle.score,
+				"player_score": self.player.paddle.score,
 				"round_nb": self.round_nb,
 				'status': self.status
 			})
@@ -107,26 +116,63 @@ class PongGame(AsyncWebsocketConsumer):
 											'status': event['status']}))
 	
 	async def game_info(self, event):
+		self.opponent = Opponent('Opponent', event["player_id"], '#ff79d1')
+		if (event["player_nb"] == '1'): self.opponent.paddle = Paddle('left') 
+		else: self.opponent.paddle = Paddle('right')
+		if self.player.nb == '1': self.difficulty = self.player.difficulty
+		else: self.difficulty = event['difficulty']
+
+		if (self.player.nb == '1'):
+			print("Game start: (host)\n", file=sys.stderr)
+			print("Player1: ", self.player.id, "\n", file=sys.stderr)
+			print("Player2: ", self.opponent.id, "\n", file=sys.stderr)
+			print("Difficulty: ", self.difficulty, "\n", file=sys.stderr)
+			self.ball = Ball(self.difficulty)
+			self.game_over = False
+			self.round_nb = 1
+			asyncio.create_task(self.play())
+
 		await self.send(text_data=json.dumps({'type': event["info"],
-											'player_nb': event["player_nb"],
-											'player_id': event["player_id"],
-											'player_name': event["player_name"],
-											'player_color': event["player_color"],
-											'difficulty': event['difficulty']}))
+											'player_nb': self.player.nb,
+											'player_id': self.player.id,
+											'player_name': self.player.name,
+											'player_color': self.player.color,
+											'opp_id': self.opponent.id,
+											'opp_name': self.opponent.name,
+											'opp_color': self.opponent.color,
+											'difficulty': self.difficulty}))
+
+	async def player_action(self, event):
+		if (self.player.nb == '1'):
+			if event["action"] == 'move_up':
+				self.player.paddle.move_up() if event["player_nb"] == self.player.nb else self.opponent.paddle.move_up()
+			elif event["action"] == 'move_down':
+				self.player.paddle.move_down() if event["player_nb"] == self.player.nb else self.opponent.paddle.move_down()
+			elif event["action"] == 'noo':
+				self.player.paddle.still() if event["player_nb"] == self.player.nb else self.opponent.paddle.still()
 
 	async def reset_round(self):
-		self.paddle.reset()
+		self.player.paddle.reset()
+		self.opponent.paddle.reset()
 		self.ball.reset(self.difficulty)
 		await self.send_state()
 
 	async def check_score(self):
-		if self.paddle.y < FIELD_WIDTH / 2 and self.ball.x <= 0:
-			self.paddle.score += 1
+		if self.player.paddle.y < FIELD_WIDTH / 2 and self.ball.x <= 0:
+			self.player.paddle.score += 1
 			self.ball.reset(self.difficulty)
-		elif self.paddle.y > FIELD_WIDTH / 2 and self.ball.x + BALL_SIZE >= FIELD_WIDTH:
-			self.paddle.score += 1
+		elif self.player.paddle.y > FIELD_WIDTH / 2 and self.ball.x + BALL_SIZE >= FIELD_WIDTH:
+			self.player.paddle.score += 1
 			self.ball.reset(self.difficulty)
-		if (self.paddle.score >= 7):
+
+		if self.opponent.paddle.y < FIELD_WIDTH / 2 and self.ball.x <= 0:
+			self.opponent.paddle.score += 1
+			self.ball.reset(self.difficulty)
+		elif self.opponent.paddle.y > FIELD_WIDTH / 2 and self.ball.x + BALL_SIZE >= FIELD_WIDTH:
+			self.opponent.paddle.score += 1
+			self.ball.reset(self.difficulty)
+
+		if (self.player.paddle.score >= 7 or self.opponent.paddle.score >= 7):
 			self.round_nb += 1
 			await self.reset_round()
 
@@ -134,9 +180,11 @@ class PongGame(AsyncWebsocketConsumer):
 		while not self.game_over:
 
 			self.ball.move()
-			self.paddle.move()
+			self.player.paddle.move()
+			self.opponent.paddle.move()
 			self.ball.wall_bounce()
-			self.ball.paddle_bounce(self.paddle)
+			self.ball.paddle_bounce(self.player.paddle)
+			self.ball.paddle_bounce(self.opponent.paddle)
 
 			await self.check_score()
 			if (self.round_nb >= 3):

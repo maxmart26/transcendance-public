@@ -46,10 +46,10 @@ def game(request, match_id):
     player2 = request.GET.get('player2')
 
     if player1 and player2:
-        return render(request, 'game-page.html', {'status': 'start_game', 'match_id': match_id, 'player_id': player2})
+        return render(request, 'game-page.html', {'status': 'start_game', 'match_id': match_id, 'player1_id': player1, 'player2_id': player2})
         #return render(request, 'index.html', {'status': 'play', 'match_id': match_id, 'player_id': player2})
     elif player1:
-        return render(request, 'game-page.html', {'status': 'waiting', 'match_id': match_id, 'player_id': player1})
+        return render(request, 'game-page.html', {'status': 'waiting', 'match_id': match_id, 'player1_id': player1})
     else:
         return Http404("Game not found.")
 
