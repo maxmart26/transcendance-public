@@ -39,7 +39,7 @@ function draw(status) {
 		this.canvas.height
 	);
 
-	if (status == 'playing')
+	if (status == 'playing' || status == 'over')
 	{
 		this.context.fillStyle = this.player1.color;
 		this.context.shadowOffsetX = -1;
@@ -103,6 +103,28 @@ function draw(status) {
 		return;
 	}
 
+	this.context.font = '50px Impact';
+	this.context.textAlign = 'center';
+
+	this.context.fillStyle = '#eba811';
+	this.context.shadowOffsetX = -1;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 15;
+	this.context.shadowColor = '#eba811';
+
+	// Draw the current round number
+	this.context.fillText(
+		"Round " + round_nb,
+		(this.canvas.width / 2),
+		100
+	);
+
+	this.context.shadowOffsetX = 0;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 0;
+
+	//Dessiner le score du BO
+
 	if (status == 'over')
 	{
 		this.context.fillStyle = '#ff79d1';
@@ -123,6 +145,7 @@ function draw(status) {
 		this.context.fillText(winner + ' won!',
 			this.canvas.width / 2 - 25,
 			this.canvas.height / 2 + 15);
+		return;
 	}
 
 	// Set the default canvas font and align it to the center
@@ -158,26 +181,6 @@ function draw(status) {
 		(this.canvas.width / 2) + 300,
 		200
 	);
-
-	this.context.font = '50px Impact';
-	this.context.textAlign = 'center';
-
-	this.context.fillStyle = '#eba811';
-	this.context.shadowOffsetX = -1;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 15;
-	this.context.shadowColor = '#eba811';
-
-	// Draw the current round number
-	this.context.fillText(
-		"Round " + round_nb,
-		(this.canvas.width / 2),
-		100
-	);
-
-	this.context.shadowOffsetX = 0;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 0;
 }
 
 function connect_socket()
