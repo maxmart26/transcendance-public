@@ -282,20 +282,48 @@ const pagesContent = {
   `,
   "friends-page": `
     <div id="friends-page">
-            <div class="home-navbar">
-                <div class="navbar-left">
-                    <p class="text-wrapper">PONG</p>
-                    <a id="home" href="#home" class="navbar-item">HOME</a>
-                    <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
-                    <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+        <div class="home-navbar">
+            <div class="navbar-left">
+                <p class="text-wrapper">PONG</p>
+                <a id="home" href="#home" class="navbar-item">HOME</a>
+                <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+            </div>
+            <div class="navbar-right">
+                <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                <div class="profile-container">
+                    <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                 </div>
-                <div class="navbar-right">
-                    <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                    <div class="profile-container">
-                        <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+            </div>
+        </div>
+        <div class="friends-rectangle">
+            <p class="profile-title">FRIENDS</p>
+            <label for="username" class="friend-user">Add a new friend</label>
+            <input class="friend-searchbox" type="text" id="user">
+            <button class="add-friend">ADD</button>
+            <p class="your-friends">YOUR FRIENDS</p>
+            <div class="scoreboard">
+                <div class="ranklist-container">
+                    <div class="ranklist">
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    </div>
+                    <div class="score">
+                        <button class="remove">Remove</button>
+                        <button class="remove">Remove</button>
+                        <button class="remove">Remove</button>
+                        <button class="remove">Remove</button>
+                        <button class="remove">Remove</button>
+                        <button class="remove">Remove</button>
                     </div>
                 </div>
             </div>
+        </div>
+        
     </div>
     `
 };

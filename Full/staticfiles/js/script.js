@@ -12,9 +12,10 @@ const pagesContent = {
               <label for="password" class="text-wrapper-2">Password</label>
               <input type="password" id="password">
           </form>
+          <p id="error-message" class="error-message"></p>
           <div class="enter">
-              <button onclick="navigateTo('home-page')" class="rectangle-4">ENTER</button>
-          </div>
+            <button id="enter-button" class="rectangle-4">ENTER</button>
+        </div>
           <div class="or">
               <img class="line" src="static/img/line1.png" /> 
               <p class="text-wrapper-8">OR</p>
@@ -59,8 +60,9 @@ const pagesContent = {
                   <label for="email" class="text-wrapper-2">Email</label>
                   <input type="text" id="email">
               </form>
+              <p id="account-error" class="error-message"></p>
               <div class="enter">
-                  <button onclick="navigateTo('login-page')" id="save" class="rectangle-4">Save</button>
+                  <button id="save-button" class="rectangle-4">Save</button>
               </div>
           </div>
       </div>
@@ -282,20 +284,47 @@ const pagesContent = {
   `,
   "friends-page": `
     <div id="friends-page">
-            <div class="home-navbar">
-                <div class="navbar-left">
-                    <p class="text-wrapper">PONG</p>
-                    <a id="home" href="#home" class="navbar-item">HOME</a>
-                    <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
-                    <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+        <div class="home-navbar">
+            <div class="navbar-left">
+                <p class="text-wrapper">PONG</p>
+                <a id="home" href="#home" class="navbar-item">HOME</a>
+                <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+            </div>
+            <div class="navbar-right">
+                <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                <div class="profile-container">
+                    <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                 </div>
-                <div class="navbar-right">
-                    <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                    <div class="profile-container">
-                        <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+            </div>
+        </div>
+        <div class="friends-rectangle">
+            <p class="friends-title">FRIENDS</p>
+            <label for="username" class="friend-user">Add a new friend</label>
+            <input class="friend-searchbox" type="text" id="user">
+            <button class="add-friend">ADD</button>
+            <p class="your-friends">YOUR FRIENDS</p>
+            <div class="scoreboard">
+                <div class="ranklist-container">
+                    <div class="ranklist">
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    </div>
+                    <div class="remove-buttons">
+                        <button class="remove">Remove</button>
+                        <button class="remove">Remove</button>
+                        <button class="remove">Remove</button>
+                        <button class="remove">Remove</button>
+                        <button class="remove">Remove</button>
+                        <button class="remove">Remove</button>
                     </div>
                 </div>
             </div>
+        </div>
     </div>
     `
 };
@@ -334,6 +363,46 @@ document.querySelectorAll('a.nav-link').forEach(link => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+document.getElementById("enter-button").addEventListener("click", async function (e) {
+    e.preventDefault(); // Empêche le comportement par défaut du bouton
+
+    // Récupère les valeurs du formulaire
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const errorMessage = document.getElementById("error-message");
+
+    // Vérifie que les champs ne sont pas vides
+    if (username === "" || password === "") {
+        errorMessage.textContent = "Both username and password are required.";
+        return;
+    }
+
+    try {
+        // Envoie une requête POST à l'API
+        const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+        });
+
+        // Analyse la réponse
+        if (response.ok) {
+            const data = await response.json();
+            alert(data.message); // Affiche "Login successful"
+            navigateTo("home-page"); // Redirige l'utilisateur
+        } else {
+            const errorData = await response.json();
+            errorMessage.textContent = errorData.error; // Affiche l'erreur retournée
+        }
+    } catch (err) {
+        errorMessage.textContent = "Server error. Please try again later.";
+    }
+});
+});
+
 
 // function setupImageUpload(inputId, previewId) {
 //     const imageUpload = document.getElementById(inputId);
@@ -358,33 +427,54 @@ document.querySelectorAll('a.nav-link').forEach(link => {
 //     }
 //   }
 
-document.getElementById('save').addEventListener('click', () => {
-const _profileImage = document.getElementById('imageUpload');
-const _username = document.getElementById('user');
-const _password = document.getElementById('password2');
-const _confirmPassword = document.getElementById('confirm-password');
-const _email = document.getElementById('email');
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById("save-button").addEventListener("click", async function (e) {
+    e.preventDefault(); // Empêche le comportement par défaut du bouton
+    const _profileImage = document.getElementById('imageUpload');
+    const _username = document.getElementById('user');
+    const _password = document.getElementById('password2');
+    const _confirmPassword = document.getElementById('confirm-password');
+    const _email = document.getElementById('email');
+    const errorMessage = document.getElementById('error-message');
 
-if (_username.value.trim() === "" || _password.value.trim() === "" || _confirmPassword.value.trim() === "" || _email.value.trim() === "")
-    console.log("Invalid field !");
+    if (_username.value.trim() === "") {
+        errorMessage.textContent = "Username is required.";
+    }
 
-if (_password.value != _confirmPassword.value)
-    console.log("Passwords are not the same !");
+    if (_password.value.trim() === "") {
+        errorMessage.textContent = "Password is required.";
+    }
 
-const formData = new FormData();
+    if (_confirmPassword.value.trim() === "") {
+        errorMessage.textContent = "Please confirm password.";
+    } else if (_password.value !== _confirmPassword.value) {
+        errorMessage.textContent = "Passwords are not the same.";
+    }
+
+    if (_email.value.trim() === "") {
+        errorMessage.textContent = "Email is required.";
+    }
+
+    if (!_profileImage.files[0]) {
+        errorMessage.textContent = "Please choose a profile image.";
+    }
+
+
+    const formData = new FormData();
     formData.append('username', _username.value.trim());
     formData.append('password', _password.value.trim());
     formData.append('email', _email.value.trim());
-    formData.append('imageUpload', _profileImage.files[0]);
+    formData.append('image_avatar', _profileImage.files[0]);
 
     console.table(Array.from(formData.entries()));
 
-fetch('https://localhost:8080/add-player/', {
-    method: 'POST',
-    body: formData,
-})
+    fetch('https://localhost:8080/add-player/', {
+        method: 'POST',
+        body: formData,
+    })
     .then(response => {
         if (response.ok) {
+            navigateTo("login-page"); // Redirige l'utilisateur
             return response.json();
         } else {
             throw new Error('Erreur lors de l\'envoi des données');
@@ -397,4 +487,4 @@ fetch('https://localhost:8080/add-player/', {
         console.error('Erreur:', error);
     });
 });
-
+});

@@ -3,7 +3,6 @@ body {
   padding: 0;
   font-family: 'Audiowide', sans-serif;
   overflow-x: hidden;
-  overflow-y: hidden
 }
 
 .login-page {
@@ -126,6 +125,13 @@ input {
   line-height: normal;
   margin-top: 10%;
   margin-bottom: 3%;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
 }
 
 .enter {
@@ -914,7 +920,7 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 2%;
+  margin-top: 1%;
   margin-bottom: 3%;
 }
 
@@ -990,6 +996,7 @@ input {
   color: #FAB005;
   font-family: 'Audiowide', sans-serif;
   font-size: 70%;
+  margin-bottom: 0;
 }
 
 .profile-stats {
@@ -1043,4 +1050,176 @@ input {
   color: #ffffff;
   z-index: 1;
   font-family: Arial, sans-serif;
+}
+
+.friends-rectangle {
+  position: relative;
+  width: 70%;
+  height: 560px;
+  margin-top: 15%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.friends-title {
+  position: relative;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10%;
+  margin-bottom: 3%;
+}
+
+.friend-user {
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #FAB005;
+  font-size: 14px;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+
+.friend-searchbox {
+  width: 40%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+  background-color: #ffffff;
+  border-radius: 60px;
+  text-align: center;
+}
+
+.add-friend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3%;
+  margin-bottom: 3%;
+  border-radius: 50px;
+  background-color: #281f79;
+  color: #fff;
+  font-size: 12px;
+  border: 1px solid #fff;
+  font-family: 'Audiowide', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.add-friend:hover {
+  background-color: #FAB005;
+  transform: scale(1.05);
+}
+
+.add-friend:active {
+  background-color: #FAB005;
+  transform: scale(0.95);
+}
+
+.your-friends {
+  color: #FAB005;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ranklist-container {
+  max-height: 200px; /* Limite la hauteur visible */
+  overflow-y: auto; /* Ajoute une barre de défilement verticale si le contenu dépasse */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #fff;
+  display: flex; /* Organise les deux colonnes côte à côte */
+  align-items: flex-start; /* Aligne les éléments en haut */
+  gap: 20px; /* Ajoute un espace entre les colonnes */
+  margin-bottom: 50%;
+  margin-top: 1%;
+}
+
+.ranklist {
+  display: flex;
+  flex-direction: column; /* Organise les noms en colonne */
+  gap: 0; /* Espacement entre chaque joueur */
+  margin-top: 0;
+}
+
+.ranklist-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ranklist-container::-webkit-scrollbar-thumb {
+  background: #888; /* Couleur de la barre */
+  border-radius: 10px;
+}
+
+.ranklist-container::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Couleur au survol */
+}
+
+.remove-buttons {
+  display: flex;
+  flex-direction: column; /* Organise les boutons en colonne */
+  align-items: center;
+  justify-content: center;
+  font-family: 'Audiowide', sans-serif;
+}
+
+.remove {
+  color: #fff;
+  background-color: #281f79;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  font-size: 12px;
+  border: 1px solid #fff;
+  cursor: pointer;
+  height: 24px; /* Hauteur uniforme pour chaque ligne */
+  display: flex; /* Assure que le contenu est aligné */
+  align-items: center; /* Aligne verticalement les éléments */
+  margin: 1.5em 0; /* Espacement uniforme entre les lignes */
+  padding: 2px 8px; /* Réduit l'espacement interne */
+}
+
+.remove:hover {
+  background-color: #FAB005;
+  transform: scale(1.05);
+}
+
+.remove:active {
+  background-color: #FAB005;
+  transform: scale(0.95);
+}
+
+.ranklist-player {
+  display: flex; /* Organise les images et le texte côte à côte */
+  align-items: center; /* Aligne verticalement l'image et le texte */
+  gap: 10px; /* Espacement entre l'image et le texte */
+  color: #281f79;
+  height: 50px; /* Hauteur uniforme pour chaque ligne */
+  margin: 5px 0; /* Espacement uniforme entre les lignes */
+  gap: 10px; /* Espace entre l'image et le texte */
+}
+
+.ranklist-img {
+  width: 40px; /* Taille de l'image */
+  height: 40px; /* Taille de l'image */
+  border-radius: 50%; /* Image ronde */
 }
