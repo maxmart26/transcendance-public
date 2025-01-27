@@ -22,10 +22,10 @@ const pagesContent = {
               <img class="img" src="static/img/line1.png" />
           </div>
           <div class="login">
-              <button class="button2">
-                  <p class="text">Login with</p>
-                  <img class="element-icon" src="static/img/42.png" />
-              </button>
+            <button onclick="window.location.href='https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-740be05e283130d59321a2b45f94cc9f8d7c90cce47668da972834e6b5ce5492&redirect_uri=http://localhost:8080/auth/complete/intra42/&response_type=code'" class="button2">
+                <p class="text">Login with</p>
+                <img class="element-icon" src="static/img/42.png" />
+            </button>
           </div>
           <div class="account">
               <p class="p">You don't have an account ?</p>
@@ -294,7 +294,7 @@ const pagesContent = {
             <div class="navbar-right">
                 <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                 <div class="profile-container">
-                    <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                    <button id="profile-img" onclick=""><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                 </div>
             </div>
         </div>
@@ -363,6 +363,7 @@ document.querySelectorAll('a.nav-link').forEach(link => {
     });
 });
 
+
 document.addEventListener('DOMContentLoaded', () => {
 document.getElementById("enter-button").addEventListener("click", async function (e) {
     e.preventDefault(); // Empêche le comportement par défaut du bouton
@@ -402,7 +403,6 @@ document.getElementById("enter-button").addEventListener("click", async function
     }
 });
 });
-
 
 // function setupImageUpload(inputId, previewId) {
 //     const imageUpload = document.getElementById(inputId);

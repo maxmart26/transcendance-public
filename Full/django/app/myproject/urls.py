@@ -7,7 +7,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import include
 from rest_framework.permissions import AllowAny
-from .views import add_player, update_or_add_player,ProtectedView
+from .views import add_player, update_or_add_player,ProtectedView,oauth_callback
 from myapp.views import get_all_players
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -38,7 +38,7 @@ urlpatterns = [
     path('get-all-players/', get_all_players, name='get_all_players'),
     path('login/', views.login, name='login'),
     path('oauth/login/', views.login_42, name='login_42'),
-    path('oauth/callback/',views.callback_42, name='callback_42'),
+    path('auth/complete/intra42/', oauth_callback, name='oauth_callback'),
     path('auth/', include('social_django.urls', namespace='social')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
