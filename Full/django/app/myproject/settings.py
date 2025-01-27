@@ -14,6 +14,7 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -118,14 +119,9 @@ AUTHENTICATION_BACKENDS = [
     'myapp.backend_42.Intra42OAuth2',  # Backend spécifique à l'API 42
     'django.contrib.auth.backends.ModelBackend',  # Authentification classique
 ]
-SOCIAL_AUTH_INTRA42_KEY = 'u-s4t2ud-740be05e283130d59321a2b45f94cc9f8d7c90cce47668da972834e6b5ce5492'
-SOCIAL_AUTH_INTRA42_SECRET = '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'
-
-# URL de redirection configurée dans l'API 42
-SOCIAL_AUTH_INTRA42_REDIRECT_URI = 'http://localhost:8080/auth/complete/intra42/'
-# Scopes demandés
-SOCIAL_AUTH_INTRA42_SCOPE = ['public']
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
+CLIENT_ID = config('INTRA_ID')
+CLIENT_SECRET = config('INTRA_SECRET')
+REDIRECT_URI = config('INTRA_REDIRECT_URI')
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

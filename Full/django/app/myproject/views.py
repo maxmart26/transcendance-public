@@ -8,10 +8,13 @@ from myapp.models import Player
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from django.shortcuts import redirect
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponseRedirect
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+import requests
+import os
+from django.db.utils import IntegrityError
 
 
 
@@ -239,12 +242,17 @@ def login_42(request):
     )
     return redirect(oauth_url)
 
+CLIENT_ID = "u-s4t2ud-740be05e283130d59321a2b45f94cc9f8d7c90cce47668da972834e6b5ce5492"
+CLIENT_SECRET = "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"
+REDIRECT_URI = "http://localhost:8080/auth/complete/intra42/"
 
-def callback_42(request):
+def oauth_callback(request):
+      # Étape 1 : Récupérer le code d'autorisation
     code = request.GET.get('code')
     if not code:
         return JsonResponse({'error': 'Code not provided'}, status=400)
 
+    # Étape 2 : Échanger le code contre un token d'accès
     token_url = "https://api.intra.42.fr/oauth/token"
     data = {
         'grant_type': 'authorization_code',
@@ -255,12 +263,70 @@ def callback_42(request):
     }
 
     response = requests.post(token_url, data=data)
-    if response.status_code == 200:
-        token_data = response.json()
-        # Sauvegarder ou traiter le token ici
-        return JsonResponse({'token_data': token_data})
-    return JsonResponse({'error': 'Failed to fetch token'}, status=response.status_code)
+    if response.status_code != 200:
+        return JsonResponse({'error': 'Failed to fetch token', 'details': response.json()}, status=response.status_code)
 
+    token = response.json().get('access_token')
+
+    # Étape 3 : Récupérer les informations utilisateur
+    user_info_url = "https://api.intra.42.fr/v2/me"
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+    user_response = requests.get(user_info_url, headers=headers)
+    if user_response.status_code != 200:
+        return JsonResponse({'error': 'Failed to fetch user info'}, status=user_response.status_code)
+
+    user_info = user_response.json()
+
+    # Étape 4 : Gestion ou création de l'utilisateur
+    email = user_info.get('email')
+    username = user_info.get('login')
+    avatar_url = user_info.get('image', {}).get('link')
+
+    if not email or not username:
+        return JsonResponse({'error': 'Missing user info from 42 API'}, status=400)
+
+    try:
+        # Chercher ou créer l'utilisateur
+        player, created = Player.objects.get_or_create(
+            email=email,
+            defaults={
+                'username': username,
+                'image_avatar': avatar_url,
+                'is_active': True,
+                'is_staff': False,
+                'nb_game_play': 0,
+                'nb_game_win': 0,
+            }
+        )
+        if not created:  # Si l'utilisateur existait déjà
+            player.image_avatar = avatar_url  # Mise à jour éventuelle de l'avatar
+            player.save()
+
+        # Connecter l'utilisateur
+        login(request, player)
+        response = HttpResponseRedirect('/')
+        response.set_cookie(
+            key='access_token',  # Nom du cookie
+            value=token,  # Valeur du token d'accès
+            httponly=True,  # HTTPOnly pour empêcher l'accès via JavaScript
+            secure=True,  # True si vous utilisez HTTPS
+            samesite='Strict',  # Protéger contre les attaques CSRF
+            max_age=3600,  # Durée de vie du cookie en secondes (1 heure)
+        )
+        response.set_cookie(
+            key='user_id',  # Nom du cookie
+            value=str(player.id),  # ID de l'utilisateur connecté
+            httponly=False,  # Accessible via JavaScript si nécessaire
+            secure=True,  # True si vous utilisez HTTPS
+            samesite='Strict',  # Protéger contre les attaques CSRF
+            max_age=3600,  # Durée de vie du cookie en secondes (1 heure)
+        )
+        return response
+
+    except IntegrityError as e:
+        return JsonResponse({'error': 'Database error', 'details': str(e)}, status=500)
 
 class ProtectedView(APIView):
     permission_classes = [IsAuthenticated]
