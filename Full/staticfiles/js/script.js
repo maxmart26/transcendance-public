@@ -381,12 +381,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
         // Envoie une requête POST à l'API
-        const response = await fetch("/api/login", {
+        const response = await fetch("http://localhost:8080/login/", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, password }),
+            body: formData,
         });
 
         // Analyse la réponse
@@ -401,6 +398,29 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
         errorMessage.textContent = "Server error. Please try again later.";
     }
+
+    // try {
+    //     // Envoie une requête POST à l'API
+    //     const response = await fetch("/api/login", {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify({ username, password }),
+    //     });
+
+    //     // Analyse la réponse
+    //     if (response.ok) {
+    //         const data = await response.json();
+    //         alert(data.message); // Affiche "Login successful"
+    //         navigateTo("home-page"); // Redirige l'utilisateur
+    //     } else {
+    //         const errorData = await response.json();
+    //         errorMessage.textContent = errorData.error; // Affiche l'erreur retournée
+    //     }
+    // } catch (err) {
+    //     errorMessage.textContent = "Server error. Please try again later.";
+    // }
 });
     }
 }); 
