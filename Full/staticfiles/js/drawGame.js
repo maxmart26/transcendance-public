@@ -185,7 +185,7 @@ function draw(status) {
 
 function connect_socket()
 {	// WebSocket game_state
-	const socket = new WebSocket('wss://' + window.location.host + '/ws/myapp/game/' + gameData.matchID + '/');
+	const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/' + gameData.matchID + '/');
 
 	socket.onopen = function(e) {
 		console.log("WebSocket drawGame open");
@@ -306,7 +306,7 @@ function startGame(gameData)
 	}
 	console.log("Player_id: " + player_id);
 
-	const socket = new WebSocket('wss://' + window.location.host + '/ws/myapp/game/');
+	const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/');
 
 	socket.onopen = function(e) {
 		console.log("WebSocket state open");
