@@ -84,6 +84,7 @@ const pagesContent = {
               </div>
         </div>
         <div class="game-types">
+            <p class="choose-game">Which game do you want to launch ?</p>
             <div class="pongs">
                 <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
                 <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">PONG 3D (local)</button>
@@ -290,6 +291,34 @@ const pagesContent = {
   `,
   "online-game-page": `
     <div id="online-game-page">
+        <div class="home-navbar">
+              <div class="navbar-left">
+                  <p class="text-wrapper">PONG</p>
+                  <a id="home" href="#home" class="navbar-item">HOME</a>
+                  <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                  <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+              </div>
+              <div class="navbar-right">
+                  <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                  <div class="profile-container">
+                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                  </div>
+              </div>
+        </div>
+        <div class="difficulty-buttons">
+            <button id="easy" class="difficulty-btn">Easy</button>
+            <button id="medium" class="difficulty-btn">Medium</button>
+            <button id="hard" class="difficulty-btn">Hard</button>
+        </div>
+        <div id="online-game-container">
+            <canvas></canvas>
+        </div>
+        
+        
+    </div>
+  `,
+  "tournament-page": `
+    <div id="tournament-page">
         <div class="home-navbar">
               <div class="navbar-left">
                   <p class="text-wrapper">PONG</p>
@@ -538,27 +567,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById("create-account-page")) {
-
-    const easyButton = document.getElementById('easy');
-    const mediumButton = document.getElementById('medium');
-    const hardButton = document.getElementById('hard');
-
-    function activateButton(button) {
-        // Retirer la classe 'active' de tous les boutons
-        easyButton.classList.remove('active');
-        mediumButton.classList.remove('active');
-        hardButton.classList.remove('active');
-        
-        // Ajouter la classe 'active' au bouton cliqué
-        button.classList.add('active');
-    }
-
-    // Écouteurs d'événements pour chaque bouton
-    easyButton.addEventListener('click', () => activateButton(easyButton));
-    mediumButton.addEventListener('click', () => activateButton(mediumButton));
-    hardButton.addEventListener('click', () => activateButton(hardButton));
+    if (document.getElementById("online-game-page")) {
+        launchGame();
     }
 });
