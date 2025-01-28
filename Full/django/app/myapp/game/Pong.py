@@ -75,7 +75,7 @@ class PongGame(AsyncWebsocketConsumer):
 			
 		elif data_json.get('type') == 'action':
 			action = data_json.get('action')
-			print(self.player.nb, "Received:\naction: ", action, "by player: ", data_json.get('player'), file=sys.stderr)
+			#print(self.player.nb, "Received:\naction: ", action, "by player: ", data_json.get('player'), file=sys.stderr)
 			if (self.player.nb == '2'):
 				await self.channel_layer.group_send(
 							self.group_name,
@@ -86,11 +86,11 @@ class PongGame(AsyncWebsocketConsumer):
 				})
 			else:
 				if action == 'move_up':
-						self.player.paddle.move_up() if data_json.get('player_nb') == self.player.nb else self.opponent.paddle.move_up()
+						self.player.paddle.move_up()
 				elif action == 'move_down':
-						self.player.paddle.move_down() if data_json.get('player_nb') == self.player.nb else self.opponent.paddle.move_down()
+						self.player.paddle.move_down()
 				elif action == 'noo':
-						self.player.paddle.still() if data_json.get('player_nb') == self.player.nb else self.opponent.paddle.still()
+						self.player.paddle.still()
 				await self.send_state()
 
 	async def send_state(self):
@@ -147,13 +147,13 @@ class PongGame(AsyncWebsocketConsumer):
 											'difficulty': self.difficulty}))
 
 	async def player_action(self, event):
-		if (self.player.nb == '1'):
+		if (self.player.nb == '1' and event["player_nb"] == '2'):
 			if event["action"] == 'move_up':
-				self.player.paddle.move_up() if event["player_nb"] == self.player.nb else self.opponent.paddle.move_up()
+				self.opponent.paddle.move_up()
 			elif event["action"] == 'move_down':
-				self.player.paddle.move_down() if event["player_nb"] == self.player.nb else self.opponent.paddle.move_down()
+				self.opponent.paddle.move_down()
 			elif event["action"] == 'noo':
-				self.player.paddle.still() if event["player_nb"] == self.player.nb else self.opponent.paddle.still()
+				self.opponent.paddle.still()
 			await self.send_state()
 
 	async def reset_round(self):
@@ -201,12 +201,9 @@ class PongGame(AsyncWebsocketConsumer):
 	async def play(self):
 		while self.status != 'over':
 
-			self.ball.move()
 			self.player.paddle.move()
 			self.opponent.paddle.move()
-			self.ball.wall_bounce()
-			self.ball.paddle_bounce(self.player.paddle)
-			self.ball.paddle_bounce(self.opponent.paddle)
+			self.ball.move(self.player.paddle, self.opponent.paddle)
 
 			await self.check_score()
 			if (self.player.score >= 2 or self.opponent.score >= 2):

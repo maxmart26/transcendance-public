@@ -2,7 +2,7 @@ import random
 
 from .Values import FIELD_HEIGHT, FIELD_WIDTH, BALL_SIZE, BALL_SPEED, PADDLE_HEIGHT, PADDLE_WIDTH
 
-class Ball:
+class Ball():
 	def __init__(self, difficulty):
 		self.x = ((FIELD_WIDTH - 20) / 2)
 		self.y = random.randrange(150, (FIELD_HEIGHT - 20) - 150)
@@ -21,7 +21,12 @@ class Ball:
 
 		self.speed = BALL_SPEED[difficulty]
 
-	def move(self):
+	def move(self, p_paddle, o_paddle):
+		self.paddle_bounce(o_paddle)
+		self.paddle_bounce(p_paddle)
+
+		self.wall_bounce()
+
 		self.x += self.vx * self.speed
 		self.y += self.vy * self.speed
 
