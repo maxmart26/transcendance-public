@@ -7,7 +7,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import include
 from rest_framework.permissions import AllowAny
-from .views import add_player, update_or_add_player,ProtectedView,oauth_callback
+from .views import add_player, update_or_add_player,ProtectedView,oauth_callback,get_user_info
 from myapp.views import get_all_players
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -44,6 +44,8 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/protected/', ProtectedView.as_view(), name='protected_view'),
     path('players/', PlayerListView.as_view(), name='player-list'),
+
+    path('user/<uuid:user_id>/', get_user_info, name='get_user_info'),
     
 ]
 

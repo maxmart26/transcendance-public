@@ -15,6 +15,7 @@ from rest_framework.permissions import IsAuthenticated
 import requests
 import os
 from django.db.utils import IntegrityError
+from django.shortcuts import get_object_or_404
 
 
 
@@ -333,4 +334,60 @@ class ProtectedView(APIView):
 
     def get(self, request):
         return Response({"message": "You are authenticated!"})
-    
+
+
+@swagger_auto_schema(
+    method='get',
+    operation_description="Retrieve user information by ID",
+    responses={
+        200: openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'user': openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'id': openapi.Schema(type=openapi.TYPE_STRING, description='The user UUID'),
+                        'username': openapi.Schema(type=openapi.TYPE_STRING, description='The username of the player'),
+                        'email': openapi.Schema(type=openapi.TYPE_STRING, description='The email of the player'),
+                        'image_avatar': openapi.Schema(type=openapi.TYPE_STRING, format='url', description='URL of the avatar'),
+                        'nb_game_play': openapi.Schema(type=openapi.TYPE_INTEGER, description='Number of games played'),
+                        'nb_game_win': openapi.Schema(type=openapi.TYPE_INTEGER, description='Number of games won'),
+                        'created_at': openapi.Schema(type=openapi.TYPE_STRING, format='date-time', description='Creation date'),
+                        'updated_at': openapi.Schema(type=openapi.TYPE_STRING, format='date-time', description='Last update date'),
+                    }
+                )
+            }
+        ),
+        404: "User not found"
+    },
+    manual_parameters=[
+        openapi.Parameter(
+            'user_id',
+            openapi.IN_PATH,
+            type=openapi.TYPE_STRING,
+            description="UUID of the user",
+            required=True
+        )
+    ]
+)
+@api_view(['GET']) 
+def get_user_info(request, user_id):
+    """
+    Récupère les informations d'un utilisateur via son ID.
+    """
+    # Recherche l'utilisateur par son ID
+    user = get_object_or_404(Player, id=user_id)
+
+    # Retourne les informations de l'utilisateur
+    user_data = {
+        'id': str(user.id),
+        'username': user.username,
+        'email': user.email,
+        'image_avatar': user.image_avatar.url if user.image_avatar else None,
+        'nb_game_play': user.nb_game_play,
+        'nb_game_win': user.nb_game_win,
+        'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        'updated_at': user.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+    }
+
+    return JsonResponse({'user': user_data}, status=200)
