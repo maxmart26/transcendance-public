@@ -68,8 +68,8 @@ const pagesContent = {
       </div>
   `,
   "home-page": `
-      <div id="home-page">
-          <div class="home-navbar">
+    <div id="home-page">
+        <div class="home-navbar">
               <div class="navbar-left">
                   <p class="text-wrapper">PONG</p>
                   <a id="home" href="#home" class="navbar-item">HOME</a>
@@ -83,8 +83,14 @@ const pagesContent = {
                   </div>
               </div>
         </div>
-          <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">START A GAME</button>
-      </div>
+        <div class="game-types">
+            <div class="pongs">
+                <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
+                <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">PONG 3D (local)</button>
+            </div>
+            <button onclick="navigateTo('tournament-page')" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
+        </div>      
+    </div>
   `,
   "settings-page": `
       <div id="settings-page">
@@ -282,6 +288,31 @@ const pagesContent = {
         
     </div>
   `,
+  "online-game-page": `
+    <div id="online-game-page">
+        <div class="home-navbar">
+              <div class="navbar-left">
+                  <p class="text-wrapper">PONG</p>
+                  <a id="home" href="#home" class="navbar-item">HOME</a>
+                  <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                  <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+              </div>
+              <div class="navbar-right">
+                  <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                  <div class="profile-container">
+                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                  </div>
+              </div>
+        </div>
+        <div id="online-game-container"></div>
+        <div class="difficulty-buttons">
+            <button id="easy" class="difficulty-btn">Easy</button>
+            <button id="medium" class="difficulty-btn">Medium</button>
+            <button id="hard" class="difficulty-btn">Hard</button>
+        </div>
+        
+    </div>
+  `,
   "friends-page": `
     <div id="friends-page">
         <div class="home-navbar">
@@ -383,9 +414,10 @@ document.addEventListener('DOMContentLoaded', () => {
     formData.append('username', username);
     formData.append('password', password);
     console.table(Array.from(formData.entries()));
-
+    
     try {
         // Envoie une requête POST à l'API
+        navigateTo("home-page");
         const response = await fetch("http://localhost:8080/login/", {
             method: "POST",
             body: formData,
@@ -395,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (response.ok) {
             const data = await response.json();
             alert(data.message); // Affiche "Login successful"
-            navigateTo("home-page"); // Redirige l'utilisateur
+            // navigateTo("home-page"); // Redirige l'utilisateur
         } else {
             const errorData = await response.json();
             errorMessage.textContent = errorData.error; // Affiche l'erreur retournée
@@ -403,6 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
         errorMessage.textContent = "Server error. Please try again later.";
     }
+    
 });
     }
 }); 
@@ -502,5 +535,30 @@ document.addEventListener('DOMContentLoaded', () => {
             
 
 });
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById("create-account-page")) {
+
+    const easyButton = document.getElementById('easy');
+    const mediumButton = document.getElementById('medium');
+    const hardButton = document.getElementById('hard');
+
+    function activateButton(button) {
+        // Retirer la classe 'active' de tous les boutons
+        easyButton.classList.remove('active');
+        mediumButton.classList.remove('active');
+        hardButton.classList.remove('active');
+        
+        // Ajouter la classe 'active' au bouton cliqué
+        button.classList.add('active');
+    }
+
+    // Écouteurs d'événements pour chaque bouton
+    easyButton.addEventListener('click', () => activateButton(easyButton));
+    mediumButton.addEventListener('click', () => activateButton(mediumButton));
+    hardButton.addEventListener('click', () => activateButton(hardButton));
     }
 });
