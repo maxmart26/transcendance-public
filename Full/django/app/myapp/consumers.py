@@ -28,9 +28,8 @@ class MatchManager(AsyncWebsocketConsumer):
 			await self.channel_layer.group_add(f"match_{match_id}", self.channel_name)
 			print("Data Received:\nmatch_id: ", match_id, "\nDifficulty: ", info_json.get("difficulty"), file=sys.stderr)
 
-			match = self.get_match(match_id, info_json.get("difficulty"), info_json.get("player_id"))
-			if match:
-				await self.start_match(match)
+			match = await self.get_match(match_id, info_json.get("difficulty"), info_json.get("player_id"))
+			await self.start_match(match)
 		
 		elif (type == 'game_create'):
 			if (info_json.get('host') == self.player1.id):
@@ -42,7 +41,7 @@ class MatchManager(AsyncWebsocketConsumer):
 			match = Match.objects.get(id=match_id)
 			match.player2 = player_id
 		except Match.DoesNotExist:
-			Match.objects.create(id=match_id, player1=player_id, difficulty=difficulty)
+			match = Match.objects.create(id=match_id, player1=player_id, difficulty=difficulty)
 		return match
 
 	async def update_match(self, match, player_id):
@@ -59,20 +58,25 @@ class MatchManager(AsyncWebsocketConsumer):
 		
 	async def start_match(self, match):
 		self.player1 = Player.objects.get(id=match.player1)
-		self.player2 = Player.objects.get(id=match.player2)
 
-		await self.channel_layer.group_send(
-		f"match_{match.id}",
-		{	'type': 'match.start',
-			'status': 'match.status',
-			'player1': self.player1.name,
-			'player1id': self.player1.id,
-			'player1color': self.player1.color,
-			'player2': self.player2.name,
-			'player2id': self.player2.id,
-			'player2color': self.player2.color,
-			'difficulty': match.difficulty
-		})
+		try:
+			self.player2 = Player.objects.get(id=match.player2)
+
+			await self.channel_layer.group_send(
+			f"match_{match.id}",
+			{	'type': 'match.start',
+				'status': 'match.status',
+				'player1': self.player1.name,
+				'player1id': self.player1.id,
+				'player1color': self.player1.color,
+				'player2': self.player2.name,
+				'player2id': self.player2.id,
+				'player2color': self.player2.color,
+				'difficulty': match.difficulty
+			})
+		
+		except:
+			pass
 
 	async def match_start(self, event):
 		await self.send(text_data=json.dumps({ 'type': 'match_start',
