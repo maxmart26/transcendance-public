@@ -279,7 +279,6 @@ const pagesContent = {
         </div>
         <div id="game-container"></div>
         <div id="score">Joueur 1: 0 | Joueur 2: 0</div>
-        
     </div>
   `,
   "friends-page": `

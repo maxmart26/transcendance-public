@@ -8,8 +8,11 @@ from .permissions import IsAdminOrReadOnly
 from .serializers import PlayerSerializer
 from rest_framework.views import APIView
 from django.shortcuts import render, redirect
+from .models import Match
+
 
 import uuid
+import random
 
 @api_view(["GET"])
 @permission_classes([IsAdminOrReadOnly])
@@ -29,31 +32,17 @@ def homepage(request):
 
 waiting_games = {}
 
-def create_game(request):
-    player_id = str(uuid.uuid4()) #A remplacer par son id dans la db
+def create_game(request, difficulty):
     if waiting_games:
-        match_id, waiting_player = waiting_games.popitem()
-        return redirect(f'/game/{match_id}/?player1={waiting_player}&player2={player_id}')
+        match_id = random.choice(list(waiting_games))
+        waiting_games.pop(match_id)
     else:
         match_id = str(uuid.uuid4())
-        waiting_games[match_id] = player_id
-        return redirect(f'/game/{match_id}/?player1={player_id}')
-        #A remplacer par un beau script JS qui cherche un joueur
-        #return render(request, 'index.html', {'status': 'waiting'})
-        #On envoie le status au .html qui pourra afficher la bonne page avec un if
+        waiting_games[match_id] = 1
+    return redirect(f'/game/{difficulty}/{match_id}/')
     
-def game(request, match_id):
-    player1 = request.GET.get('player1')
-    player2 = request.GET.get('player2')
-
-    if player1 and player2:
-        return render(request, 'game-page.html', {'status': 'start_game', 'match_id': match_id, 'player1_id': player1, 'player2_id': player2})
-        #return render(request, 'index.html', {'status': 'play', 'match_id': match_id, 'player1_id': player1, 'player2_id': player2})
-    elif player1:
-        return render(request, 'game-page.html', {'status': 'waiting', 'match_id': match_id, 'player1_id': player1})
-        #return render(request, 'index.html', {'status': 'play', 'match_id': match_id, 'player1_id': player1})
-    else:
-        return Http404("Game not found.")
+def game(request, difficulty, match_id):
+    return render(request, 'game-page.html', {'match_id': match_id, 'difficulty': difficulty})
 
 from .serializers import PlayerAll
 

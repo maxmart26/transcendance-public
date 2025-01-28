@@ -23,10 +23,8 @@
 	<h1>ft_PONG</h1>
 	<canvas></canvas>
 	<div id="game-data"
-		data-status="{{ status }}"
         data-matchid="{{ match_id }}"
-        data-player1="{{ player1_id }}"
-        data-player2="{{ player2_id }}"
+        data-dificulty="{{ difficulty }}"
         style="display: none;"></div>
 	<p>C'est bon transcendence c fini.</p>
 
@@ -34,17 +32,15 @@
 	<script>
         const gameDataElement = document.getElementById('game-data');
         const gameData = {
-        	status: gameDataElement.dataset.status,
             matchID: gameDataElement.dataset.matchid,
-            player1: gameDataElement.dataset.player1,
-            player2: gameDataElement.dataset.player2
+            difficulty: gameDataElement.dataset.difficulty
         };
         const script = document.createElement('script');
         script.src = "{% static 'js/drawGame.js' %}";
         script.defer = true;
         document.body.appendChild(script);
         script.onload = function() {
-                startGame(gameData);
+                init_game(gameData);
         };
     </script>
 </body>

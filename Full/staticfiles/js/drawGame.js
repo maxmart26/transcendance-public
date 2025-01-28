@@ -15,10 +15,12 @@ this.paddle_width = 15;
 this.ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height / 2 - (ball_size / 2)};
 this.player1 = {};
 this.player2 = {};
-let player_nb = '1';
 let round_nb = 0
 this.game_status = 'waiting'
 let winner = 'Michel'
+
+let player_id = '1'; // rcup l'info en cookies
+let player_nb = 0;
 
 // Fonction pour dessiner le jeu
 function draw(status) {
@@ -183,70 +185,41 @@ function draw(status) {
 	);
 }
 
-function connect_socket()
-{	// WebSocket game_state
-	const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/' + gameData.matchID + '/');
-
-	socket.onopen = function(e) {
-		console.log("WebSocket drawGame open");
-		player_id = gameData.player1;
-		if (player_nb == '2'){
-			player_id = gameData.player2;
-		}
-		socket.send(JSON.stringify({
-			'type': 'game_init',
-			'player_id': player_id,
-			'player_nb': player_nb
-		}));
-		console.log("sent:\nplayer_id: " + player_id + "\nplayer_nb: " + player_nb + "\n");
-	};
-
+function start_game(socket)
+{	
 	socket.onmessage = function(event) {
 		const data = JSON.parse(event.data);
 
 		switch (data.type) {
-			case 'game_info':
-				if (player_nb === '1'){
-					player1.id = data.player_id;
-					player1.name = data.player_name;
-					player1.color = data.player_color;
-
-					player2.id = data.opp_id;
-					player2.name = data.opp_name;
-					player2.color = data.opp_color;
-
+			case 'match_start':
+					player1.id = data.player1id;
+					player1.name = data.player1;
+					player1.color = data.player1color;
 					player1.y = 1000 / 2 - (120 / 2);
 					player1.side = 'left';
 					player1.score = 0;
+					player1.score_bo = 0;
+					
+					player2.id = data.player2id;
+					player2.name = data.player2;
+					player2.color = data.player2color;
 					player2.y = 1000 / 2 + (120 / 2);
 					player2.side = 'right'
 					player2.score = 0;
-				}
-				else{
-					player1.id = data.opp_id;
-					player1.name = data.opp_name;
-					player1.color = data.opp_color;
-					
-					player2.id = data.player_id;
-					player2.name = data.player_name;
-					player2.color = data.player_color;
+					player2.score_bo = 0;
 
-					player1.y = 1000 / 2 + (120 / 2);
-					player1.side = 'right';
-					player1.score = 0;
-					player2.y = 1000 / 2 - (120 / 2);
-					player2.side = 'left'
-					player2.score = 0;
-				}
-				draw('playing');
-				break;
+					player_nb = (player1.id == player_id ? '1':'2');
+					draw('playing');
+					break;
 
 			case 'game_state':
 				ball = data.ball;
 				player1.y = data.player1_y;
 				player2.y = data.player2_y;
 				player1.score = data.player1_score;
+				player1.score_bo = data.player1_scorebo;
 				player2.score = data.player2_score;
+				player2.score_bo = data.player2_scorebo;
 				round_nb = data.round_nb;
 				this.game_status = data.status
 				draw(this.game_status);
@@ -260,16 +233,9 @@ function connect_socket()
 		}
 	};
 
-	socket.onclose = function(e) {
-		console.error('Socket WebSocket closed (error)');
-	};
-
-	socket.onerror = function(err) {
-		console.error('Error WebSocket :', err);
-	};
-
 	document.addEventListener('keydown', (event) => {
 		let action = null;
+
 		if (event.key === 'ArrowUp') {
 			action = 'move_up';
 		} else if (event.key === 'ArrowDown') {
@@ -293,26 +259,22 @@ function connect_socket()
 	});
 }
 
-function startGame(gameData)
+function init_game(gameData)
 {
 	let status = gameData.status
 
 	console.log("Match_id: " + gameData.matchID);
-	console.log("Status: " + gameData.status);
-	player_id = gameData.player1;
-	if (gameData.player2.length){
-		player_id = gameData.player2;
-		player_nb = '2';
-	}
-	console.log("Player_id: " + player_id);
+	console.log("Difficulty: " + gameData.difficulty);
 
-	const socket = new WebSocket('ws://' + window.location.host + '/ws/myapp/game/');
+	const socket = new WebSocket('ws://' + window.location.host + '/ws/game/' + gameData.matchID + '/');
 
 	socket.onopen = function(e) {
 		console.log("WebSocket state open");
 		socket.send(JSON.stringify({
+			'type': 'match_init',
 			'match_id': gameData.matchID,
-			'player_id': player_id
+			'difficulty': gameData.difficulty,
+			// 'player_id': player_id #a recup dans les cookies en global
 		}))
 	};
 
@@ -322,17 +284,12 @@ function startGame(gameData)
 
 		console.log("Received new match status: " + status);
 
-		draw('waiting');
-		if (status === 'ready')
-		{
-			console.log("Game is starting.");
-			connect_socket();
-		}
-		else if (status === 'full')
-		{
-			console.log("Game is full, exiting");
-			return;
-		}
+		if (status === 'waiting')
+			draw('waiting');
+		
+		if (data.type === 'match_start')
+			start_game(socket);
+
 	};
 
 	socket.onclose = function(e) {

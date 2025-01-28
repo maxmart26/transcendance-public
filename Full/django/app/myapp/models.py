@@ -37,6 +37,7 @@ class Player(AbstractBaseUser, PermissionsMixin):
     nb_game_win = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    color = models.CharField(max_length=7, default='#ff79d1')
 
     # Champs obligatoires pour AbstractBaseUser
     is_active = models.BooleanField(default=True)
@@ -53,9 +54,10 @@ class Player(AbstractBaseUser, PermissionsMixin):
     
 class Match(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    player1 = models.CharField(max_length=255)
+    player1 = models.CharField(max_length=255, null=True, blank=True)
     player2 = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=20, default='waiting')
+    difficulty = models.CharField(max_length=6, default='medium')
 
     def __str__(self):
         return str(self.id)
