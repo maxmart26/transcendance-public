@@ -272,7 +272,7 @@ input {
   align-items: center;
 }
 
-#create-account .rectangle .content {
+#create-account-page .rectangle .content {
   font-family: 'Audiowide', sans-serif;
   margin: 20px;
   padding: 10px;
@@ -358,6 +358,8 @@ input {
   border-radius: 15px;
   transition: all 0.3s ease;
   white-space: nowrap;
+  border: 1px solid #fff;
+  cursor: pointer;
 }
 
 .custom-button:hover {
@@ -643,7 +645,7 @@ input {
   transform: scale(0.95);
 }
 
-.save-button {
+#save-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -655,17 +657,19 @@ input {
   line-height: normal;
   margin-bottom: 2%;
   border-radius: 60px;
-  background-color: #D25CB9;
+  background-color: #fff;
   transition: all 0.3s ease;
+  border: 1px solid #fff;
+  color: #000;
 }
 
-.save-button:hover {
-  background-color: #281f79;
+#save-button:hover {
+  background-color: #51FBF2;
   transform: scale(1.05);
 }
 
-.save-button:active {
-  background-color: #281f79;
+#save-button:active {
+  background-color: #51FBF2;
   transform: scale(0.95);
 }
 

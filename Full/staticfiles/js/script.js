@@ -34,7 +34,7 @@ const pagesContent = {
           </div>
       </div>`,
   "create-account-page": `
-      <div id="create-account">
+      <div id="create-account-page">
           <div class="navbar"></div>
           <p class="text-wrapper">PONG</p>
           <div class="rectangle">
@@ -364,7 +364,8 @@ document.querySelectorAll('a.nav-link').forEach(link => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-document.getElementById("enter-button").addEventListener("click", async function (e) {
+    if (document.getElementById("login-page")) {
+    document.getElementById("enter-button").addEventListener("click", async function (e) {
     e.preventDefault(); // Empêche le comportement par défaut du bouton
 
     // Récupère les valeurs du formulaire
@@ -401,57 +402,68 @@ document.getElementById("enter-button").addEventListener("click", async function
         errorMessage.textContent = "Server error. Please try again later.";
     }
 });
-});
-
-
-// function setupImageUpload(inputId, previewId) {
-//     const imageUpload = document.getElementById(inputId);
-//     const imagePreview = document.getElementById(previewId);
-  
-//     if (imageUpload && imagePreview) {
-//       // Écouteur d'événement pour le changement de fichier
-//       imageUpload.addEventListener('change', (event) => {
-//         const file = event.target.files[0]; // Récupère le premier fichier sélectionné
-  
-//         if (file) {
-//           const reader = new FileReader(); // Crée un FileReader
-  
-//           // Quand le fichier est lu
-//           reader.onload = (e) => {
-//             imagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
-//           };
-  
-//           reader.readAsDataURL(file); // Lit le fichier comme une URL de données
-//         }
-//       });
-//     }
-//   }
+    }
+}); 
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById("save-button").addEventListener("click", async function (e) {
-    e.preventDefault(); // Empêche le comportement par défaut du bouton
-    const _profileImage = document.getElementById('imageUpload');
-    const _username = document.getElementById('user');
-    const _password = document.getElementById('password2');
-    const _confirmPassword = document.getElementById('confirm-password');
-    const _email = document.getElementById('email');
-    const errorMessage = document.getElementById('error-message');
+    if (document.getElementById("create-account-page")) {
+    
+    
+    const imageUpload = document.getElementById('imageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const errorMessage = document.getElementById('account-error');
+    const saveButton = document.getElementById('save-button');
+    
+    // Ajoute un gestionnaire pour l'input file
+    imageUpload.addEventListener('change', function () {
+        const file = this.files[0]; // Récupère le fichier sélectionné
 
-    if (_username.value.trim() === "") {
+        if (file) {
+            const reader = new FileReader();
+
+            // Une fois le fichier chargé
+            reader.onload = function (e) {
+                // Met à jour la source de l'image de prévisualisation
+                imagePreview.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.src = "static/img/person.png"; // Réinitialise l'image si aucun fichier n'est sélectionné
+            errorMessage.textContent = "Please choose a valid file.";
+        }
+    });
+
+    
+
+    
+    saveButton.addEventListener("click", async function (e) {
+   
+    e.stopPropagation(); // Empêche le comportement par défaut du bouton
+    
+    
+    const _profileImage = document.getElementById('imageUpload');
+    const _username = document.getElementById('user').value.trim();
+    const _password = document.getElementById('password2').value.trim();
+    const _confirmPassword = document.getElementById('confirm-password').value.trim();
+    const _email = document.getElementById('email').value.trim();
+    
+
+    if (_username === "") {
         errorMessage.textContent = "Username is required.";
     }
 
-    if (_password.value.trim() === "") {
+    if (_password === "") {
         errorMessage.textContent = "Password is required.";
     }
 
-    if (_confirmPassword.value.trim() === "") {
+    if (_confirmPassword === "") {
         errorMessage.textContent = "Please confirm password.";
-    } else if (_password.value !== _confirmPassword.value) {
+    } else if (_password !== _confirmPassword) {
         errorMessage.textContent = "Passwords are not the same.";
     }
 
-    if (_email.value.trim() === "") {
+    if (_email === "") {
         errorMessage.textContent = "Email is required.";
     }
 
@@ -461,30 +473,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const formData = new FormData();
-    formData.append('username', _username.value.trim());
-    formData.append('password', _password.value.trim());
-    formData.append('email', _email.value.trim());
+    formData.append('username', _username);
+    formData.append('password', _password);
+    formData.append('email', _email);
     formData.append('image_avatar', _profileImage.files[0]);
 
     console.table(Array.from(formData.entries()));
 
-    fetch('https://localhost:8080/add-player/', {
-        method: 'POST',
-        body: formData,
-    })
-    .then(response => {
-        if (response.ok) {
-            navigateTo("login-page"); // Redirige l'utilisateur
-            return response.json();
-        } else {
-            throw new Error('Erreur lors de l\'envoi des données');
-        }
-    })
-    .then(result => {
-        console.log('Succès:', result);
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-    });
+    try {
+                    const response = await fetch('http://localhost:8080/add-player/', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error while submitting the form');
+                    }
+
+                    const result = await response.json();
+                    console.log('Success:', result);
+                    navigateTo("login-page"); // Redirige l'utilisateur
+                } catch (error) {
+                    console.error('Error:', error);
+                    errorMessage.textContent = "An error occurred. Please try again.";
+                }
+            
+
 });
+    }
 });
