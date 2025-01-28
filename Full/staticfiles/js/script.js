@@ -481,22 +481,22 @@ document.addEventListener('DOMContentLoaded', () => {
     console.table(Array.from(formData.entries()));
 
     try {
-                    const response = await fetch('http://localhost:8080/add-player/', {
-                        method: 'POST',
-                        body: formData,
-                    });
+        const response = await fetch('http://localhost:8080/add-player/', {
+            method: 'POST',
+            body: formData,
+        });
 
-                    if (!response.ok) {
-                        throw new Error('Error while submitting the form');
-                    }
+        if (!response.ok) {
+            throw new Error('Error while submitting the form');
+        }
 
-                    const result = await response.json();
-                    console.log('Success:', result);
-                    navigateTo("login-page"); // Redirige l'utilisateur
-                } catch (error) {
-                    console.error('Error:', error);
-                    errorMessage.textContent = "An error occurred. Please try again.";
-                }
+        const result = await response.json();
+        console.log('Success:', result);
+        navigateTo("login-page"); // Redirige l'utilisateur
+    } catch (error) {
+        console.error('Error:', error);
+        errorMessage.textContent = "An error occurred. Please try again.";
+    }
             
 
 });
