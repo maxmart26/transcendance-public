@@ -118,8 +118,8 @@ const pagesContent = {
               <div class="profile">
                   <div class="recap-infos">
                       <div class="icon">
-                          <div class="people-contour">
-                              <img id="newImagePreview" class="preview" src="static/img/person.png">
+                          <div id="settings-img" class="people-contour">
+                              
                           </div>
                           <div class="file">
                               <div class="upload">
@@ -255,9 +255,6 @@ const pagesContent = {
                 </div>
                 <div class="profile-stats">
                 </div>
-            </div>
-            <div class="achievements">
-                <p class="achiev-title">ACHIEVEMENTS (0/7)</p>
             </div>
         </div>
     </div>
@@ -587,6 +584,16 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
             console.log("User ID from API:", data);
             let userID = data.user.id;
+
+            const settings_img = document.getElementById("settings-img");
+                    
+            const li = document.createElement("li");
+            if (data.user.image_avatar !== null)
+                li.innerHTML = `<img id="newImagePreview" class="preview" src=${data.user.image_avatar}>`;
+            else
+            li.innerHTML = `<img id="newImagePreview" class="preview" src=${data.user.image_avatar}>`;
+            settings_img.appendChild(li);
+                    
             
             document.getElementById("save-settings").addEventListener("click", async function (e) {
                 e.preventDefault(); // Empêche le comportement par défaut du bouton
