@@ -146,7 +146,7 @@ const pagesContent = {
                   </form>
               </div>
               <button id="save-settings" class="save-settings">SAVE</button>
-              <button onclick="navigateTo('login-page')" id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
+              <button id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
           </div>
       </div>
   `,
@@ -593,7 +593,6 @@ document.addEventListener("DOMContentLoaded", function() {
             else
             li.innerHTML = `<img id="newImagePreview" class="preview" src=${data.user.image_avatar}>`;
             settings_img.appendChild(li);
-                    
             
             document.getElementById("save-settings").addEventListener("click", async function (e) {
                 e.preventDefault(); // Empêche le comportement par défaut du bouton
@@ -659,4 +658,29 @@ document.addEventListener("DOMContentLoaded", function() {
     
 }
     }); 
+
+
+function deleteCookie(name) {
+    document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("settings-page")) {
+        document.getElementById("logout").addEventListener("click", async function (e) {
+            console.log("Cookies restants avand delete :", document.cookie);
+            deleteCookie("user_id");
+            console.log("Cookies restants apres delete :", document.cookie);
+            navigateTo("login-page");
+        });
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("login-page")) {
+        console.log("Cookies restants :", document.cookie);
+        if (document.cookie.includes("user_id=")) {
+            navigateTo("home-page");
+        }
+    }
+});
     
