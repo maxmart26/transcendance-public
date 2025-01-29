@@ -391,3 +391,35 @@ def get_user_info(request, user_id):
     }
 
     return JsonResponse({'user': user_data}, status=200)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_friend(request):
+    """Ajoute un ami à la liste d'amis d'un joueur"""
+    user = request.user
+    friend_username = request.data.get("friend_username")
+    
+    try:
+        friend = Player.objects.get(username=friend_username)
+        if friend == user:
+            return Response({"error": "Vous ne pouvez pas vous ajouter vous-même en ami."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.add_friend(friend)
+        return Response({"message": f"{friend_username} a été ajouté à votre liste d'amis."}, status=status.HTTP_200_OK)
+    except Player.DoesNotExist:
+        return Response({"error": "Utilisateur non trouvé."}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def remove_friend(request):
+    """Supprime un ami de la liste d'amis d'un joueur"""
+    user = request.user
+    friend_username = request.data.get("friend_username")
+    
+    try:
+        friend = Player.objects.get(username=friend_username)
+        user.remove_friend(friend)
+        return Response({"message": f"{friend_username} a été retiré de votre liste d'amis."}, status=status.HTTP_200_OK)
+    except Player.DoesNotExist:
+        return Response({"error": "Utilisateur non trouvé."}, status=status.HTTP_404_NOT_FOUND)

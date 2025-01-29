@@ -7,7 +7,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import include
 from rest_framework.permissions import AllowAny
-from .views import add_player, update_or_add_player,ProtectedView,oauth_callback,get_user_info
+from .views import add_player, update_or_add_player,ProtectedView,oauth_callback,get_user_info,add_friend, remove_friend
 from myapp.views import get_all_players
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -47,6 +47,8 @@ urlpatterns = [
 
     path('user/<uuid:user_id>/', get_user_info, name='get_user_info'),
     
+    path('add-friend/', add_friend, name='add_friend'),
+    path('remove-friend/', remove_friend, name='remove_friend'),
 ]
 
 # Si des fichiers statiques sont nécessaires
