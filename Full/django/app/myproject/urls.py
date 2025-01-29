@@ -10,7 +10,11 @@ from rest_framework.permissions import AllowAny
 from .views import add_player, update_or_add_player,ProtectedView,oauth_callback,get_user_info,add_friend, remove_friend
 from myapp.views import get_all_players
 from . import views
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
 from myapp.views import PlayerListView
 
 schema_view = get_schema_view(
@@ -42,6 +46,7 @@ urlpatterns = [
     path('auth/', include('social_django.urls', namespace='social')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/protected/', ProtectedView.as_view(), name='protected_view'),
     path('players/', PlayerListView.as_view(), name='player-list'),
 
