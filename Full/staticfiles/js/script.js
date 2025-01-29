@@ -135,7 +135,6 @@ const pagesContent = {
                           <input type="text" id="email">
                       </form>
                   </div>
-                  <button id="save-settings1" class="save-button">SAVE</button>
               </div>
               <div class="change-password">
                   <p class="settings-password">CHANGE YOUR PASSWORD</p>
@@ -145,8 +144,8 @@ const pagesContent = {
                       <label for="confirm-password" class="password-text">Confirm new password</label>
                       <input type="password" id="confirm-password">
                   </form>
-                  <button id="save-settings2" class="save-button">SAVE</button>
               </div>
+              <button id="save-settings" class="save-settings">SAVE</button>
               <button onclick="navigateTo('login-page')" id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
           </div>
       </div>
@@ -587,8 +586,70 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
             console.log("User ID from API:", data);
+            let userID = data.user.id;
+            
+            document.getElementById("save-settings").addEventListener("click", async function (e) {
+                e.preventDefault(); // Empêche le comportement par défaut du bouton
+            
+                // Récupère les valeurs du formulaire
+                const _profileImage = document.getElementById('newImageUpload');
+                const _username = document.getElementById('username').value.trim();
+                const _password = document.getElementById('password2').value.trim();
+                const _confirmPassword = document.getElementById('confirm-password').value.trim();
+                const _email = document.getElementById('email').value.trim();
+        
+                const formData = new FormData();
+        
+                formData.append('player_id', userID);
+        
+                if (_username !== "") {
+                    formData.append('username', _username);
+                }
+        
+                if (_email !== "") {
+                    formData.append('email', _email);
+                }
+        
+                if (_profileImage.files[0]) {
+                    formData.append('image_avatar', _profileImage.files[0]);
+                }
+                if (_password !== "") {
+                    formData.append('password', _password);
+                }
+                if (_password !== "" && _confirmPassword !== "" && _password !== _confirmPassword) {
+                    errorMessage.textContent = "Passwords are not the same.";
+                } else if (_password === "" && _confirmPassword !== "") {
+                    errorMessage.textContent = "Please enter a new password before confirming.";
+                }
+        
+                console.table(Array.from(formData.entries()));
+                
+                try {
+                    // Envoie une requête POST à l'API
+                    const response = await fetch("http://localhost:8080/update-player/", {
+                        method: "PUT",
+                        body: formData,
+                    });
+        
+                    if (!response.ok) {
+                        throw new Error('Error while submitting the form');
+                    }
+            
+                    const result = await response.json();
+                    console.log('Success:', result);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    errorMessage.textContent = "An error occurred. Please try again.";
+                }
+            
+            });
         })
         
         .catch(error => console.error("Erreur lors du chargement des param du user_id :", error));
-    }
-    });
+    
+
+    
+}
+    }); 
+    
