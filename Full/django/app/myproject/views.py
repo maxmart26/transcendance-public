@@ -1,10 +1,13 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import parser_classes
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from myapp.models import Player
+from myapp.serializers import PlayerLead
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from django.shortcuts import redirect
@@ -47,17 +50,22 @@ from django.shortcuts import get_object_or_404
         500: "Internal Server Error",
     },
 )
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@parser_classes([MultiPartParser, FormParser])
 def add_player(request):
+    """Ajoute un joueur avec upload d'image."""
     try:
-        # Charger les données du POST
+
+        logger.debug(f"Request data: {request.data}")
+        logger.debug(f"Request files: {request.FILES}")
+        # Utiliser request.FILES pour récupérer l'image
         data = request.data
         username = data.get("username")
         password = data.get("password")
         email = data.get("email")
-        image_avatar = request.FILES.get("image_avatar")
-
+        image_avatar = request.FILES.get("image_avatar")  # Récupération correcte du fichier
 
         # Vérifier les champs obligatoires
         if not username or not password or not email or not image_avatar:
@@ -65,12 +73,17 @@ def add_player(request):
 
         hashed_password = make_password(password)
 
-        # Créer un joueur
-        player = Player.objects.create(username=username, password=hashed_password, email=email)
-        return Response({"message": "Player added successfully!", "player_id": player.id}, status=status.HTTP_201_CREATED)
+        # Créer un joueur avec l'image
+        player = Player.objects.create(username=username, password=hashed_password, email=email, image_avatar=image_avatar)
+
+        return Response({
+            "message": "Player added successfully!",
+            "player_id": player.id,
+            "image_url": player.image_avatar.url  # Retourner l'URL de l'image
+        }, status=status.HTTP_201_CREATED)
+
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 # route pour modif un player
 
@@ -423,3 +436,32 @@ def remove_friend(request):
         return Response({"message": f"{friend_username} a été retiré de votre liste d'amis."}, status=status.HTTP_200_OK)
     except Player.DoesNotExist:
         return Response({"error": "Utilisateur non trouvé."}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+@swagger_auto_schema(
+    method='get',
+    operation_description="Retourne les 9 meilleurs joueurs avec le plus grand nombre de victoires.",
+    responses={
+        200: openapi.Response(
+            description="Liste des meilleurs joueurs",
+            examples={
+                "application/json": [
+                    {"id": "1", "username": "Player1", "nb_game_win": 100},
+                    {"id": "2", "username": "Player2", "nb_game_win": 95}
+                ]
+            }
+        ),
+        500: "Erreur interne du serveur"
+    }
+)
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def leaderboard(request):
+    """Retourne les 9 meilleurs joueurs avec le plus grand nombre de victoires."""
+    try:
+        top_players = Player.objects.order_by('-nb_game_win')[:9]  # Trier par nb_game_win décroissant
+        serializer = PlayerLead(top_players, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
