@@ -147,11 +147,6 @@ const pagesContent = {
                   </form>
                   <button id="save-settings2" class="save-button">SAVE</button>
               </div>
-              <div class="a2f">
-                  <p class="a2f-title">TWO-FACTOR AUTHENTICATION</p>
-                  <button id="a2f-button"><i class="bi bi-toggle-off switch-button"></i>Enable Two-Factor Authentication (A2F)</button>
-                  <p class="a2f-explain">This method enhances security by requiring users to provide two distincts types of verification to confirm their identity.</p>
-              </div>
               <button onclick="navigateTo('login-page')" id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
           </div>
       </div>
@@ -454,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (response.ok) {
             const data = await response.json();
             alert(data.message); // Affiche "Login successful"
-            // navigateTo("home-page"); // Redirige l'utilisateur
+            navigateTo("home-page"); // Redirige l'utilisateur
         } else {
             const errorData = await response.json();
             errorMessage.textContent = errorData.error; // Affiche l'erreur retournée
@@ -569,4 +564,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById("online-game-page")) {
         launchGame();
     }
+});
+
+function getCookie(name) {
+    let cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+        let [key, value] = cookie.split("=");
+        if (key === name) {
+            return decodeURIComponent(value);  // Décoder les valeurs encodées
+        }
+    }
+    return null; // Retourne `null` si le cookie n'existe pas
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    
+    let session = getCookie("user_id");
+    console.log("User ID:", session);
+
+    fetch('http://localhost:8080/user_id/')
+        .then(response => response.json())
+        .then(data => {
+            const articlesList = document.getElementById("articles-list");
+            data.articles.forEach(article => {
+                const li = document.createElement("li");
+                li.innerHTML = `<h2>${article.titre}</h2><p>${article.contenu}</p><small>Publié le : ${article.date_publication}</small>`;
+                articlesList.appendChild(li);
+            });
+        })
+        .catch(error => console.error("Erreur lors du chargement des articles :", error));
 });

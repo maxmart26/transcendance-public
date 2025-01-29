@@ -682,50 +682,6 @@ input {
   margin-bottom: 3%;
 }
 
-.a2f {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80%;
-  height: 18%;
-  background-color: #E085CB;
-  border-radius: 30px;
-  font-family: 'Audiowide', sans-serif;
-  margin-top: 2%;
-  color: #fff;
-  flex-direction: column;
-}
-
-.a2f-title {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 90%;
-  color: #000;
-  margin-top: 6%;
-  margin-bottom: 0;
-}
-
-#a2f-button {
-  font-size: 13px;
-  border: none;
-  background-color: transparent;
-  color: #000;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-}
-
-.switch-button {
-  font-size: 160%;
-  margin-right: 2%;
-}
-
-.a2f-explain {
-  font-size: 65%;
-  margin-left: 20%;
-}
-
 .logout {
   margin-top: 1%;
   border: none;

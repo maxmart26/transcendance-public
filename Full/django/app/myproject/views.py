@@ -307,7 +307,7 @@ def oauth_callback(request):
 
         # Connecter l'utilisateur
         login(request, player)
-        response = HttpResponseRedirect('/')
+        response = HttpResponseRedirect('/#home-page')
         response.set_cookie(
             key='access_token',  # Nom du cookie
             value=token,  # Valeur du token d'accès
