@@ -12,7 +12,7 @@ class Ball():
 
 		self.speed = BALL_SPEED[difficulty]
 
-	def reset(self, difficulty):
+	async def reset(self, difficulty):
 		self.x = (FIELD_WIDTH - 20) / 2
 		self.y = random.randrange(150, (FIELD_HEIGHT - 20) - 150)
 
@@ -21,22 +21,22 @@ class Ball():
 
 		self.speed = BALL_SPEED[difficulty]
 
-	def move(self, p_paddle, o_paddle):
-		self.paddle_bounce(o_paddle)
-		self.paddle_bounce(p_paddle)
+	async def move(self, p_paddle, o_paddle):
+		await self.paddle_bounce(o_paddle)
+		await self.paddle_bounce(p_paddle)
 
-		self.wall_bounce()
+		await self.wall_bounce()
 
 		self.x += self.vx * self.speed
 		self.y += self.vy * self.speed
 
-	def wall_bounce(self):
+	async def wall_bounce(self):
 		if self.x + BALL_SIZE >= FIELD_WIDTH or self.x <= 0:
 			self.vx *= -1
 		elif self.y + BALL_SIZE >= FIELD_HEIGHT or self.y <= 0:
 			self.vy *= -1
 
-	def paddle_bounce(self, paddle):
+	async def paddle_bounce(self, paddle):
 		if(self.x < 50 or self.x > FIELD_WIDTH - 50 - PADDLE_WIDTH):
 			return
 

@@ -1,13 +1,11 @@
 import json
 import sys
 import asyncio
-import uuid
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
 from .models import Match, Player
-from myapp.game.Pong import PongGame
 
 class MatchManager(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -28,69 +26,80 @@ class MatchManager(AsyncWebsocketConsumer):
 			match_id = info_json.get("match_id")
 
 			await self.channel_layer.group_add(f"match_{match_id}", self.channel_name)
-			print("Data Received:\nmatch_id: ", match_id, "\nDifficulty: ", info_json.get("difficulty"), "\n", file=sys.stderr)
-
+			print("Data Received:\nmatch_id: ", match_id, "\nDifficulty: ", info_json.get("difficulty"), file=sys.stderr)
 			self.match = await self.get_match(match_id, info_json.get("difficulty"), info_json.get("player_id"))
-			await self.start_match(self.match)
+			self.player1 = await self.get_player(self.match.player1)
 
-			if self.player2:
-				await self.channel_layer.group_send(
-					f"match_{self.match.id}",
-					{	'type': 'match.start',
-						'status': 'playing',
-						'player1': self.player1.username,
-						'player1id': str(self.player1.id),
-						'player1color': self.player1.color,
-						'player2': self.player2.username,
-						'player2id': str(self.player2.id),
-						'player2color': self.player2.color,
-						'difficulty': self.match.difficulty
-					})
-			else:
-				await self.send_state(self.match)
+			await self.send_newplayer(self.match.player2)
 		
 		elif (type == 'game_create'):
-			print("game_create notification:\nhost: ", info_json.get('host'), "\n", file=sys.stderr)
-			if (info_json.get('host') == str(self.player1.id)):
-				game = PongGame(self.match.difficulty)
-				asyncio.create_task(game.play())
-				print("Match started ! (", self.match.id, ")\n", file=sys.stderr)
+			await self.match.game.play(info_json.get("difficulty"), self.match)
+
+		elif type == 'action':
+			action = info_json.get('action')
+			await self.match.game.action(action, '1') if info_json.get('player') == self.player1.id else self.match.game.action(action, '2')
+
+
+#==================================================
+
+	@database_sync_to_async
+	def get_player(self, id):
+		try:
+			player_db = Player.objects.get(id=id)
+			print("Player ", id, "found!\n", file=sys.stderr)
+		except Player.DoesNotExist:
+			print("Player ", id, "not found in db.\n", file=sys.stderr)
+			player_db = None
+		return player_db
+
+	async def send_newplayer(self, id):
+		await self.channel_layer.group_send(
+			f"match_{self.match.id}",
+			{	'type': 'player.connect',
+				'match_id': self.match.id,
+				'player_id': id
+			})
+
+	async def player_connect(self, event):
+		print("Player connect received.", file=sys.stderr)
+		self.player2 = await self.get_player(self.match.player2)
+
+		if (self.player2 != None):
+			await self.channel_layer.group_send(
+				f"match_{self.match.id}",
+				{	'type': 'match.start',
+					'status': 'match.status',
+					'player1': self.player1.username,
+					'player1id': self.player1.id,
+					'player1color': self.player1.color,
+					'player2': self.player2.username,
+					'player2id': self.player2.id,
+					'player2color': self.player2.color,
+					'difficulty': self.match.difficulty
+				})
+			
+#==============================================
 
 	@database_sync_to_async
 	def get_match(self, match_id, difficulty, player_id):
 		try:
 			match = Match.objects.get(id=match_id)
+			print("Match ", match.id, "found!\n", file=sys.stderr)
 			match.player2 = player_id
-			print("Match ready in db:\nmatch_id: ", match.id, "\nDifficulty: ", match.difficulty, "\nplayer1: ", match.player1, "\nplayer2: ", match.player2, "\n", file=sys.stderr)
 		except Match.DoesNotExist:
 			match = Match.objects.create(id=match_id, player1=player_id, difficulty=difficulty)
-			print("Match created in db:\nmatch_id: ", match.id, "\nDifficulty: ", match.difficulty, "\nplayer1: ", match.player1, "\n", file=sys.stderr)
+			print("Match ", match.id, "created!\n", file=sys.stderr)
 		return match
 
-	async def send_state(self, match):
-		await self.channel_layer.group_send(
-			f"match_{match.id}",
-			{	'type': 'match.update',
-				'status': 'waiting'
-			})
-		
-	@database_sync_to_async
-	def start_match(self, match):
-		self.player1 = Player.objects.get(id=match.player1)
-		try:
-			self.player2 = Player.objects.get(id=match.player2)
-			print("Starting match... (", match.id, ")\n", file=sys.stderr)
-		except:
-			print("Meh. (", match.id, ")\n", file=sys.stderr)
-
-	@database_sync_to_async
-	def get_player(self, name):
-		self.player2 = Player.objects.get(username=name)
+	async def update_match(self, match, player_id):
+		match = await self.update_match_db(match, player_id)
+		await self.add_to_group(match, player_id)
+		await self.send_state(match)
 
 	async def match_start(self, event):
-		print(self.channel_name, "receveived match_start info.\n", event, file=sys.stderr)
-		if not self.player2:
-			self.player2 = self.get_player(event['player2'])
+		if (self.player2 == None):
+			self.player2 = await self.get_player(event['player2id'])
+
 		await self.send(text_data=json.dumps({ 'type': 'match_start',
 										'status': event['status'],
 										'player1': event['player1'],
@@ -104,10 +113,17 @@ class MatchManager(AsyncWebsocketConsumer):
 		
 	async def match_update(self, event):
 		status = event["status"]
-		await self.send(text_data=json.dumps({
-			'type': 'match_state',
-			'status': status}))
+		await self.send(text_data=json.dumps({'status': status}))
 
+#===========================================================
+
+	async def send_status(self, match):
+		await self.channel_layer.group_send(
+			f"match_{match.id}",
+			{	'type': 'match.update',
+				'status': 'waiting'
+			})
+		
 	async def game_state(self, event):
 		await self.send(text_data=json.dumps({'type': event["info"],
 											'ball': event["ball"],
@@ -116,6 +132,6 @@ class MatchManager(AsyncWebsocketConsumer):
 											'player1_score': event["player1_score"],
 											'player1_scorebo': event["player1_scorebo"],
 											'player2_score': event["player2_score"],
-											'player2_score': event["player2_scorebo"],
+											'player2_scorebo': event["player2_scorebo"],
 											'round_nb': event["round_nb"],
 											'status': event['status']}))

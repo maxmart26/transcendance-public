@@ -4,6 +4,8 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.translation import gettext_lazy as _
 
+from myapp.game.Pong import PongGame
+
 
 class PlayerManager(BaseUserManager):
     def create_user(self, username, password=None, email=None, **extra_fields):
@@ -28,7 +30,7 @@ class PlayerManager(BaseUserManager):
 
 
 class Player(AbstractBaseUser, PermissionsMixin):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=20, unique=True)
     password = models.CharField(_('password'), max_length=128)
     email = models.EmailField(max_length=128, unique=True)
@@ -58,6 +60,7 @@ class Match(models.Model):
     player2 = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=20, default='waiting')
     difficulty = models.CharField(max_length=6, default='medium')
+    game = PongGame()
 
     def __str__(self):
         return str(self.id)

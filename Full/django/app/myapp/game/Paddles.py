@@ -12,21 +12,21 @@ class Paddle:
 
 		self.vy = 0
 
-	def reset(self):
+	async def reset(self):
 		self.y = FIELD_HEIGHT / 2 - (PADDLE_HEIGHT / 2)
 		self.vy = 0
 		self.score = 0
 
-	def still(self):
+	async def still(self):
 		self.vy = 0
 
-	def move_up(self):
+	async def move_up(self):
 		self.vy = -PADDLE_SPEED
 
-	def move_down(self):
+	async def move_down(self):
 		self.vy = PADDLE_SPEED
 
-	def move(self):
+	async def move(self):
 		self.y += self.vy
 
 		if (self.y + PADDLE_HEIGHT) >= FIELD_HEIGHT:

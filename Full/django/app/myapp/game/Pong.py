@@ -6,6 +6,8 @@ from .Values import *
 from .Ball import Ball
 from .Paddles import Paddle
 
+from channels.layers import get_channel_layer
+
 class Player:
 	def __init__(self, side):
 		self.paddle = Paddle(side)
@@ -13,20 +15,23 @@ class Player:
 		self.score_bo = 0
 
 class PongGame():
-	def __init__(self, difficulty):
+	def __init__(self):
 		self.player1 = Player('left')
 		self.player2 = Player('right')
-		self.ball = Ball(difficulty)
 		self.status = 'playing'
 		self.round_nb = 1
-		self.difficulty = difficulty
 
-	async def play(self):
+	async def play(self, difficulty, match):
+		self.difficulty = difficulty
+		self.ball = Ball(self.difficulty)
+		self.match = match
+		self.channel_layer = get_channel_layer()
+
 		while self.status != 'over':
 
-			self.player1.paddle.move()
-			self.player2.paddle.move()
-			self.ball.move(self.player1.paddle, self.player2.paddle)
+			await self.player1.paddle.move()
+			await self.player2.paddle.move()
+			await self.ball.move(self.player1.paddle, self.player2.paddle)
 
 			await self.check_score()
 			if (self.player1.score >= 2 or self.player2.score >= 2):
@@ -35,23 +40,18 @@ class PongGame():
 				await self.send_state()
 				await asyncio.sleep(1/TICK_RATE)
 
-	async def receive(self, text_data):
-		data_json = json.loads(text_data)
-
-		if data_json.get('type') == 'action':
-			action = data_json.get('action')
-			if action == 'move_up':
-				self.player1.paddle.move_up() if data_json.get('player_nb' == '1') else self.player2.paddle.move_up()
-			elif action == 'move_down':
-				self.player1.paddle.move_down() if data_json.get('player_nb' == '1') else self.player2.paddle.move_down()
-			elif action == 'noo':
-				self.player1.paddle.still() if data_json.get('player_nb' == '1') else self.player2.still()
-			await self.send_state()
+	async def action(self, action, player):
+		if action == 'move_up':
+			await self.player1.paddle.move_up() if player == '1' else self.player2.paddle.move_up()
+		elif action == 'move_down':
+			await self.player1.paddle.move_down() if player == '1' else self.player2.paddle.move_down()
+		elif action == 'noo':
+			await self.player1.paddle.still() if player == '1' else self.player2.paddle.still()
+		await self.send_state()
 
 	async def send_state(self):
 		await self.channel_layer.group_send(
-						self.group_name,
-			{	'type': 'game.state',
+			f"match_{self.match.id}",({	'type': 'game.state',
 				'info': 'game_state',
 				"ball": {"x": self.ball.x, "y": self.ball.y},
 		   		"player1_y": self.player1.paddle.y,
@@ -62,10 +62,11 @@ class PongGame():
 				"player2_scorebo": self.player2.score_bo,
 				"round_nb": self.round_nb,
 				'status': self.status
-			})
+			}))
+
 
 	async def reset_round(self):
-		self.player1.paddle.reset()
+		await self.player1.paddle.reset()
 		self.player2.paddle.reset()
 		self.ball.reset(self.difficulty)
 		await self.send_state()
@@ -88,11 +89,11 @@ class PongGame():
 		
 	async def end_game(self):
 		self.status = 'over'
-		self.winner = self.player.name
-		if (self.player2.score > self.player.score):
-			self.winner = self.player2.name
+		self.winner = '2' 
+		if (self.player2.score > self.player1.score):
+			self.winner = '1'
 		await self.channel_layer.group_send(
-						self.group_name,
+						f"match_{self.match.id}",
 			{	'type': 'game.over',
 				'info': 'game_over',
 				"status": 'over',

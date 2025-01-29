@@ -272,7 +272,7 @@ function init_game(gameData)
 	console.log("Difficulty: " + gameData.difficulty);
 	console.log("Player_id: " + player_id);
 
-	const socket = new WebSocket('wss://' + window.location.host + '/ws/game/' + gameData.matchID + '/');
+	const socket = new WebSocket('ws://' + window.location.host + '/ws/game/' + gameData.matchID + '/');
 
 	socket.onopen = function(e) {
 		console.log("WebSocket state open");
