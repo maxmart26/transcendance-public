@@ -13,11 +13,13 @@ class Player:
 		self.score_bo = 0
 
 class PongGame():
-	def __init__(self):
+	def __init__(self, difficulty):
 		self.player1 = Player('left')
 		self.player2 = Player('right')
+		self.ball = Ball(difficulty)
 		self.status = 'playing'
 		self.round_nb = 1
+		self.difficulty = difficulty
 
 	async def play(self):
 		while self.status != 'over':
@@ -70,17 +72,17 @@ class PongGame():
 
 	async def check_score(self):
 		if self.ball.x <= 0:
-			self.player2.paddle.score += 1
+			self.player2.score += 1
 			self.ball.reset(self.difficulty)
 		elif self.ball.x + BALL_SIZE >= FIELD_WIDTH:
-			self.player1.paddle.score += 1
+			self.player1.score += 1
 			self.ball.reset(self.difficulty)
 
-		if (self.player1.paddle.score >= 7 or self.player2.paddle.score >= 7):
+		if (self.player1.score >= 7 or self.player2.score >= 7):
 			self.round_nb += 1
-			if (self.player1.paddle.score >= 7):
+			if (self.player1.score >= 7):
 				self.player1.score_bo += 1
-			if (self.player2.paddle.score >= 7):
+			if (self.player2.score >= 7):
 				self.player2.score_bo += 1
 			await self.reset_round()
 		
