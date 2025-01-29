@@ -578,19 +578,17 @@ function getCookie(name) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    
+    if (document.getElementById("settings-page")) {
     let session = getCookie("user_id");
     console.log("User ID:", session);
-
-    fetch('http://localhost:8080/user_id/')
+    let url = "http://localhost:8080/user/" + session +'/';
+    console.log(url);
+    fetch(url)
         .then(response => response.json())
         .then(data => {
-            const articlesList = document.getElementById("articles-list");
-            data.articles.forEach(article => {
-                const li = document.createElement("li");
-                li.innerHTML = `<h2>${article.titre}</h2><p>${article.contenu}</p><small>Publié le : ${article.date_publication}</small>`;
-                articlesList.appendChild(li);
-            });
+            console.log("User ID from API:", data);
         })
-        .catch(error => console.error("Erreur lors du chargement des articles :", error));
-});
+        
+        .catch(error => console.error("Erreur lors du chargement des param du user_id :", error));
+    }
+    });
