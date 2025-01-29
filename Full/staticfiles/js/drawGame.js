@@ -1,22 +1,24 @@
-this.canvas = document.querySelector('canvas');
-this.context = this.canvas.getContext('2d');
+function launchGame() {
+const gameContainer = document.querySelector('#online-game-container');
+const canvas = gameContainer.querySelector('canvas');
+const context = canvas.getContext('2d');
 
-this.canvas.width = 1400;
-this.canvas.height = 1000;
-this.color = '#281f79'
+canvas.width = 1400;
+canvas.height = 1000;
+const color = '#281f79'
 
-this.canvas.style.width = (this.canvas.width / 2) + 'px';
-this.canvas.style.height = (this.canvas.height / 2) + 'px';
+canvas.style.width = (canvas.width / 2) + 'px';
+canvas.style.height = (canvas.height / 2) + 'px';
 
 // Paramètres initiaux (seront mis à jour par les données du WebSocket)
-ball_size = 20;
-paddle_height = 120;
-paddle_width = 15; 
+const ball_size = 20;
+const paddle_height = 120;
+const paddle_width = 15; 
 
-let ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height / 2 - (ball_size / 2)};
+let ball = {x: canvas.width / 2 - (ball_size / 2), y: canvas.height / 2 - (ball_size / 2)};
 
-let player1Y = this.canvas.height / 2 - (paddle_height / 2);
-let player2Y = this.canvas.height / 2 - (paddle_height / 2);
+let player1Y = canvas.height / 2 - (paddle_height / 2);
+let player2Y = canvas.height / 2 - (paddle_height / 2);
 let p1_score = 0
 let p2_score = 0
 let round_nb = 0
@@ -24,32 +26,32 @@ let round_nb = 0
 // Fonction pour dessiner le jeu
 function draw() {
     // Clear the Canvas
-	this.context.clearRect(
+	context.clearRect(
 		0,
 		0,
-		this.canvas.width,
-		this.canvas.height
+		canvas.width,
+		canvas.height
 	);
 
 	// Set the fill style to black
-	this.context.fillStyle = this.color;
+	context.fillStyle = color;
 
 	// Draw the background
-	this.context.fillRect(
+	context.fillRect(
 		0,
 		0,
-		this.canvas.width,
-		this.canvas.height
+		canvas.width,
+		canvas.height
 	);
 
-	this.context.fillStyle = '#ff79d1';
-	this.context.shadowOffsetX = -1;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 15;
-	this.context.shadowColor = '#ff79d1';
+	context.fillStyle = '#ff79d1';
+	context.shadowOffsetX = -1;
+	context.shadowOffsetY = 0;
+	context.shadowBlur = 15;
+	context.shadowColor = '#ff79d1';
 
 	// Draw the Player1
-	this.context.fillRect(
+	context.fillRect(
 		50,
 		player1Y,
 		paddle_width,
@@ -57,79 +59,79 @@ function draw() {
 	);
 
 	// Draw the Player2
-	this.context.fillRect(
-		this.canvas.width - 50 - paddle_width,
+	context.fillRect(
+		canvas.width - 50 - paddle_width,
 		player2Y,
 		paddle_width,
 		paddle_height
 	);
 
-	this.context.shadowOffsetX = 0;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 0;
+	context.shadowOffsetX = 0;
+	context.shadowOffsetY = 0;
+	context.shadowBlur = 0;
 
 	// Draw the net (Line in the middle)
-	this.context.beginPath();
-	this.context.setLineDash([7, 15]);
-	this.context.moveTo((this.canvas.width / 2), this.canvas.height - 140);
-	this.context.lineTo((this.canvas.width / 2), 140);
-	this.context.lineWidth = 10;
-	this.context.strokeStyle = '#4bdae0';
-	this.context.stroke();
+	context.beginPath();
+	context.setLineDash([7, 15]);
+	context.moveTo((canvas.width / 2), canvas.height - 140);
+	context.lineTo((canvas.width / 2), 140);
+	context.lineWidth = 10;
+	context.strokeStyle = '#4bdae0';
+	context.stroke();
 
 	// Set the default canvas font and align it to the center
-	this.context.font = '100px Impact';
-	this.context.textAlign = 'center';
+	context.font = '100px Impact';
+	context.textAlign = 'center';
 
-	this.context.fillStyle = '#ffffff';
-	this.context.shadowOffsetX = -1;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 15;
-	this.context.shadowColor = '#ffffff';
+	context.fillStyle = '#ffffff';
+	context.shadowOffsetX = -1;
+	context.shadowOffsetY = 0;
+	context.shadowBlur = 15;
+	context.shadowColor = '#ffffff';
 
 	// Draw the Ball
-	this.context.fillRect(
+	context.fillRect(
 		ball.x,
 		ball.y,
 		ball_size,
 		ball_size
 	);
 
-	this.context.shadowOffsetX = 0;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 0;
+	context.shadowOffsetX = 0;
+	context.shadowOffsetY = 0;
+	context.shadowBlur = 0;
 
 	// Draw the players score
-	this.context.fillText(
+	context.fillText(
 		p1_score, // Left score
-		(this.canvas.width / 2) - 300,
+		(canvas.width / 2) - 300,
 		200
 	);
-	this.context.fillText(
+	context.fillText(
 		p2_score, // Right score
-		(this.canvas.width / 2) + 300,
+		(canvas.width / 2) + 300,
 		200
 	);
 
-	this.context.font = '50px Impact';
-	this.context.textAlign = 'center';
+	context.font = '50px Impact';
+	context.textAlign = 'center';
 
-	this.context.fillStyle = '#eba811';
-	this.context.shadowOffsetX = -1;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 15;
-	this.context.shadowColor = '#eba811';
+	context.fillStyle = '#eba811';
+	context.shadowOffsetX = -1;
+	context.shadowOffsetY = 0;
+	context.shadowBlur = 15;
+	context.shadowColor = '#eba811';
 
 	// Draw the current round number
-	this.context.fillText(
+	context.fillText(
 		"Round " + round_nb,
-		(this.canvas.width / 2),
+		(canvas.width / 2),
 		100
 	);
 
-	this.context.shadowOffsetX = 0;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 0;
+	context.shadowOffsetX = 0;
+	context.shadowOffsetY = 0;
+	context.shadowBlur = 0;
 }
 
 // WebSocket
@@ -184,3 +186,17 @@ document.addEventListener('keyup', (event) => {
 
 // Dessin initial
 draw();
+
+// Difficulty selection
+const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+difficultyButtons.forEach(button => {
+	button.addEventListener('click', (event) => {
+		const difficulty = event.target.id; // 'easy', 'medium', 'hard'
+		socket.send(JSON.stringify({ action: 'set_difficulty', difficulty }));
+
+		// Highlight the selected difficulty
+		difficultyButtons.forEach(btn => btn.classList.remove('selected'));
+		event.target.classList.add('selected');
+	});
+});
+}

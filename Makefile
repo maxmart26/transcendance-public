@@ -22,8 +22,15 @@ test:
 re:
 	docker compose -f ./Full/docker-compose.yml up -d --build --force-recreate
 
+test:
+	docker compose -f ./Full/docker-compose.yml up --build
+
 clean:
 	docker system prune -af
+
+# clean-db:
+#     docker compose -f ./Full/docker-compose.yml down -v
+#     #Attention en cleanant la db il faut refaire les migrations Django
 
 .PHONY:
 	all down re clear
