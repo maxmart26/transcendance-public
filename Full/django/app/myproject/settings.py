@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
+from datetime import timedelta
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +30,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +54,8 @@ INSTALLED_APPS = [
     'drf_yasg', 
 	'channels',
     'myapp',
+    'social_django',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'myproject.urls'
@@ -82,9 +98,9 @@ import os
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'yourdatabase'),
-        'USER': os.getenv('POSTGRES_USER', 'yourusername'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'yourpassword'),
+        'NAME': os.getenv('POSTGRES_DB', 'new_Post'),
+        'USER': os.getenv('POSTGRES_USER', 'maxime'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'maxou'),
         'HOST': os.getenv('POSTGRES_HOST', 'db'),
         'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
@@ -100,9 +116,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Répertoire où les fichiers ser
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
+    'myapp.backend_42.Intra42OAuth2',  # Backend spécifique à l'API 42
+    'django.contrib.auth.backends.ModelBackend',  # Authentification classique
 ]
-
+CLIENT_ID = config('INTRA_ID')
+CLIENT_SECRET = config('INTRA_SECRET')
+REDIRECT_URI = config('INTRA_REDIRECT_URI')
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -171,3 +190,16 @@ CHANNEL_LAYERS = {
 }
 
 ASGI_APPLICATION = 'myproject.routing.application'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}

@@ -3,3 +3,8 @@ djangorestframework
 drf-yasg>=1.21.4
 psycopg2>=2.9.0
 Pillow>=9.0
+social-auth-app-django>=5.0.0
+social-auth-core>=4.4.0
+requests>=2.25.1
+python-decouple
+djangorestframework-simplejwt
