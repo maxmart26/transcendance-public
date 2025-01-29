@@ -415,11 +415,13 @@ document.querySelectorAll('a.nav-link').forEach(link => {
 });
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById("login-page")) {
-    document.getElementById("enter-button").addEventListener("click", async function (e) {
-    e.preventDefault(); // Empêche le comportement par défaut du bouton
-
+// document.addEventListener('DOMContentLoaded', () => {
+//     if (document.getElementById("login-page")) {
+//     document.getElementById("enter-button").addEventListener("click", async function (e) {
+//     e.preventDefault(); // Empêche le comportement par défaut du bouton
+document.addEventListener("click", async function (event) {
+    if (event.target && event.target.id === "enter-button") {
+        event.preventDefault();
     // Récupère les valeurs du formulaire
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -453,15 +455,17 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
         errorMessage.textContent = "Server error. Please try again later.";
     }
-    
+}   
 });
-    }
-}); 
 
-document.addEventListener('DOMContentLoaded', () => {
+//     }
+// }); 
+
+document.addEventListener("click", async function (event) {
+    
+// document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById("create-account-page")) {
-    
-    
+
     const imageUpload = document.getElementById('imageUpload');
     const imagePreview = document.getElementById('imagePreview');
     const errorMessage = document.getElementById('account-error');
@@ -487,12 +491,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    
-
-    
-    saveButton.addEventListener("click", async function (e) {
+    if (event.target && event.target.id === "save-button") {
+        event.preventDefault();
+    // saveButton.addEventListener("click", async function (e) {
    
-    e.stopPropagation(); // Empêche le comportement par défaut du bouton
+    // e.stopPropagation(); // Empêche le comportement par défaut du bouton
     
     
     const _profileImage = document.getElementById('imageUpload');
@@ -551,10 +554,11 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMessage.textContent = "An error occurred. Please try again.";
     }
             
-
-});
     }
+}
 });
+//     }
+// });
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById("online-game-page")) {
@@ -572,6 +576,7 @@ function getCookie(name) {
     }
     return null; // Retourne `null` si le cookie n'existe pas
 }
+
 
 document.addEventListener("DOMContentLoaded", function() {
     if (document.getElementById("settings-page")) {
@@ -664,15 +669,21 @@ function deleteCookie(name) {
     document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+
+document.addEventListener("click", async function (event) {
+    
+// document.addEventListener("DOMContentLoaded", function() {
     if (document.getElementById("settings-page")) {
-        document.getElementById("logout").addEventListener("click", async function (e) {
+        if (event.target && event.target.id === "logout") {
+            event.preventDefault();
+        // document.getElementById("logout").addEventListener("click", async function (e) {
             console.log("Cookies restants avand delete :", document.cookie);
             deleteCookie("user_id");
             console.log("Cookies restants apres delete :", document.cookie);
             navigateTo("login-page");
-        });
+        // });
     }
+}
 });
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -683,4 +694,13 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 });
+
+function reloadScript(url) {
+    let oldScript = document.querySelector("script[src^='" + url + "']");
+    if (oldScript) oldScript.remove(); // Supprime l'ancien script
+
+    let newScript = document.createElement("script");
+    newScript.src = url + "?v=" + new Date().getTime(); // Ajoute un cache-buster
+    document.body.appendChild(newScript);
+}
     
