@@ -33,6 +33,7 @@ def homepage(request):
 waiting_games = {}
 
 def create_game(request, difficulty):
+    #get les id en cookies et les ajouter (peut etre mettre un Match dedans plutot)
     if waiting_games:
         match_id = random.choice(list(waiting_games))
         waiting_games.pop(match_id)
@@ -40,6 +41,9 @@ def create_game(request, difficulty):
         match_id = str(uuid.uuid4())
         waiting_games[match_id] = 1
     return redirect(f'/game/{difficulty}/{match_id}/')
+
+# games = {}
+# mtach id en key, PongGame en valeur ?
     
 def game(request, difficulty, match_id):
     return render(request, 'game-page.html', {'match_id': match_id, 'difficulty': difficulty})
