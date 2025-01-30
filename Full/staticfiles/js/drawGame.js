@@ -19,6 +19,7 @@ let round_nb = 0
 this.game_status = 'waiting'
 let winner = 'Michel'
 
+let match_id
 let player_id = '1'; // rcup l'info en cookies
 let player_nb = 0;
 
@@ -204,16 +205,15 @@ function draw(status) {
 
 function start_game(socket)
 {	
-	draw('playing');
 	socket.send(JSON.stringify({
-		'type': 'game_create',
-		'match_id': gameData.matchID,
-		'difficulty': gameData.difficulty,
-		'host': player1.id
+		'type': 'match_start',
+		'match_id': gameData.matchID
 	}))
-
+	draw('playing');
+	
 	socket.onmessage = function(event) {
 		const data = JSON.parse(event.data);
+		console.log("Received new " + data.type + "\n");
 
 		switch (data.type) {
 			case 'game_state':
@@ -266,46 +266,40 @@ function start_game(socket)
 function init_game(gameData)
 {
 	let status = gameData.status
+	draw('waiting');
 
 	player_id = getCookieValue('user_id')
 	console.log("Match_id: " + gameData.matchID);
 	console.log("Difficulty: " + gameData.difficulty);
 	console.log("Player_id: " + player_id);
 
-	const socket = new WebSocket('ws://' + window.location.host + '/ws/game/' + gameData.matchID + '/');
+	const socket = new WebSocket('wss://' + window.location.host + '/ws/game/' + gameData.matchID + '/');
 
 	socket.onopen = function(e) {
 		console.log("WebSocket state open");
-		socket.send(JSON.stringify({
-			'type': 'match_init',
-			'match_id': gameData.matchID,
-			'difficulty': gameData.difficulty,
-			'player_id': player_id
-		}))
 	};
 
 	socket.onmessage = function(event) {
 		const data = JSON.parse(event.data);
 		status = data.status;
 
-		console.log("Received new " + data.type + " :\nstatus: " + status);
-
-		if (status === 'waiting')
-			draw('waiting');
-		
-		if (data.type === 'match_start')
+		console.log("Received new " + data.type + "\n");
+		if (data.type === 'match_setup')
 		{
-			player1.id = data.player1id;
-			player1.name = data.player1;
-			player1.color = data.player1color;
+			match_id = data.match_id
+			difficulty = data.difficulty
+
+			player1.id = data.player1;
+			player1.name = data.player1_name;
+			player1.color = data.player1_color;
 			player1.y = 1000 / 2 - (120 / 2);
 			player1.side = 'left';
 			player1.score = 0;
 			player1.score_bo = 0;
 			
-			player2.id = data.player2id;
-			player2.name = data.player2;
-			player2.color = data.player2color;
+			player2.id = data.player2;
+			player2.name = data.player2_name;
+			player2.color = data.player2_color;
 			player2.y = 1000 / 2 + (120 / 2);
 			player2.side = 'right'
 			player2.score = 0;
@@ -313,7 +307,7 @@ function init_game(gameData)
 
 			player_nb = (player1.id == player_id ? '1':'2');
 			console.log("game is all set");
-			console.log("Player1: " + player1.name + " (host)");
+			console.log("Player1: " + player1.name);
 			console.log("Player2: " + player2.name);
 			start_game(socket);
 		}

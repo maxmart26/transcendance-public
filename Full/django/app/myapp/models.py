@@ -60,7 +60,6 @@ class Match(models.Model):
     player2 = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=20, default='waiting')
     difficulty = models.CharField(max_length=6, default='medium')
-    game = PongGame()
 
     def __str__(self):
         return str(self.id)

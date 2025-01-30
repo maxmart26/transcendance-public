@@ -25,9 +25,12 @@ class PongGame():
 		self.channel_group = "match_" + match_id
 		self.channel_layer = get_channel_layer()
 
-	async def play(self, difficulty, match):
-		while self.status != 'over':
+		self.start_counter = 0
 
+	async def play(self):
+		self.start_counter += 1
+		if self.start_counter == 2: print("Game is starting !\n", file=sys.stderr)
+		while self.status != 'over' and self.start_counter == 2:
 			self.player1.paddle.move()
 			self.player2.paddle.move()
 			self.ball.move(self.player1.paddle, self.player2.paddle)
@@ -64,13 +67,13 @@ class PongGame():
 			}))
 
 
-	async def reset_round(self):
+	def reset_round(self):
 		self.player1.paddle.reset()
 		self.player2.paddle.reset()
 		self.ball.reset(self.difficulty)
 		self.send_state()
 
-	async def check_score(self):
+	def check_score(self):
 		if self.ball.x <= 0:
 			self.player2.score += 1
 			self.ball.reset(self.difficulty)
@@ -84,7 +87,7 @@ class PongGame():
 				self.player1.score_bo += 1
 			if (self.player2.score >= 7):
 				self.player2.score_bo += 1
-			await self.reset_round()
+			self.reset_round()
 		
 	async def end_game(self):
 		self.status = 'over'
