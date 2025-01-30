@@ -15,43 +15,42 @@ class Player:
 		self.score_bo = 0
 
 class PongGame():
-	def __init__(self):
+	def __init__(self, match_id, difficulty):
 		self.player1 = Player('left')
 		self.player2 = Player('right')
 		self.status = 'playing'
 		self.round_nb = 1
-
-	async def play(self, difficulty, match):
 		self.difficulty = difficulty
 		self.ball = Ball(self.difficulty)
-		self.match = match
+		self.channel_group = "match_" + match_id
 		self.channel_layer = get_channel_layer()
 
+	async def play(self, difficulty, match):
 		while self.status != 'over':
 
-			await self.player1.paddle.move()
-			await self.player2.paddle.move()
-			await self.ball.move(self.player1.paddle, self.player2.paddle)
+			self.player1.paddle.move()
+			self.player2.paddle.move()
+			self.ball.move(self.player1.paddle, self.player2.paddle)
 
-			await self.check_score()
+			self.check_score()
 			if (self.player1.score >= 2 or self.player2.score >= 2):
-				await self.end_game()
+				self.end_game()
 			else:
-				await self.send_state()
+				self.send_state()
 				await asyncio.sleep(1/TICK_RATE)
 
 	async def action(self, action, player):
 		if action == 'move_up':
-			await self.player1.paddle.move_up() if player == '1' else self.player2.paddle.move_up()
+			self.player1.paddle.move_up() if player == '1' else self.player2.paddle.move_up()
 		elif action == 'move_down':
-			await self.player1.paddle.move_down() if player == '1' else self.player2.paddle.move_down()
+			self.player1.paddle.move_down() if player == '1' else self.player2.paddle.move_down()
 		elif action == 'noo':
-			await self.player1.paddle.still() if player == '1' else self.player2.paddle.still()
+			self.player1.paddle.still() if player == '1' else self.player2.paddle.still()
 		await self.send_state()
 
 	async def send_state(self):
 		await self.channel_layer.group_send(
-			f"match_{self.match.id}",({	'type': 'game.state',
+			self.channel_group,({	'type': 'game.state',
 				'info': 'game_state',
 				"ball": {"x": self.ball.x, "y": self.ball.y},
 		   		"player1_y": self.player1.paddle.y,
@@ -66,10 +65,10 @@ class PongGame():
 
 
 	async def reset_round(self):
-		await self.player1.paddle.reset()
+		self.player1.paddle.reset()
 		self.player2.paddle.reset()
 		self.ball.reset(self.difficulty)
-		await self.send_state()
+		self.send_state()
 
 	async def check_score(self):
 		if self.ball.x <= 0:
@@ -93,7 +92,7 @@ class PongGame():
 		if (self.player2.score > self.player1.score):
 			self.winner = '1'
 		await self.channel_layer.group_send(
-						f"match_{self.match.id}",
+						self.channel_group,
 			{	'type': 'game.over',
 				'info': 'game_over',
 				"status": 'over',

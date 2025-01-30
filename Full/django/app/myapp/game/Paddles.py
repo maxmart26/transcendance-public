@@ -11,22 +11,24 @@ class Paddle:
 			self.x = FIELD_WIDTH - 50 - PADDLE_WIDTH
 
 		self.vy = 0
+		self.score = 0
+		self.free = True
 
-	async def reset(self):
+	def reset(self):
 		self.y = FIELD_HEIGHT / 2 - (PADDLE_HEIGHT / 2)
 		self.vy = 0
 		self.score = 0
 
-	async def still(self):
+	def still(self):
 		self.vy = 0
 
-	async def move_up(self):
+	def move_up(self):
 		self.vy = -PADDLE_SPEED
 
-	async def move_down(self):
+	def move_down(self):
 		self.vy = PADDLE_SPEED
 
-	async def move(self):
+	def move(self):
 		self.y += self.vy
 
 		if (self.y + PADDLE_HEIGHT) >= FIELD_HEIGHT:

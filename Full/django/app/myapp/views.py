@@ -9,6 +9,7 @@ from .serializers import PlayerSerializer
 from rest_framework.views import APIView
 from django.shortcuts import render, redirect
 from .models import Match
+from .game.Pong import PongGame
 
 import sys
 import uuid
@@ -31,19 +32,20 @@ def homepage(request):
     return render(request, 'index.html')
 
 waiting_games = {}
+games = {}
 
 def create_game(request, difficulty):
-    #get les id en cookies et les ajouter (peut etre mettre un Match dedans plutot)
+    user_id = request.COOKIES.get('user_id')
+
     if waiting_games:
         match_id = random.choice(list(waiting_games))
+        game = Match(id=match_id, player1=waiting_games[match_id], player2=user_id)
+        games[game] = PongGame(match_id, difficulty)
         waiting_games.pop(match_id)
     else:
         match_id = str(uuid.uuid4())
-        waiting_games[match_id] = 1
+        waiting_games[match_id] = user_id
     return redirect(f'/game/{difficulty}/{match_id}/')
-
-# games = {}
-# mtach id en key, PongGame en valeur ?
     
 def game(request, difficulty, match_id):
     return render(request, 'game-page.html', {'match_id': match_id, 'difficulty': difficulty})
