@@ -345,4 +345,4 @@ function init_game()
 	socket.onerror = function(err) {
 		console.error('Error WebSocket :', err);
 	};
-}
+}}
