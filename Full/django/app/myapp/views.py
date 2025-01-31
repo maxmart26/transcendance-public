@@ -38,6 +38,12 @@ games = {}
 
 def create_game(request, difficulty):
     user_id = request.COOKIES.get('user_id')
+    if not user_id:
+        try:
+            player = Player.objects.get(username='Unknown')
+        except:
+            player = Player.objects.create(id=uuid.uuid4(), username='Unknown')
+        user_id = player.id
 
     if waiting_games:
         match_id = random.choice(list(waiting_games))
@@ -56,8 +62,9 @@ def set_matchid_cookie(response, match_id):
     value=str(match_id),
     httponly=False,     
     secure=True,
-    samesite='Strict',
+    samesite='None',
     max_age=3600,
+    path='/'
     )
 
 async def game(request, match_id):
