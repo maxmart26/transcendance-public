@@ -297,7 +297,7 @@ function init_game()
 	console.log("Match_id: " + match_id);
 	console.log("Player_id: " + player_id);
 
-	const socket = new WebSocket('wss://' + window.location.host + '/ws/game/' + match_id + '/');
+	const socket = new WebSocket('ws://' + window.location.host + '/ws/game/' + match_id + '/');
 
 	socket.onopen = function(e) {
 		console.log("WebSocket state open");
