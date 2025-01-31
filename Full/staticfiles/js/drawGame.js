@@ -207,8 +207,9 @@ function start_game(socket)
 {	
 	socket.send(JSON.stringify({
 		'type': 'match_start',
-		'match_id': gameData.matchID
+		'match_id': self.match_id
 	}))
+	console.log("Match starts.\n");
 	draw('playing');
 	
 	socket.onmessage = function(event) {
@@ -263,17 +264,16 @@ function start_game(socket)
 	});
 }
 
-function init_game(gameData)
+function init_game()
 {
-	let status = gameData.status
 	draw('waiting');
 
 	player_id = getCookieValue('user_id')
-	console.log("Match_id: " + gameData.matchID);
-	console.log("Difficulty: " + gameData.difficulty);
+	match_id = getCookieValue('match_id')
+	console.log("Match_id: " + match_id);
 	console.log("Player_id: " + player_id);
 
-	const socket = new WebSocket('wss://' + window.location.host + '/ws/game/' + gameData.matchID + '/');
+	const socket = new WebSocket('wss://' + window.location.host + '/ws/game/' + match_id + '/');
 
 	socket.onopen = function(e) {
 		console.log("WebSocket state open");
@@ -281,7 +281,6 @@ function init_game(gameData)
 
 	socket.onmessage = function(event) {
 		const data = JSON.parse(event.data);
-		status = data.status;
 
 		console.log("Received new " + data.type + "\n");
 		if (data.type === 'match_setup')

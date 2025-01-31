@@ -4,8 +4,6 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.translation import gettext_lazy as _
 
-from myapp.game.Pong import PongGame
-
 
 class PlayerManager(BaseUserManager):
     def create_user(self, username, password=None, email=None, **extra_fields):

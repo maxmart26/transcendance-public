@@ -10,10 +10,12 @@ from rest_framework.views import APIView
 from django.shortcuts import render, redirect
 from .models import Match
 from .game.Pong import PongGame
+from asgiref.sync import sync_to_async
 
 import sys
 import uuid
 import random
+import asyncio
 
 @api_view(["GET"])
 @permission_classes([IsAdminOrReadOnly])
@@ -40,15 +42,28 @@ def create_game(request, difficulty):
     if waiting_games:
         match_id = random.choice(list(waiting_games))
         game = Match.objects.create(id=match_id, player1=waiting_games[match_id], player2=user_id)
-        games[game.id] = PongGame(match_id, difficulty)
         waiting_games.pop(match_id)
+        games[str(game.id)] = PongGame(match_id, difficulty)
     else:
-        match_id = str(uuid.uuid4())
+        match_id = uuid.uuid4()
         waiting_games[match_id] = user_id
-    return redirect(f'/game/{difficulty}/{match_id}/')
-    
-def game(request, difficulty, match_id):
-    return render(request, 'game-page.html', {'match_id': match_id, 'difficulty': difficulty})
+    return redirect(f'/game/{match_id}/')
+
+@sync_to_async
+def set_matchid_cookie(response, match_id):
+    response.set_cookie(
+    key='match_id',
+    value=str(match_id),
+    httponly=False,     
+    secure=True,
+    samesite='Strict',
+    max_age=3600,
+    )
+
+async def game(request, match_id):
+    response = render(request, 'game-page.html')
+    await set_matchid_cookie(response, match_id)
+    return response
 
 from .serializers import PlayerAll
 

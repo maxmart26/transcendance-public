@@ -33,11 +33,14 @@ class MatchManager(AsyncWebsocketConsumer):
 		
 		if (type == 'match_start'):
 			self.game = games[str(self.match.id)]
-			await asyncio.create_task(self.game.play())
+			self.match.status = 'playing'
+			# if self.match.status == 'waiting': self.match.status = 'starting'
+			# elif self.match.status == 'starting': self.match.status == 'playing'
+			print("match is ", self.match.status, "\n", file=sys.stderr)
+			asyncio.create_task(self.game.game_starter(self.channel_layer))
 
 		elif type == 'action':
-			action = info_json.get('action')
-			await self.game.action(action, '1') if info_json.get('player') == self.player1.id else self.game.action(action, '2')
+			await self.game.action(info_json.get('action'), info_json.get('player_nb'))
 
 #===========================================================
 
@@ -49,7 +52,7 @@ class MatchManager(AsyncWebsocketConsumer):
 		await self.channel_layer.group_send(
 		f"match_{self.match.id}",
 		{	'type': 'match.setup',
-			'match_id': str(self.match.id),
+			'match_id': self.match.id,
 			'difficulty': self.match.difficulty,
 			'player1': str(self.player1.id),
 			'player1_name': self.player1.username,
@@ -61,7 +64,7 @@ class MatchManager(AsyncWebsocketConsumer):
 
 	async def match_setup(self, event):
 		await self.send(text_data=json.dumps({'type': 'match_setup',
-			'match_id' : event['match_id'],
+			'match_id' : str(event['match_id']),
 			'difficulty' : event['difficulty'],
 			'player1': event["player1"],
 			'player1_name': event["player1_name"],
@@ -72,6 +75,7 @@ class MatchManager(AsyncWebsocketConsumer):
 		}))
 
 	async def game_state(self, event):
+		print("\n\nconsumer received state (", event['ball'],")\n\n")
 		await self.send(text_data=json.dumps({'type': event["info"],
 											'ball': event["ball"],
 											'player1_y': event["player1_y"],
@@ -82,6 +86,13 @@ class MatchManager(AsyncWebsocketConsumer):
 											'player2_scorebo': event["player2_scorebo"],
 											'round_nb': event["round_nb"],
 											'status': event['status']}))
+		
+	async def game_over(self, event):
+		winner = self.player1.username
+		if event['winner'] == '2': winner = self.player2.username
+		await self.send(text_data=json.dumps({'type': event["info"],
+											'status': event['status'],
+											'winner': winner}))
 
 #===========================================================
 
@@ -89,10 +100,10 @@ class MatchManager(AsyncWebsocketConsumer):
 	def get_match(self, match_id):
 		try:
 			match = Match.objects.get(id=match_id)
-			print("Match ", match.id, "found!\n", file=sys.stderr)
+			print("Match ", match.id, "found! (consumer)\n", file=sys.stderr)
 		except Match.DoesNotExist:
 			match = None
-			print("Match ", match_id, "not found, yet.\n", file=sys.stderr)
+			print("Match ", match_id, "not found, yet. (consumer)\n", file=sys.stderr)
 		return match
 		
 
@@ -100,8 +111,8 @@ class MatchManager(AsyncWebsocketConsumer):
 	def get_player(self, player_id):
 		try:
 			player = Player.objects.get(id=player_id)
-			print("Player ", player.id, "found!\n", file=sys.stderr)
+			print("Player ", player.id, "found! (consumer)\n", file=sys.stderr)
 		except Match.DoesNotExist:
 			player = None
-			print("Player ", player_id, "not found, yet.\n", file=sys.stderr)
+			print("Player ", player_id, "not found, yet. (consumer)\n", file=sys.stderr)
 		return player

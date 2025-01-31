@@ -7,12 +7,24 @@ from .Ball import Ball
 from .Paddles import Paddle
 
 from channels.layers import get_channel_layer
+from channels.db import database_sync_to_async
+from myapp.models import Match
 
 class Player:
 	def __init__(self, side):
 		self.paddle = Paddle(side)
 		self.score = 0
 		self.score_bo = 0
+
+@database_sync_to_async
+def get_match(match_id):
+	try:
+		match = Match.objects.get(id=match_id)
+		print("Match ", match.id, "found! (PongGame)\n", file=sys.stderr)
+	except Match.DoesNotExist:
+		match = None
+		print("Match ", match_id, "not found, yet. (PongGame)\n", file=sys.stderr)
+	return match
 
 class PongGame():
 	def __init__(self, match_id, difficulty):
@@ -22,24 +34,29 @@ class PongGame():
 		self.round_nb = 1
 		self.difficulty = difficulty
 		self.ball = Ball(self.difficulty)
-		self.channel_group = "match_" + match_id
-		self.channel_layer = get_channel_layer()
+		self.channel_group = "match_" + str(match_id)
+		self.match_id = match_id
 
 		self.start_counter = 0
 
-	async def play(self):
+	async def game_starter(self, channel_layer):
+		self.channel_layer = channel_layer
 		self.start_counter += 1
-		if self.start_counter == 2: print("Game is starting !\n", file=sys.stderr)
-		while self.status != 'over' and self.start_counter == 2:
+		if self.start_counter == 2:
+			print("Game is starting, have fun!", file=sys.stderr)
+			await self.play()
+
+	async def play(self):
+		while self.status == 'playing':
 			self.player1.paddle.move()
 			self.player2.paddle.move()
 			self.ball.move(self.player1.paddle, self.player2.paddle)
 
 			self.check_score()
-			if (self.player1.score >= 2 or self.player2.score >= 2):
-				self.end_game()
+			if (self.player1.score_bo >= 2 or self.player2.score_bo >= 2):
+				await self.end_game()
 			else:
-				self.send_state()
+				await self.send_state()
 				await asyncio.sleep(1/TICK_RATE)
 
 	async def action(self, action, player):
@@ -66,10 +83,11 @@ class PongGame():
 				'status': self.status
 			}))
 
-
 	def reset_round(self):
 		self.player1.paddle.reset()
+		self.player1.score = 0
 		self.player2.paddle.reset()
+		self.player2.score = 0
 		self.ball.reset(self.difficulty)
 		self.send_state()
 
@@ -101,10 +119,3 @@ class PongGame():
 				"status": 'over',
 				"winner": self.winner,
 			})
-		
-	async def game_over(self, event):
-		print(self.player.nb, " sent game over.", file=sys.stderr)
-		await self.send(text_data=json.dumps({'type': event["info"],
-											'status': event['status'],
-											'winner': event['winner']}))
-		await self.disconnect()

@@ -15,9 +15,6 @@ COPY app/requirements.txt /app/requirements.txt
 # Installer les dépendances Python
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Installer les dépendances Channels et Daphne (websockets)
-RUN pip install channels && pip install daphne
-
 # Copier le reste de l'application
 COPY app /app
 

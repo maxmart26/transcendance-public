@@ -22,25 +22,16 @@
 <body>
 	<h1>ft_PONG</h1>
 	<canvas></canvas>
-	<div id="game-data"
-        data-matchid="{{ match_id }}"
-        data-difficulty="{{ difficulty }}"
-        style="display: none;"></div>
 	<p>C'est bon transcendence c fini.</p>
 
 	{% load static %}
 	<script>
-        const gameDataElement = document.getElementById('game-data');
-        const gameData = {
-            matchID: gameDataElement.dataset.matchid,
-            difficulty: gameDataElement.dataset.difficulty
-        };
         const script = document.createElement('script');
         script.src = "{% static 'js/drawGame.js' %}";
         script.defer = true;
         document.body.appendChild(script);
         script.onload = function() {
-                init_game(gameData);
+                init_game();
         };
     </script>
 </body>
