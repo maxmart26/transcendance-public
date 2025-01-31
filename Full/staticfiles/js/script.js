@@ -118,8 +118,8 @@ const pagesContent = {
               <div class="profile">
                   <div class="recap-infos">
                       <div class="icon">
-                          <div class="people-contour">
-                              <img id="newImagePreview" class="preview" src="static/img/person.png">
+                          <div id="settings-img" class="people-contour">
+                              
                           </div>
                           <div class="file">
                               <div class="upload">
@@ -135,7 +135,6 @@ const pagesContent = {
                           <input type="text" id="email">
                       </form>
                   </div>
-                  <button id="save-settings1" class="save-button">SAVE</button>
               </div>
               <div class="change-password">
                   <p class="settings-password">CHANGE YOUR PASSWORD</p>
@@ -145,9 +144,9 @@ const pagesContent = {
                       <label for="confirm-password" class="password-text">Confirm new password</label>
                       <input type="password" id="confirm-password">
                   </form>
-                  <button id="save-settings2" class="save-button">SAVE</button>
               </div>
-              <button onclick="navigateTo('login-page')" id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
+              <button id="save-settings" class="save-settings">SAVE</button>
+              <button id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
           </div>
       </div>
   `,
@@ -256,9 +255,6 @@ const pagesContent = {
                 </div>
                 <div class="profile-stats">
                 </div>
-            </div>
-            <div class="achievements">
-                <p class="achiev-title">ACHIEVEMENTS (0/7)</p>
             </div>
         </div>
     </div>
@@ -418,11 +414,13 @@ document.querySelectorAll('a.nav-link').forEach(link => {
 });
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById("login-page")) {
-    document.getElementById("enter-button").addEventListener("click", async function (e) {
-    e.preventDefault(); // Empêche le comportement par défaut du bouton
-
+// document.addEventListener('DOMContentLoaded', () => {
+//     if (document.getElementById("login-page")) {
+//     document.getElementById("enter-button").addEventListener("click", async function (e) {
+//     e.preventDefault(); // Empêche le comportement par défaut du bouton
+document.addEventListener("click", async function (event) {
+    if (event.target && event.target.id === "enter-button") {
+        event.preventDefault();
     // Récupère les valeurs du formulaire
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -456,15 +454,17 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
         errorMessage.textContent = "Server error. Please try again later.";
     }
-    
+}   
 });
-    }
-}); 
 
-document.addEventListener('DOMContentLoaded', () => {
+//     }
+// }); 
+
+document.addEventListener("click", async function (event) {
+    
+// document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById("create-account-page")) {
-    
-    
+
     const imageUpload = document.getElementById('imageUpload');
     const imagePreview = document.getElementById('imagePreview');
     const errorMessage = document.getElementById('account-error');
@@ -490,12 +490,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    
-
-    
-    saveButton.addEventListener("click", async function (e) {
+    if (event.target && event.target.id === "save-button") {
+        event.preventDefault();
+    // saveButton.addEventListener("click", async function (e) {
    
-    e.stopPropagation(); // Empêche le comportement par défaut du bouton
+    // e.stopPropagation(); // Empêche le comportement par défaut du bouton
     
     
     const _profileImage = document.getElementById('imageUpload');
@@ -554,10 +553,11 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMessage.textContent = "An error occurred. Please try again.";
     }
             
-
-});
     }
+}
 });
+//     }
+// });
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById("online-game-page")) {
@@ -576,6 +576,7 @@ function getCookie(name) {
     return null; // Retourne `null` si le cookie n'existe pas
 }
 
+
 document.addEventListener("DOMContentLoaded", function() {
     if (document.getElementById("settings-page")) {
     let session = getCookie("user_id");
@@ -586,8 +587,119 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
             console.log("User ID from API:", data);
+            let userID = data.user.id;
+
+            const settings_img = document.getElementById("settings-img");
+                    
+            const li = document.createElement("li");
+            if (data.user.image_avatar !== null)
+                li.innerHTML = `<img id="newImagePreview" class="preview" src=${data.user.image_avatar}>`;
+            else
+            li.innerHTML = `<img id="newImagePreview" class="preview" src=${data.user.image_avatar}>`;
+            settings_img.appendChild(li);
+            
+            document.getElementById("save-settings").addEventListener("click", async function (e) {
+                e.preventDefault(); // Empêche le comportement par défaut du bouton
+            
+                // Récupère les valeurs du formulaire
+                const _profileImage = document.getElementById('newImageUpload');
+                const _username = document.getElementById('username').value.trim();
+                const _password = document.getElementById('password2').value.trim();
+                const _confirmPassword = document.getElementById('confirm-password').value.trim();
+                const _email = document.getElementById('email').value.trim();
+        
+                const formData = new FormData();
+        
+                formData.append('player_id', userID);
+        
+                if (_username !== "") {
+                    formData.append('username', _username);
+                }
+        
+                if (_email !== "") {
+                    formData.append('email', _email);
+                }
+        
+                if (_profileImage.files[0]) {
+                    formData.append('image_avatar', _profileImage.files[0]);
+                }
+                if (_password !== "") {
+                    formData.append('password', _password);
+                }
+                if (_password !== "" && _confirmPassword !== "" && _password !== _confirmPassword) {
+                    errorMessage.textContent = "Passwords are not the same.";
+                } else if (_password === "" && _confirmPassword !== "") {
+                    errorMessage.textContent = "Please enter a new password before confirming.";
+                }
+        
+                console.table(Array.from(formData.entries()));
+                
+                try {
+                    // Envoie une requête POST à l'API
+                    const response = await fetch("http://localhost:8080/update-player/", {
+                        method: "PUT",
+                        body: formData,
+                    });
+        
+                    if (!response.ok) {
+                        throw new Error('Error while submitting the form');
+                    }
+            
+                    const result = await response.json();
+                    console.log('Success:', result);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    errorMessage.textContent = "An error occurred. Please try again.";
+                }
+            
+            });
         })
         
         .catch(error => console.error("Erreur lors du chargement des param du user_id :", error));
+    
+
+    
+}
+    }); 
+
+
+function deleteCookie(name) {
+    document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+}
+
+
+document.addEventListener("click", async function (event) {
+    
+// document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("settings-page")) {
+        if (event.target && event.target.id === "logout") {
+            event.preventDefault();
+        // document.getElementById("logout").addEventListener("click", async function (e) {
+            console.log("Cookies restants avand delete :", document.cookie);
+            deleteCookie("user_id");
+            console.log("Cookies restants apres delete :", document.cookie);
+            navigateTo("login-page");
+        // });
     }
-    });
+}
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("login-page")) {
+        console.log("Cookies restants :", document.cookie);
+        if (document.cookie.includes("user_id=")) {
+            navigateTo("home-page");
+        }
+    }
+});
+
+function reloadScript(url) {
+    let oldScript = document.querySelector("script[src^='" + url + "']");
+    if (oldScript) oldScript.remove(); // Supprime l'ancien script
+
+    let newScript = document.createElement("script");
+    newScript.src = url + "?v=" + new Date().getTime(); // Ajoute un cache-buster
+    document.body.appendChild(newScript);
+}
+    

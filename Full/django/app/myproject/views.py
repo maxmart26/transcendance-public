@@ -65,7 +65,8 @@ def add_player(request):
         username = data.get("username")
         password = data.get("password")
         email = data.get("email")
-        image_avatar = request.FILES.get("image_avatar")  # Récupération correcte du fichier
+        image_avatar = request.FILES.get("image_avatar")
+
 
         # Vérifier les champs obligatoires
         if not username or not password or not email or not image_avatar:
