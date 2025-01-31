@@ -4,6 +4,7 @@ this.context = this.canvas.getContext('2d');
 this.canvas.width = 1400;
 this.canvas.height = 1000;
 this.color = '#281f79' //background color
+this.diff_color = {'easy': '#33cc4c', 'medium': '#faec2d', 'hard': '#d1332e'};
 
 this.canvas.style.width = (this.canvas.width / 2) + 'px';
 this.canvas.style.height = (this.canvas.height / 2) + 'px';
@@ -15,13 +16,14 @@ this.paddle_width = 15;
 this.ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height / 2 - (ball_size / 2)};
 this.player1 = {};
 this.player2 = {};
-let round_nb = 0
-this.game_status = 'waiting'
-let winner = 'Michel'
+let round_nb = 0;
+this.game_status = 'waiting';
+let winner = 'Michel';
 
-let match_id
-let player_id = '1'; // rcup l'info en cookies
+let match_id;
+let player_id;
 let player_nb = 0;
+let difficulty;
 
 function getCookieValue(cookieName) {
 	const name = cookieName + "=";
@@ -100,6 +102,9 @@ function draw(status) {
 	this.context.strokeStyle = '#4bdae0';
 	this.context.stroke();
 
+	this.context.font = '50px Impact';
+	this.context.textAlign = 'center';
+
 	if (status == 'waiting')
 	{
 		this.context.fillStyle = '#ff79d1';
@@ -117,11 +122,29 @@ function draw(status) {
 		this.context.shadowBlur = 0;
 		this.context.fillStyle = '#ffffff';
 		this.context.font = '50px Impact';
+		this.context.textAlign = 'center';
 		this.context.fillText('Waiting for players...',
-			this.canvas.width / 2 - 200,
+			this.canvas.width / 2,
 			this.canvas.height / 2 + 15);
 		return;
 	}
+
+	this.context.fillStyle = this.diff_color[difficulty]
+	this.context.shadowOffsetX = -1;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 15;
+	this.context.shadowColor = this.diff_color[difficulty];
+
+	// Draw the difficulty
+	this.context.fillText(
+		difficulty.toUpperCase(),
+		(this.canvas.width / 2),
+		60
+	);
+
+	this.context.shadowOffsetX = 0;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 0;
 
 	this.context.font = '50px Impact';
 	this.context.textAlign = 'center';
@@ -136,14 +159,15 @@ function draw(status) {
 	this.context.fillText(
 		"Round " + round_nb,
 		(this.canvas.width / 2),
-		100
+		125
 	);
 
 	this.context.shadowOffsetX = 0;
 	this.context.shadowOffsetY = 0;
 	this.context.shadowBlur = 0;
 
-	//Dessiner le score du BO
+	//Dessiner le score du BO\
+	//A rajouter
 
 	if (status == 'over')
 	{
@@ -161,14 +185,14 @@ function draw(status) {
 		this.context.shadowOffsetY = 0;
 		this.context.shadowBlur = 0;
 		this.context.fillStyle = '#ffffff';
+		this.context.textAlign = 'center';
 		this.context.font = '50px Impact';
 		this.context.fillText(winner + ' won!',
-			this.canvas.width / 2 - 25,
+			this.canvas.width / 2,
 			this.canvas.height / 2 + 15);
 		return;
 	}
 
-	// Set the default canvas font and align it to the center
 	this.context.font = '100px Impact';
 	this.context.textAlign = 'center';
 

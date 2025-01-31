@@ -41,7 +41,7 @@ def create_game(request, difficulty):
 
     if waiting_games:
         match_id = random.choice(list(waiting_games))
-        game = Match.objects.create(id=match_id, player1=waiting_games[match_id], player2=user_id)
+        game = Match.objects.create(id=match_id, player1=waiting_games[match_id], player2=user_id, difficulty=difficulty)
         waiting_games.pop(match_id)
         games[str(game.id)] = PongGame(match_id, difficulty)
     else:
