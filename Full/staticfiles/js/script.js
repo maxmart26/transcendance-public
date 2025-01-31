@@ -34,7 +34,7 @@ const pagesContent = {
           </div>
       </div>`,
   "create-account-page": `
-      <div id="create-account">
+      <div id="create-account-page">
           <div class="navbar"></div>
           <p class="text-wrapper">PONG</p>
           <div class="rectangle">
@@ -68,8 +68,8 @@ const pagesContent = {
       </div>
   `,
   "home-page": `
-      <div id="home-page">
-          <div class="home-navbar">
+    <div id="home-page">
+        <div class="home-navbar">
               <div class="navbar-left">
                   <p class="text-wrapper">PONG</p>
                   <a id="home" href="#home" class="navbar-item">HOME</a>
@@ -83,8 +83,15 @@ const pagesContent = {
                   </div>
               </div>
         </div>
-          <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">START A GAME</button>
-      </div>
+        <div class="game-types">
+            <p class="choose-game">Which game do you want to launch ?</p>
+            <div class="pongs">
+                <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
+                <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">PONG 3D (local)</button>
+            </div>
+            <button onclick="navigateTo('tournament-page')" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
+        </div>      
+    </div>
   `,
   "settings-page": `
       <div id="settings-page">
@@ -139,11 +146,6 @@ const pagesContent = {
                       <input type="password" id="confirm-password">
                   </form>
                   <button id="save-settings2" class="save-button">SAVE</button>
-              </div>
-              <div class="a2f">
-                  <p class="a2f-title">TWO-FACTOR AUTHENTICATION</p>
-                  <button id="a2f-button"><i class="bi bi-toggle-off switch-button"></i>Enable Two-Factor Authentication (A2F)</button>
-                  <p class="a2f-explain">This method enhances security by requiring users to provide two distincts types of verification to confirm their identity.</p>
               </div>
               <button onclick="navigateTo('login-page')" id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
           </div>
@@ -281,6 +283,59 @@ const pagesContent = {
         <div id="score">Joueur 1: 0 | Joueur 2: 0</div>
     </div>
   `,
+  "online-game-page": `
+    <div id="online-game-page">
+        <div class="home-navbar">
+              <div class="navbar-left">
+                  <p class="text-wrapper">PONG</p>
+                  <a id="home" href="#home" class="navbar-item">HOME</a>
+                  <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                  <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+              </div>
+              <div class="navbar-right">
+                  <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                  <div class="profile-container">
+                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                  </div>
+              </div>
+        </div>
+        <div class="difficulty-buttons">
+            <button id="easy" class="difficulty-btn">Easy</button>
+            <button id="medium" class="difficulty-btn">Medium</button>
+            <button id="hard" class="difficulty-btn">Hard</button>
+        </div>
+        <div id="online-game-container">
+            <canvas></canvas>
+        </div>
+        
+        
+    </div>
+  `,
+  "tournament-page": `
+    <div id="tournament-page">
+        <div class="home-navbar">
+              <div class="navbar-left">
+                  <p class="text-wrapper">PONG</p>
+                  <a id="home" href="#home" class="navbar-item">HOME</a>
+                  <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                  <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+              </div>
+              <div class="navbar-right">
+                  <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                  <div class="profile-container">
+                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                  </div>
+              </div>
+        </div>
+        <div id="online-game-container"></div>
+        <div class="difficulty-buttons">
+            <button id="easy" class="difficulty-btn">Easy</button>
+            <button id="medium" class="difficulty-btn">Medium</button>
+            <button id="hard" class="difficulty-btn">Hard</button>
+        </div>
+        
+    </div>
+  `,
   "friends-page": `
     <div id="friends-page">
         <div class="home-navbar">
@@ -364,7 +419,8 @@ document.querySelectorAll('a.nav-link').forEach(link => {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-document.getElementById("enter-button").addEventListener("click", async function (e) {
+    if (document.getElementById("login-page")) {
+    document.getElementById("enter-button").addEventListener("click", async function (e) {
     e.preventDefault(); // Empêche le comportement par défaut du bouton
 
     // Récupère les valeurs du formulaire
@@ -400,57 +456,70 @@ document.getElementById("enter-button").addEventListener("click", async function
     } catch (err) {
         errorMessage.textContent = "Server error. Please try again later.";
     }
+    
 });
-});
-
-// function setupImageUpload(inputId, previewId) {
-//     const imageUpload = document.getElementById(inputId);
-//     const imagePreview = document.getElementById(previewId);
-  
-//     if (imageUpload && imagePreview) {
-//       // Écouteur d'événement pour le changement de fichier
-//       imageUpload.addEventListener('change', (event) => {
-//         const file = event.target.files[0]; // Récupère le premier fichier sélectionné
-  
-//         if (file) {
-//           const reader = new FileReader(); // Crée un FileReader
-  
-//           // Quand le fichier est lu
-//           reader.onload = (e) => {
-//             imagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
-//           };
-  
-//           reader.readAsDataURL(file); // Lit le fichier comme une URL de données
-//         }
-//       });
-//     }
-//   }
+    }
+}); 
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById("save-button").addEventListener("click", async function (e) {
-    e.preventDefault(); // Empêche le comportement par défaut du bouton
-    const _profileImage = document.getElementById('imageUpload');
-    const _username = document.getElementById('user');
-    const _password = document.getElementById('password2');
-    const _confirmPassword = document.getElementById('confirm-password');
-    const _email = document.getElementById('email');
-    const errorMessage = document.getElementById('error-message');
+    if (document.getElementById("create-account-page")) {
+    
+    
+    const imageUpload = document.getElementById('imageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const errorMessage = document.getElementById('account-error');
+    const saveButton = document.getElementById('save-button');
+    
+    // Ajoute un gestionnaire pour l'input file
+    imageUpload.addEventListener('change', function () {
+        const file = this.files[0]; // Récupère le fichier sélectionné
 
-    if (_username.value.trim() === "") {
+        if (file) {
+            const reader = new FileReader();
+
+            // Une fois le fichier chargé
+            reader.onload = function (e) {
+                // Met à jour la source de l'image de prévisualisation
+                imagePreview.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.src = "static/img/person.png"; // Réinitialise l'image si aucun fichier n'est sélectionné
+            errorMessage.textContent = "Please choose a valid file.";
+        }
+    });
+
+    
+
+    
+    saveButton.addEventListener("click", async function (e) {
+   
+    e.stopPropagation(); // Empêche le comportement par défaut du bouton
+    
+    
+    const _profileImage = document.getElementById('imageUpload');
+    const _username = document.getElementById('user').value.trim();
+    const _password = document.getElementById('password2').value.trim();
+    const _confirmPassword = document.getElementById('confirm-password').value.trim();
+    const _email = document.getElementById('email').value.trim();
+    
+
+    if (_username === "") {
         errorMessage.textContent = "Username is required.";
     }
 
-    if (_password.value.trim() === "") {
+    if (_password === "") {
         errorMessage.textContent = "Password is required.";
     }
 
-    if (_confirmPassword.value.trim() === "") {
+    if (_confirmPassword === "") {
         errorMessage.textContent = "Please confirm password.";
-    } else if (_password.value !== _confirmPassword.value) {
+    } else if (_password !== _confirmPassword) {
         errorMessage.textContent = "Passwords are not the same.";
     }
 
-    if (_email.value.trim() === "") {
+    if (_email === "") {
         errorMessage.textContent = "Email is required.";
     }
 
@@ -460,30 +529,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const formData = new FormData();
-    formData.append('username', _username.value.trim());
-    formData.append('password', _password.value.trim());
-    formData.append('email', _email.value.trim());
+    formData.append('username', _username);
+    formData.append('password', _password);
+    formData.append('email', _email);
     formData.append('image_avatar', _profileImage.files[0]);
 
     console.table(Array.from(formData.entries()));
 
-    fetch('https://localhost:8080/add-player/', {
-        method: 'POST',
-        body: formData,
-    })
-    .then(response => {
-        if (response.ok) {
-            navigateTo("login-page"); // Redirige l'utilisateur
-            return response.json();
-        } else {
-            throw new Error('Erreur lors de l\'envoi des données');
+    try {
+        const response = await fetch('http://localhost:8080/add-player/', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error('Error while submitting the form');
         }
-    })
-    .then(result => {
-        console.log('Succès:', result);
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
+
+        const result = await response.json();
+        console.log('Success:', result);
+        navigateTo("login-page"); // Redirige l'utilisateur
+    } catch (error) {
+        console.error('Error:', error);
+        errorMessage.textContent = "An error occurred. Please try again.";
+    }
+            
+
+});
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById("online-game-page")) {
+        launchGame();
+    }
+});
+
+function getCookie(name) {
+    let cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+        let [key, value] = cookie.split("=");
+        if (key === name) {
+            return decodeURIComponent(value);  // Décoder les valeurs encodées
+        }
+    }
+    return null; // Retourne `null` si le cookie n'existe pas
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("settings-page")) {
+    let session = getCookie("user_id");
+    console.log("User ID:", session);
+    let url = "http://localhost:8080/user/" + session +'/';
+    console.log(url);
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log("User ID from API:", data);
+        })
+        
+        .catch(error => console.error("Erreur lors du chargement des param du user_id :", error));
+    }
     });
-});
-});

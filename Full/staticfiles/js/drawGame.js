@@ -1,13 +1,15 @@
-this.canvas = document.querySelector('canvas');
-this.context = this.canvas.getContext('2d');
+function launchGame() {
+const gameContainer = document.querySelector('#online-game-container');
+const canvas = gameContainer.querySelector('canvas');
+const context = canvas.getContext('2d');
 
 this.canvas.width = 1400;
 this.canvas.height = 1000;
 this.color = '#281f79' //background color
 this.diff_color = {'easy': '#33cc4c', 'medium': '#faec2d', 'hard': '#d1332e'};
 
-this.canvas.style.width = (this.canvas.width / 2) + 'px';
-this.canvas.style.height = (this.canvas.height / 2) + 'px';
+canvas.style.width = (canvas.width / 2) + 'px';
+canvas.style.height = (canvas.height / 2) + 'px';
 
 this.ball_size = 20;
 this.paddle_height = 120;
@@ -47,18 +49,18 @@ function draw(status) {
 	this.context.clearRect(
 		0,
 		0,
-		this.canvas.width,
-		this.canvas.height
+		canvas.width,
+		canvas.height
 	);
 
 	this.context.fillStyle = this.color;
 
 	// Draw the background
-	this.context.fillRect(
+	context.fillRect(
 		0,
 		0,
-		this.canvas.width,
-		this.canvas.height
+		canvas.width,
+		canvas.height
 	);
 
 	if (status == 'playing' || status == 'over')
@@ -94,13 +96,13 @@ function draw(status) {
 	}
 
 	// Draw the net (Line in the middle)
-	this.context.beginPath();
-	this.context.setLineDash([7, 15]);
-	this.context.moveTo((this.canvas.width / 2), this.canvas.height - 140);
-	this.context.lineTo((this.canvas.width / 2), 140);
-	this.context.lineWidth = 10;
-	this.context.strokeStyle = '#4bdae0';
-	this.context.stroke();
+	context.beginPath();
+	context.setLineDash([7, 15]);
+	context.moveTo((canvas.width / 2), canvas.height - 140);
+	context.lineTo((canvas.width / 2), 140);
+	context.lineWidth = 10;
+	context.strokeStyle = '#4bdae0';
+	context.stroke();
 
 	this.context.font = '50px Impact';
 	this.context.textAlign = 'center';
@@ -142,21 +144,21 @@ function draw(status) {
 		60
 	);
 
-	this.context.shadowOffsetX = 0;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 0;
+	context.shadowOffsetX = 0;
+	context.shadowOffsetY = 0;
+	context.shadowBlur = 0;
 
 	this.context.font = '50px Impact';
 	this.context.textAlign = 'center';
 
-	this.context.fillStyle = '#eba811';
-	this.context.shadowOffsetX = -1;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 15;
-	this.context.shadowColor = '#eba811';
+	context.fillStyle = '#eba811';
+	context.shadowOffsetX = -1;
+	context.shadowOffsetY = 0;
+	context.shadowBlur = 15;
+	context.shadowColor = '#eba811';
 
 	// Draw the current round number
-	this.context.fillText(
+	context.fillText(
 		"Round " + round_nb,
 		(this.canvas.width / 2),
 		125

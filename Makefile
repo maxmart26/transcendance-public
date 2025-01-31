@@ -24,6 +24,9 @@ re:
 
 logs:
 	docker logs django-container -f
+	
+test:
+	docker compose -f ./Full/docker-compose.yml up --build
 
 clean:
 	docker system prune -af

@@ -9,3 +9,7 @@ class PlayerAll(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ['id', 'username', 'image_avatar']
+class PlayerLead(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = ['id', 'username', 'image_avatar', 'nb_game_win']

@@ -12,6 +12,7 @@ services:
     depends_on:
       - django
 
+
   django:
     build:
       context: ./django
@@ -27,7 +28,7 @@ services:
       - ./django/.env
     depends_on:
       - db
-    
+  
 
   db:
     image: postgres:14

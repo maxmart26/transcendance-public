@@ -39,6 +39,9 @@ class Player(AbstractBaseUser, PermissionsMixin):
     updated_at = models.DateTimeField(auto_now=True)
     color = models.CharField(max_length=7, default='#ff79d1')
 
+    friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+    nb_friends = models.IntegerField(default=0)
+
     # Champs obligatoires pour AbstractBaseUser
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -61,3 +64,16 @@ class Match(models.Model):
 
     def __str__(self):
         return str(self.id)
+    def add_friend(self, player):
+        """Ajoute un ami à la liste d'amis"""
+        if player != self and player not in self.friends.all():
+            self.friends.add(player)
+            self.nb_friends = self.friends.count()
+            self.save()
+
+    def remove_friend(self, player):
+        """Supprime un ami de la liste d'amis"""
+        if player in self.friends.all():
+            self.friends.remove(player)
+            self.nb_friends = self.friends.count()
+            self.save()
