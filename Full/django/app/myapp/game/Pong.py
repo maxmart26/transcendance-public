@@ -60,6 +60,8 @@ class PongGame():
 				await asyncio.sleep(1/TICK_RATE)
 
 	async def action(self, action, player):
+		if (player == 'spectator'):
+			return
 		if action == 'move_up':
 			self.player1.paddle.move_up() if player == '1' else self.player2.paddle.move_up()
 		elif action == 'move_down':
@@ -109,9 +111,9 @@ class PongGame():
 		
 	async def end_game(self):
 		self.status = 'over'
-		self.winner = '2' 
-		if (self.player2.score > self.player1.score):
-			self.winner = '1'
+		self.winner = '1' 
+		if (self.player2.score_bo > self.player1.score_bo):
+			self.winner = '2'
 		await self.channel_layer.group_send(
 						self.channel_group,
 			{	'type': 'game.over',

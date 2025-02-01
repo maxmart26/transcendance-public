@@ -162,13 +162,76 @@ function draw(status) {
 		125
 	);
 
+	//Dessiner le score du BO
+
+	if (player1.score_bo > 0)
+	{
+		this.context.fillRect(
+			(this.canvas.width / 2) - 120 - 40,
+			100,
+			35,
+			15
+		);
+	}
+
+	if (player1.score_bo > 1)
+	{
+		this.context.fillRect(
+			(this.canvas.width / 2) - 120 - 90,
+			100,
+			35,
+			15
+		);
+	}
+
+	if (player2.score_bo > 0)
+	{
+		this.context.fillRect(
+			(this.canvas.width / 2) + 85 + 40,
+			100,
+			35,
+			15
+		);
+	}
+
+	if (player2.score_bo > 1)
+	{
+		this.context.fillRect(
+			(this.canvas.width / 2) + 85 + 90,
+			100,
+			35,
+			15
+		);
+	}
+
 	this.context.shadowOffsetX = 0;
 	this.context.shadowOffsetY = 0;
 	this.context.shadowBlur = 0;
 
-	//Dessiner le score du BO\
-	//A rajouter
-
+	if (player_nb == 'spectator')
+	{
+	
+		this.context.font = '50px Impact';
+		this.context.textAlign = 'center';
+		this.context.fillStyle = '#ffffff'
+		this.context.shadowOffsetX = -1;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 15;
+		this.context.shadowColor = '#4bdae0';
+	
+		// Draw the difficulty
+		this.context.fillText(
+			'SPECTATOR',
+			(this.canvas.width / 2),
+			this.canvas.height - 50
+		);
+	
+		this.context.shadowOffsetX = 0;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 0;
+		
+		}
+	
 	if (status == 'over')
 	{
 		this.context.fillStyle = '#ff79d1';
@@ -225,6 +288,7 @@ function draw(status) {
 		(this.canvas.width / 2) + 300,
 		200
 	);
+
 }
 
 function start_game(socket)
@@ -256,6 +320,10 @@ function start_game(socket)
 			
 			case 'game_over':
 				winner = data.winner;
+				if (winner == player1.name)
+					player1.score_bo++;
+				else if (winner == player2.name)
+					player2.score_bo++;
 				console.log(player_nb + " received a game over notification.\n");
 				draw('over');
 				break;
@@ -297,7 +365,7 @@ function init_game()
 	console.log("Match_id: " + match_id);
 	console.log("Player_id: " + player_id);
 
-	const socket = new WebSocket('ws://' + window.location.host + '/ws/game/' + match_id + '/');
+	const socket = new WebSocket('wss://' + window.location.host + '/ws/game/' + match_id + '/');
 
 	socket.onopen = function(e) {
 		console.log("WebSocket state open");
@@ -319,6 +387,7 @@ function init_game()
 			player1.side = 'left';
 			player1.score = 0;
 			player1.score_bo = 0;
+			player1.bo_scorex = 50;
 			
 			player2.id = data.player2;
 			player2.name = data.player2_name;
@@ -327,8 +396,15 @@ function init_game()
 			player2.side = 'right'
 			player2.score = 0;
 			player2.score_bo = 0;
+			player1.bo_scorex = 50;
 
-			player_nb = (player1.id == player_id ? '1':'2');
+			if (player1.id == player_id)
+				player_nb = '1';
+			else if (player2.id == player_id)
+				player_nb = '2';
+			else
+				player_nb = 'spectator'
+
 			console.log("game is all set");
 			console.log("Player1: " + player1.name);
 			console.log("Player2: " + player2.name);

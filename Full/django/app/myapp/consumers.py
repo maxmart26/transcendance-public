@@ -90,6 +90,7 @@ class MatchManager(AsyncWebsocketConsumer):
 	async def game_over(self, event):
 		winner = self.player1.username
 		if event['winner'] == '2': winner = self.player2.username
+		print("Player ", event['winner'], "won! (", winner, ")\n", file=sys.stderr)
 		await self.send(text_data=json.dumps({'type': event["info"],
 											'status': event['status'],
 											'winner': winner}))
