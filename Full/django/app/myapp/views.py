@@ -33,7 +33,7 @@ def get_all_players(request):
 def homepage(request):
     return render(request, 'index.html')
 
-waiting_games = {}
+waiting_games = {'easy': {}, 'medium': {}, 'hard': {}}
 games = {}
 
 def create_game(request, difficulty):
@@ -45,14 +45,14 @@ def create_game(request, difficulty):
             player = Player.objects.create(id=uuid.uuid4(), username='Unknown')
         user_id = player.id
 
-    if waiting_games:
-        match_id = random.choice(list(waiting_games))
-        game = Match.objects.create(id=match_id, player1=waiting_games[match_id], player2=user_id, difficulty=difficulty)
-        waiting_games.pop(match_id)
+    if waiting_games[difficulty]:
+        match_id = random.choice(list(waiting_games[difficulty]))
+        game = Match.objects.create(id=match_id, player1=waiting_games[difficulty][match_id], player2=user_id, difficulty=difficulty)
+        waiting_games[difficulty].pop(match_id)
         games[str(game.id)] = PongGame(match_id, difficulty)
     else:
         match_id = uuid.uuid4()
-        waiting_games[match_id] = user_id
+        waiting_games[difficulty][match_id] = user_id
     return redirect(f'/game/{match_id}/')
 
 @sync_to_async

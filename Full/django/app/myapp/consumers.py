@@ -24,7 +24,13 @@ class MatchManager(AsyncWebsocketConsumer):
 			})
 
 	async def disconnect(self):
-		pass
+		print("Client ", self.player_id, " disconnected.\n", file=sys.stderr)
+		await self.channel_layer.group_send(
+						self.channel_group,
+			{	'type': 'client.disconnected',
+				'info': 'client_disconnected',
+				'client': self.player_id
+			})
 
 	async def receive(self, text_data):
 		info_json = json.loads(text_data)
@@ -34,6 +40,7 @@ class MatchManager(AsyncWebsocketConsumer):
 		if (type == 'match_start'):
 			self.game = games[str(self.match.id)]
 			self.match.status = 'playing'
+			self.player_id = info_json.get('player_id')
 			# if self.match.status == 'waiting': self.match.status = 'starting'
 			# elif self.match.status == 'starting': self.match.status == 'playing'
 			print("match is ", self.match.status, "\n", file=sys.stderr)
@@ -94,6 +101,17 @@ class MatchManager(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps({'type': event["info"],
 											'status': event['status'],
 											'winner': winner}))
+		
+	async def client_disconnected(self, event):
+		winner = self.player1.username
+		if event['client'] == self.player1.id: winner = self.player2.username
+		await self.channel_layer.group_send(
+						self.channel_group,
+			{	'type': 'game.over',
+				'info': 'game_over',
+				"status": 'over',
+				"winner": winner,
+			})
 
 #===========================================================
 

@@ -295,7 +295,8 @@ function start_game(socket)
 {	
 	socket.send(JSON.stringify({
 		'type': 'match_start',
-		'match_id': self.match_id
+		'match_id': self.match_id,
+		'player_id': player_id
 	}))
 	console.log("Match starts.\n");
 	draw('playing');
