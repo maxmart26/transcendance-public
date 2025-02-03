@@ -1226,15 +1226,20 @@ input {
 
 .difficulty-buttons {
   display: flex;
+  position: fixed;
+  top: 50%;
+  left: 37.5%;
   gap: 10px;
 }
 
 .difficulty-btn {
+
   padding: 10px 20px;
   font-size: 18px;
   margin: 5px;
   border: none;
   cursor: pointer;
+  z-index: 2;
   border-radius: 5px;
   background-color: #444;
   color: white;

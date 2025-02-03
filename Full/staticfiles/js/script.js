@@ -296,9 +296,9 @@ const pagesContent = {
               </div>
         </div>
         <div class="difficulty-buttons">
-            <button id="easy" class="difficulty-btn">Easy</button>
-            <button id="medium" class="difficulty-btn">Medium</button>
-            <button id="hard" class="difficulty-btn">Hard</button>
+            <button id="easy" onclick="window.location.href='create-game/easy/'" class="difficulty-btn">Easy</button>
+            <button id="medium" href="#create-game/medium" class="difficulty-btn">Medium</button>
+            <button id="hard" href="#create-game/hard" class="difficulty-btn">Hard</button>
         </div>
         <div id="online-game-container">
             <canvas></canvas>
@@ -375,6 +375,38 @@ const pagesContent = {
                 </div>
             </div>
         </div>
+    </div>
+    `,
+    "game-page":`
+    <div id="game-page">
+        <div class="home-navbar">
+            <div class="navbar-left">
+                <p class="text-wrapper">PONG</p>
+                <a id="home" href="#home" class="navbar-item">HOME</a>
+                <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+            </div>
+            <div class="navbar-right">
+                <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                <div class="profile-container">
+                    <button id="profile-img" onclick=""><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                </div>
+            </div>
+        </div>
+        <h1>ft_PONG</h1>
+        <canvas></canvas>
+        <p id='test-pong'>C'est bon transcendence c fini.</p>
+
+        {% load static %}
+        <script>
+            const script = document.createElement('script');
+            script.src = "{% static 'js/drawGame.js' %}";
+            script.defer = true;
+            document.body.appendChild(script);
+            script.onload = function() {
+                    init_game();
+            };
+        </script>
     </div>
     `
 };
@@ -560,8 +592,8 @@ document.addEventListener("click", async function (event) {
 // });
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById("online-game-page")) {
-        launchGame();
+    if (document.getElementById("test-pong")) {
+        navigateTo('game-page')
     }
 });
 
