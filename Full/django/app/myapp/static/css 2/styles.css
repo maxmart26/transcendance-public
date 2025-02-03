@@ -1,0 +1,1159 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Audiowide', sans-serif;
+  overflow-x: hidden;
+}
+
+.login-page {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.login-page .overlap-wrapper {
+  background-color: #ffffff;
+  width: 100%;
+  height: 100%;
+}
+
+.login-page .overlap {
+  position: relative;
+  height: 1028px;
+  top: -4px;
+}
+
+.login-page .background-img {
+  position: absolute;
+  width: 100vw;
+  height: 100%;
+  object-fit: cover;
+	object-position: center;
+	inset: 0;
+}
+  
+.navbar {
+  position: absolute;
+  width: 100%;
+  height: 80px;
+  top: 0;
+  left: 0;
+  background-color: #271e79;
+}
+
+.text-wrapper {
+  position: absolute;
+  width: 144px;
+  height: 69px;
+  top: 16px;
+  left: 25px;
+  text-shadow: 0px 0px 15px #e085cb;
+  -webkit-text-stroke: 1px #d25cb8e6;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffb3e4;
+  font-size: 40px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.rectangle {
+position: relative;
+width: 552px;
+height: 672px;
+top: 186px;
+margin-left: auto;
+margin-right: auto;
+background-color: #281f79;
+border-radius: 60px;
+border: 1px solid #ffffff;
+box-shadow: 0px 0px 15px 5px #ffffff;
+opacity: 0.9;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+}
+
+.login-page .text-wrapper-5 {
+  position: relative;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+  top: 6%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5%;
+}
+
+.login-page .login-infos {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  flex-direction: column;
+  margin-top: 5%;
+  margin-bottom: 8%;
+  align-items: center;
+}
+
+input {
+  width: 90%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+  background-color: #ffffff;
+  border-radius: 60px;
+  text-align: center;
+}
+
+.text-wrapper-2 {
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #51fbf2;
+  font-size: 15px;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-top: 10%;
+  margin-bottom: 3%;
+}
+
+.enter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8%;
+}
+
+.login-page .rectangle-4 {
+  width: 115%;
+  height: 110%;
+  background-color: #51fbf2;
+  color: #000000;
+  font-size: 13px;
+  border-radius: 30px;
+  left: 5%;
+  font-family: 'Audiowide', sans-serif;
+}
+
+.login-page .or {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.login-page .text-wrapper-8 {
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 15px;
+  letter-spacing: 0;
+  text-align: center;
+  margin-top: 2%;
+}
+
+.login-page .line {
+  width: 223px;
+  height: 1px;
+  object-fit: cover;
+  margin: 0 10px;
+}
+
+.login-page .img {
+  left: 261px;
+  width: 223px;
+  height: 1px;
+  object-fit: cover;
+  margin: 0 10px;
+}
+
+.login-page .login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10%;
+  margin-bottom: 8%;
+}
+
+.login-page .button2 {
+  background-color: #51fbf2;
+  border-radius: 13px;
+  width: 120%;
+  height: 110%;
+  align-items: center;
+  justify-content: center;
+  display: inline-flex;
+  gap: 10px;
+  color: #ffffff;
+}
+
+.login-page .text {
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #000000;
+  font-size: 13px;
+  letter-spacing: 0;
+  line-height: normal;
+  border: none;
+  margin-bottom: 0;
+}
+
+.login-page .element-icon {
+  width: 28px;
+  height: 27px;
+  object-fit: cover;
+}
+
+.login-page .account {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+  flex-direction: column;
+}
+
+.login-page .p {
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: normal;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.login-page .text-wrapper-6 {
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffb3e4;
+  font-size: 12px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+  text-decoration: underline;
+  margin-top: 0;
+  border: none;
+  background-color: transparent;
+}
+
+.create-account {
+  position: absolute;
+  top: 50%; /* Centre verticalement */
+  left: 50%; /* Centre horizontalement */
+  transform: translate(-50%, -50%); /* Ajuste pour centrer */
+  width: 552px;
+  height: 672px;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#create-account .rectangle .content {
+  font-family: 'Audiowide', sans-serif;
+  margin: 20px;
+  padding: 10px;
+  color: #fff;
+}
+
+.hidden {
+  display: none;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8%;
+  flex-direction: column;
+  position: relative;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 40%;
+}
+
+.people-contour {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10%;
+  overflow: hidden;
+}
+
+.people-icon {
+  font-size: 3.5rem;
+  color: #fff;
+}
+
+.upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  margin-bottom: 0;
+}
+
+.upload-icon {
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.upload-button {
+  background-color: #fff;
+  color: #000000;
+  font-size: 13px;
+  border-radius: 60px;
+  font-family: 'Audiowide', sans-serif;
+  display: flex;
+  margin-top: 7%;
+}
+
+.infos {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  flex-direction: column;
+  margin-top: 2%;
+  margin-bottom: 10%;
+  align-items: center;
+  margin-bottom: 7%;
+}
+
+.custom-button {
+  display: inline-block;
+  background-color: #fff;
+  color: #000000;
+  font-size: 11px;
+  font-family: 'Audiowide', sans-serif;
+  padding: 5px 15px;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.custom-button:hover {
+  background-color: #51FBF2;
+  transform: scale(1.05);
+}
+
+.custom-button:active {
+  background-color: #51FBF2;
+  transform: scale(0.95);
+}
+
+#imageUpload {
+  display: none;
+}
+
+.preview {
+  width: 100px;
+  height: 100px;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.home-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  color: white;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 100%;
+  height: 80px;
+  top: 0;
+  left: 0;
+  background-color: #271e79;
+}
+
+
+/* Left side of the navbar */
+.navbar-left {
+  display: flex;
+  gap: 13%; /* Space between links */
+  padding-left: 13em;
+  align-items: center;
+}
+
+/* Right side of the navbar */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18%; /* Space between settings and profile */
+  padding-right: 2em;
+}
+
+/* Navbar items (links) */
+#home {
+  text-decoration: none; /* Remove underline */
+  color: white; /* Text color */
+  font-size: 16px;
+  transition: color 0.3s ease;
+  font-family: 'Audiowide', sans-serif;
+}
+
+#leaderboard {
+  text-decoration: none; /* Remove underline */
+  color: white; /* Text color */
+  font-size: 16px;
+  transition: color 0.3s ease;
+  font-family: 'Audiowide', sans-serif;
+}
+
+#friends {
+  text-decoration: none; /* Remove underline */
+  color: white; /* Text color */
+  font-size: 16px;
+  transition: color 0.3s ease;
+  font-family: 'Audiowide', sans-serif;
+}
+
+#settings {
+  text-decoration: none; /* Remove underline */
+  color: white; /* Text color */
+  font-size: 16px;
+  transition: color 0.3s ease;
+  font-family: 'Audiowide', sans-serif;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  padding: 5px 8px;
+  background-color: #E085CB;
+}
+
+#home:hover {
+  color: #51fbf2; /* Highlight color on hover */
+  text-decoration: underline;
+}
+
+#friends:hover {
+  color: #FAB005; /* Highlight color on hover */
+  text-decoration: underline;
+}
+
+#leaderboard:hover {
+  text-decoration: underline;
+}
+
+#settings:hover {
+  color: #fff; /* Highlight color on hover */
+  background-color: #D25CB9;
+}
+
+
+
+/* Profile image styling */
+.profile-container {
+  display: flex;
+  align-items: center;
+}
+
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+#profile-img {
+  position: relative;
+  display: inline-flex; /* Permet de gérer le contenu interne correctement */
+  align-items: center; /* Centrer l'image */
+  justify-content: center; /* Centrer l'image */
+  border: none;
+  background: none; /* Supprime l'arrière-plan par défaut */
+  cursor: pointer; /* Garde le curseur de clic */
+}
+
+.game-rectangle {
+  position: relative;
+  width: 25%;
+  margin-top: 18em;
+  left: 2%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 120%;
+  font-family: 'Audiowide', sans-serif;
+  padding: 10px 5px;
+  transition: all 0.3s ease;
+}
+
+.game-rectangle:hover {
+  background-color: #D25CB9;
+  transform: scale(1.05);
+}
+
+.game-rectangle:active {
+  background-color: #D25CB9;
+  transform: scale(0.95);
+}
+
+.start-game {
+  color: #fff;
+  font-family: 'Audiowide', sans-serif;
+  display: flex;
+  margin-bottom: 5%;
+  margin-top: 5%;
+}
+
+.settings-page {
+  position: absolute;
+  top: 50%; /* Centre verticalement */
+  left: 50%; /* Centre horizontalement */
+  transform: translate(-50%, -50%); /* Ajuste pour centrer */
+  width: 552px;
+  height: 672px;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: 28%;
+  background-color: #E085CB;
+  border-radius: 30px;
+  font-family: 'Audiowide', sans-serif;
+  margin-top: 3%;
+  flex-direction: column;
+}
+
+.recap-infos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15%;
+}
+
+.settings-infos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+}
+
+.settings-title {
+  position: relative;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+  top: 3%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+  margin-left: 15%;
+}
+
+.settings-text {
+  color: #fff;
+}
+
+.lang {
+  border: none;
+  background-color: transparent;
+}
+
+.french-icon {
+  margin-left: 290%;
+}
+
+.settings-profileImage {
+  display: inline-block;
+  background-color: #fff;
+  color: #000000;
+  font-size: 11px;
+  font-family: 'Audiowide', sans-serif;
+  padding: 5px 15px;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.settings-profileImage:hover {
+  background-color: #281f79;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.settings-profileImage:active {
+  background-color: #281f79;
+  color: #ffffff;
+  transform: scale(0.95);
+}
+
+.save-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-bottom: 2%;
+  border-radius: 60px;
+  background-color: #D25CB9;
+  transition: all 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: #281f79;
+  transform: scale(1.05);
+}
+
+.save-button:active {
+  background-color: #281f79;
+  transform: scale(0.95);
+}
+
+.change-password {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: 32%;
+  background-color: #E085CB;
+  border-radius: 30px;
+  font-family: 'Audiowide', sans-serif;
+  margin-top: 2%;
+  color: #fff;
+  flex-direction: column;
+}
+
+.settings-password {
+  margin-bottom: 0;
+  margin-top: 4%;
+  color: #000;
+  font-size: 90%;
+}
+
+.password-infos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 0%;
+  margin-bottom: 4%;
+}
+
+.password-text {
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #fff;
+  font-size: 15px;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-top: 7%;
+  margin-bottom: 3%;
+}
+
+.a2f {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: 18%;
+  background-color: #E085CB;
+  border-radius: 30px;
+  font-family: 'Audiowide', sans-serif;
+  margin-top: 2%;
+  color: #fff;
+  flex-direction: column;
+}
+
+.a2f-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 90%;
+  color: #000;
+  margin-top: 6%;
+  margin-bottom: 0;
+}
+
+#a2f-button {
+  font-size: 13px;
+  border: none;
+  background-color: transparent;
+  color: #000;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.switch-button {
+  font-size: 160%;
+  margin-right: 2%;
+}
+
+.a2f-explain {
+  font-size: 65%;
+  margin-left: 20%;
+}
+
+.logout {
+  margin-top: 1%;
+  border: none;
+  background-color: transparent;
+  color: #fff;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.logout:hover {
+  text-decoration: underline;
+}
+
+.logout-icon {
+  font-size: 170%;
+}
+
+.lead-rectangle {
+  position: relative;
+  width: 70%;
+  height: 672px;
+  margin-top: 9%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lead-title {
+  position: relative;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2%;
+}
+
+.lead-players {
+  flex-direction: row;
+  display: flex;
+  gap: 30%;
+  align-items: center;
+  justify-content: center;
+}
+
+.rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.rank-title {
+  color: #EFDA37;
+  font-size: 18px;
+  text-align: center;
+  justify-content: center;
+  margin-bottom: 8%;
+  font-family: 'Audiowide', sans-serif;
+}
+
+.rank-username {
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  justify-content: center;
+  margin-top: 8%;
+  font-family: 'Audiowide', sans-serif;
+}
+
+.first-img {
+  justify-content: center;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  width: 100px;
+}
+
+.lead-img {
+  justify-content: center;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  width: 58px;
+}
+
+#second, #third {
+  margin-top: 40%;
+}
+
+.scoreboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 80%;
+  white-space: nowrap;
+}
+
+.ranklist {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: 'Audiowide', sans-serif;
+  margin-top: 15%;
+}
+
+.ranklist-title {
+  color: #fff;
+  font-size: 13px;
+}
+
+.ranklist-player {
+  color: #fff;
+  font-size: 13px;
+  margin-top: 4%;
+}
+
+.ranklist-img {
+  width: 22%;
+  border-radius: 50%;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: 'Audiowide', sans-serif;
+  margin-top: 15%;
+}
+
+.score-nb {
+  color: #fff;  
+  font-size: 13px;
+  margin-top: 10%;
+}
+
+.profile-title {
+  position: relative;
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2%;
+  margin-bottom: 3%;
+}
+
+.profile-infos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 17%;
+  margin-bottom: 5%;
+}
+
+.profile-recap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.user-online {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-left: 20%;
+}
+
+.online {
+  color: #fff;
+  background-color: #61EA76;
+  border-radius: 60px;
+  border: 1px solid #61EA76;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 70%;
+  padding: 3% 10%;
+  box-shadow: 0px 0px 4px 2px #61EA76;
+}
+
+.recap-items {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 50%;
+  margin-top: 15%;
+}
+
+.item-infos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.profile-icon {
+  font-size: 144%;
+  margin-left: 20%;
+}
+
+.item-nb {
+  color: #FAB005;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 100%;
+}
+
+.item-title {
+  color: #FAB005;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 70%;
+}
+
+.profile-stats {
+  position: relative;
+  width: 680px;
+  height: 380px;
+  background-color: #FAB005;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.profile-username {
+  color: #fff;
+  font-family: 'Audiowide', sans-serif;
+}
+
+.achievements {
+  display: flex;
+  justify-content: center;
+}
+
+.achiev-title {
+  color: #FAB005;
+  font-size: 94%;
+  font-family: 'Audiowide', sans-serif;
+}
+
+#game-container {
+  width: 100vw;
+  height: 100vh; /* Taille du conteneur */
+  background-color: #000; /* Couleur de fond pour différencier */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#score {
+  position: absolute;
+  top: 100px;
+  width: 100%;
+  text-align: center;
+  font-size: 24px;
+  color: #ffffff;
+  z-index: 1;
+  font-family: Arial, sans-serif;
+}
+
+.friends-rectangle {
+  position: relative;
+  width: 70%;
+  height: 560px;
+  margin-top: 15%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.friend-user {
+  font-family: 'Audiowide', sans-serif;
+  font-weight: 400;
+  color: #FAB005;
+  font-size: 14px;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-top: 10%;
+  margin-bottom: 3%;
+}
+
+.friend-searchbox {
+  width: 40%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+  background-color: #ffffff;
+  border-radius: 60px;
+  text-align: center;
+}
+
+.add-friend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3%;
+  border-radius: 50px;
+  background-color: #281f79;
+  color: #fff;
+  font-size: 12px;
+  border: 1px solid #fff;
+  font-family: 'Audiowide', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.add-friend:hover {
+  background-color: #FAB005;
+  transform: scale(1.05);
+}
+
+.add-friend:active {
+  background-color: #FAB005;
+  transform: scale(0.95);
+}
+
+.your-friends {
+  color: #FAB005;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 14px;
+  margin-top: 7%;
+  margin-bottom: 0;
+}
+
+.ranklist-container {
+  max-height: 200px; /* Limite la hauteur visible */
+  overflow-y: auto; /* Ajoute une barre de défilement verticale si le contenu dépasse */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  margin-top: 5%;
+}
+
+.ranklist-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ranklist-container::-webkit-scrollbar-thumb {
+  background: #888; /* Couleur de la barre */
+  border-radius: 10px;
+}
+
+.ranklist-container::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Couleur au survol */
+}
+
+.remove {
+  color: #fff;
+  background-color: #281f79;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  font-size: 12px;
+  border: 1px solid #fff;
+}
+
+.remove:hover {
+  background-color: #FAB005;
+  transform: scale(1.05);
+}
+
+.remove:active {
+  background-color: #FAB005;
+  transform: scale(0.95);
+}
