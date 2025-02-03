@@ -20,121 +20,108 @@ import os
 from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 
-
+import logging
+logger = logging.getLogger(__name__)
 
 # route pour add un player
-
 @swagger_auto_schema(
     method="post",
-    operation_description="Add a new player with username, password, and email.",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'username': openapi.Schema(type=openapi.TYPE_STRING, description='The username of the player'),
-            'password': openapi.Schema(type=openapi.TYPE_STRING, description='The password of the player'),
-            'email': openapi.Schema(type=openapi.TYPE_STRING, description='The email of the player'),
-            'image_avatar': openapi.Schema(type=openapi.TYPE_STRING, format='binary', description='The new avatar image of the player'),
-
-        },
-        required=['username', 'password', 'email'],
-    ),
+    operation_description="Ajoute un nouveau joueur avec un nom d'utilisateur, un mot de passe, un email et une image d'avatar.",
+    consumes=["multipart/form-data"],  # Important pour Swagger
+    manual_parameters=[
+        openapi.Parameter('username', openapi.IN_FORM, type=openapi.TYPE_STRING, required=True, description="Nom d'utilisateur"),
+        openapi.Parameter('password', openapi.IN_FORM, type=openapi.TYPE_STRING, required=True, description="Mot de passe"),
+        openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING, required=True, description="Email"),
+        openapi.Parameter('image_avatar', openapi.IN_FORM, type=openapi.TYPE_FILE, required=True, description="Image d'avatar"),
+    ],
     responses={
         201: openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
                 'message': openapi.Schema(type=openapi.TYPE_STRING),
-                'player_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                'player_id': openapi.Schema(type=openapi.TYPE_STRING),  # UUID string
+                'image_url': openapi.Schema(type=openapi.TYPE_STRING),
             }
         ),
-        400: "Bad Request: Missing fields.",
-        500: "Internal Server Error",
+        400: "Bad Request: Champs manquants",
+        500: "Erreur interne du serveur",
     },
 )
-
 @api_view(["POST"])
 @permission_classes([AllowAny])
 @parser_classes([MultiPartParser, FormParser])
 def add_player(request):
     """Ajoute un joueur avec upload d'image."""
     try:
-
         logger.debug(f"Request data: {request.data}")
         logger.debug(f"Request files: {request.FILES}")
-        # Utiliser request.FILES pour récupérer l'image
+
         data = request.data
         username = data.get("username")
         password = data.get("password")
         email = data.get("email")
         image_avatar = request.FILES.get("image_avatar")
 
-
-        # Vérifier les champs obligatoires
         if not username or not password or not email or not image_avatar:
-            return Response({"error": "All fields (username, password, email, image_avatar) are required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Tous les champs (username, password, email, image_avatar) sont requis."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         hashed_password = make_password(password)
 
-        # Créer un joueur avec l'image
         player = Player.objects.create(username=username, password=hashed_password, email=email, image_avatar=image_avatar)
 
         return Response({
-            "message": "Player added successfully!",
-            "player_id": player.id,
-            "image_url": player.image_avatar.url  # Retourner l'URL de l'image
+            "message": "Joueur ajouté avec succès !",
+            "player_id": str(player.id),
+            "image_url": player.image_avatar.url if player.image_avatar else None
         }, status=status.HTTP_201_CREATED)
 
     except Exception as e:
+        logger.error(f"Erreur lors de l'ajout d'un joueur: {str(e)}")
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # route pour modif un player
-
 @swagger_auto_schema(
     method="put",
-    operation_description="Update or add fields for a player.",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'player_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='The ID of the player to update (required for update)'),
-            'username': openapi.Schema(type=openapi.TYPE_STRING, description='The new username of the player'),
-            'password': openapi.Schema(type=openapi.TYPE_STRING, description='The new password of the player'),
-            'email': openapi.Schema(type=openapi.TYPE_STRING, description='The new email of the player'),
-            'image_avatar': openapi.Schema(type=openapi.TYPE_STRING, format='binary', description='The new avatar image of the player'),
-            'nb_game_play': openapi.Schema(type=openapi.TYPE_INTEGER, description='The new number of games played'),
-            'nb_game_win': openapi.Schema(type=openapi.TYPE_INTEGER, description='The new number of games won'),
-        },
-        required=[],
-    ),
+    operation_description="Met à jour ou ajoute un joueur.",
+    consumes=["multipart/form-data"],  # Indispensable pour Swagger
+    manual_parameters=[
+        openapi.Parameter('player_id', openapi.IN_FORM, type=openapi.TYPE_STRING, required=True, description="ID du joueur à modifier"),
+        openapi.Parameter('username', openapi.IN_FORM, type=openapi.TYPE_STRING, description="Nouveau nom d'utilisateur"),
+        openapi.Parameter('password', openapi.IN_FORM, type=openapi.TYPE_STRING, description="Nouveau mot de passe"),
+        openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING, description="Nouvel email"),
+        openapi.Parameter('image_avatar', openapi.IN_FORM, type=openapi.TYPE_FILE, description="Nouvelle image d'avatar"),
+        openapi.Parameter('nb_game_play', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description="Nombre de parties jouées"),
+        openapi.Parameter('nb_game_win', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description="Nombre de parties gagnées"),
+    ],
     responses={
         200: openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
                 'message': openapi.Schema(type=openapi.TYPE_STRING),
                 'player': openapi.Schema(type=openapi.TYPE_OBJECT),
-            },
+            }
         ),
-        404: "Player not found.",
-        400: "Invalid request.",
+        404: "Joueur non trouvé",
+        400: "Requête invalide",
     },
 )
 @api_view(["PUT"])
 @permission_classes([AllowAny])
+@parser_classes([MultiPartParser, FormParser])  # Ajout du parser pour gérer les fichiers
 def update_or_add_player(request):
     try:
         data = request.data
-
-        # Récupérer l'ID du joueur pour modification
         player_id = data.get("player_id")
 
-        # Vérifier si c'est une mise à jour ou une création
-        if player_id:
-            try:
-                player = Player.objects.get(id=player_id)
-            except Player.DoesNotExist:
-                return Response({"error": "Player not found."}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            return Response({"error": "need player_id."}, status=status.HTTP_404_NOT_FOUND)
+        if not player_id:
+            return Response({"error": "Le champ player_id est requis."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Mettre à jour les champs fournis
+        try:
+            player = Player.objects.get(id=player_id)
+        except Player.DoesNotExist:
+            return Response({"error": "Joueur non trouvé."}, status=status.HTTP_404_NOT_FOUND)
+
         if "username" in data:
             player.username = data["username"]
         if "password" in data:
@@ -144,19 +131,17 @@ def update_or_add_player(request):
         if "image_avatar" in request.FILES:
             player.image_avatar = request.FILES["image_avatar"]
         if "nb_game_play" in data:
-            player.nb_game_play = data["nb_game_play"]
+            player.nb_game_play = int(data["nb_game_play"])
         if "nb_game_win" in data:
-            player.nb_game_win = data["nb_game_win"]
+            player.nb_game_win = int(data["nb_game_win"])
 
-        # Sauvegarder le joueur
         player.save()
 
-        # Retourner la réponse
         return Response(
             {
-                "message": "Player updated successfully!" if player_id else "Player created successfully!",
+                "message": "Joueur mis à jour avec succès.",
                 "player": {
-                    "id": player.id,
+                    "id": str(player.id),
                     "username": player.username,
                     "email": player.email,
                     "nb_game_play": player.nb_game_play,
@@ -167,10 +152,10 @@ def update_or_add_player(request):
         )
 
     except Exception as e:
+        logger.error(f"Erreur lors de la mise à jour du joueur: {str(e)}")
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-import logging
-logger = logging.getLogger(__name__)
+
+
 
 @swagger_auto_schema(
     method="post",
