@@ -22,10 +22,10 @@ const pagesContent = {
               <img class="img" src="static/img/line1.png" />
           </div>
           <div class="login">
-              <button class="button2">
-                  <p class="text">Login with</p>
-                  <img class="element-icon" src="static/img/42.png" />
-              </button>
+            <button onclick="window.location.href='https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-740be05e283130d59321a2b45f94cc9f8d7c90cce47668da972834e6b5ce5492&redirect_uri=https://' + window.location.host + '/auth/complete/intra42/&response_type=code'" class="button2">
+                <p class="text">Login with</p>
+                <img class="element-icon" src="static/img/42.png" />
+            </button>
           </div>
           <div class="account">
               <p class="p">You don't have an account ?</p>
@@ -34,7 +34,7 @@ const pagesContent = {
           </div>
       </div>`,
   "create-account-page": `
-      <div id="create-account">
+      <div id="create-account-page">
           <div class="navbar"></div>
           <p class="text-wrapper">PONG</p>
           <div class="rectangle">
@@ -68,8 +68,8 @@ const pagesContent = {
       </div>
   `,
   "home-page": `
-      <div id="home-page">
-          <div class="home-navbar">
+    <div id="home-page">
+        <div class="home-navbar">
               <div class="navbar-left">
                   <p class="text-wrapper">PONG</p>
                   <a id="home" href="#home" class="navbar-item">HOME</a>
@@ -83,8 +83,15 @@ const pagesContent = {
                   </div>
               </div>
         </div>
-          <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">START A GAME</button>
-      </div>
+        <div class="game-types">
+            <p class="choose-game">Which game do you want to launch ?</p>
+            <div class="pongs">
+                <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
+                <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">PONG 3D (local)</button>
+            </div>
+            <button onclick="navigateTo('tournament-page')" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
+        </div>      
+    </div>
   `,
   "settings-page": `
       <div id="settings-page">
@@ -111,8 +118,8 @@ const pagesContent = {
               <div class="profile">
                   <div class="recap-infos">
                       <div class="icon">
-                          <div class="people-contour">
-                              <img id="newImagePreview" class="preview" src="static/img/person.png">
+                          <div id="settings-img" class="people-contour">
+                              
                           </div>
                           <div class="file">
                               <div class="upload">
@@ -128,7 +135,6 @@ const pagesContent = {
                           <input type="text" id="email">
                       </form>
                   </div>
-                  <button id="save-settings1" class="save-button">SAVE</button>
               </div>
               <div class="change-password">
                   <p class="settings-password">CHANGE YOUR PASSWORD</p>
@@ -138,14 +144,9 @@ const pagesContent = {
                       <label for="confirm-password" class="password-text">Confirm new password</label>
                       <input type="password" id="confirm-password">
                   </form>
-                  <button id="save-settings2" class="save-button">SAVE</button>
               </div>
-              <div class="a2f">
-                  <p class="a2f-title">TWO-FACTOR AUTHENTICATION</p>
-                  <button id="a2f-button"><i class="bi bi-toggle-off switch-button"></i>Enable Two-Factor Authentication (A2F)</button>
-                  <p class="a2f-explain">This method enhances security by requiring users to provide two distincts types of verification to confirm their identity.</p>
-              </div>
-              <button onclick="navigateTo('login-page')" id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
+              <button id="save-settings" class="save-settings">SAVE</button>
+              <button id="logout" class="logout"><i class="bi bi-box-arrow-right logout-icon"></i>LOG OUT</button>
           </div>
       </div>
   `,
@@ -255,9 +256,6 @@ const pagesContent = {
                 <div class="profile-stats">
                 </div>
             </div>
-            <div class="achievements">
-                <p class="achiev-title">ACHIEVEMENTS (0/7)</p>
-            </div>
         </div>
     </div>
   `,
@@ -279,6 +277,58 @@ const pagesContent = {
         </div>
         <div id="game-container"></div>
         <div id="score">Joueur 1: 0 | Joueur 2: 0</div>
+    </div>
+  `,
+  "online-game-page": `
+    <div id="online-game-page">
+        <div class="home-navbar">
+              <div class="navbar-left">
+                  <p class="text-wrapper">PONG</p>
+                  <a id="home" href="#home" class="navbar-item">HOME</a>
+                  <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                  <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+              </div>
+              <div class="navbar-right">
+                  <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                  <div class="profile-container">
+                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                  </div>
+              </div>
+        </div>
+        <div class="difficulty-buttons">
+            <button id="easy" onclick="window.location.href='create-game/easy/'" class="difficulty-btn">Easy</button>
+            <button id="medium" onclick="window.location.href='create-game/medium/'" class="difficulty-btn">Medium</button>
+            <button id="hard" onclick="window.location.href='create-game/hard/'" class="difficulty-btn">Hard</button>
+        </div>
+        <div id="online-game-container">
+            <canvas></canvas>
+        </div>
+        
+        
+    </div>
+  `,
+  "tournament-page": `
+    <div id="tournament-page">
+        <div class="home-navbar">
+              <div class="navbar-left">
+                  <p class="text-wrapper">PONG</p>
+                  <a id="home" href="#home" class="navbar-item">HOME</a>
+                  <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                  <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+              </div>
+              <div class="navbar-right">
+                  <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                  <div class="profile-container">
+                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                  </div>
+              </div>
+        </div>
+        <div id="online-game-container"></div>
+        <div class="difficulty-buttons">
+            <button id="easy" class="difficulty-btn">Easy</button>
+            <button id="medium" class="difficulty-btn">Medium</button>
+            <button id="hard" class="difficulty-btn">Hard</button>
+        </div>
         
     </div>
   `,
@@ -294,7 +344,7 @@ const pagesContent = {
             <div class="navbar-right">
                 <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                 <div class="profile-container">
-                    <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                    <button id="profile-img" onclick=""><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
                 </div>
             </div>
         </div>
@@ -325,6 +375,38 @@ const pagesContent = {
                 </div>
             </div>
         </div>
+    </div>
+    `,
+    "game-page":`
+    <div id="game-page">
+        <div class="home-navbar">
+            <div class="navbar-left">
+                <p class="text-wrapper">PONG</p>
+                <a id="home" href="#home" class="navbar-item">HOME</a>
+                <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+            </div>
+            <div class="navbar-right">
+                <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                <div class="profile-container">
+                    <button id="profile-img" onclick=""><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
+                </div>
+            </div>
+        </div>
+        <h1>ft_PONG</h1>
+        <canvas></canvas>
+        <p id='test-pong'>C'est bon transcendence c fini.</p>
+
+        {% load static %}
+        <script>
+            const script = document.createElement('script');
+            script.src = "{% static 'js/drawGame.js' %}";
+            script.defer = true;
+            document.body.appendChild(script);
+            script.onload = function() {
+                    init_game();
+            };
+        </script>
     </div>
     `
 };
@@ -363,10 +445,14 @@ document.querySelectorAll('a.nav-link').forEach(link => {
     });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-document.getElementById("enter-button").addEventListener("click", async function (e) {
-    e.preventDefault(); // Empêche le comportement par défaut du bouton
 
+// document.addEventListener('DOMContentLoaded', () => {
+//     if (document.getElementById("login-page")) {
+//     document.getElementById("enter-button").addEventListener("click", async function (e) {
+//     e.preventDefault(); // Empêche le comportement par défaut du bouton
+document.addEventListener("click", async function (event) {
+    if (event.target && event.target.id === "enter-button") {
+        event.preventDefault();
     // Récupère les valeurs du formulaire
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -377,15 +463,15 @@ document.getElementById("enter-button").addEventListener("click", async function
         errorMessage.textContent = "Both username and password are required.";
         return;
     }
-
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('password', password);
+    console.table(Array.from(formData.entries()));
     try {
         // Envoie une requête POST à l'API
-        const response = await fetch("/api/login", {
+        const response = await fetch("https://" + window.location.host + "/login/", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, password }),
+            body: formData,
         });
 
         // Analyse la réponse
@@ -400,36 +486,71 @@ document.getElementById("enter-button").addEventListener("click", async function
     } catch (err) {
         errorMessage.textContent = "Server error. Please try again later.";
     }
+}   
 });
 
+//     }
+// }); 
 
-    document.getElementById("save-button").addEventListener("click", async function (e) {
-    e.preventDefault(); // Empêche le comportement par défaut du bouton
+document.addEventListener("click", async function (event) {
+    
+// document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById("create-account-page")) {
 
-    console.log("saving infos");
+    const imageUpload = document.getElementById('imageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const errorMessage = document.getElementById('account-error');
+    const saveButton = document.getElementById('save-button');
+    
+    // Ajoute un gestionnaire pour l'input file
+    imageUpload.addEventListener('change', function () {
+        const file = this.files[0]; // Récupère le fichier sélectionné
 
+        if (file) {
+            const reader = new FileReader();
+
+            // Une fois le fichier chargé
+            reader.onload = function (e) {
+                // Met à jour la source de l'image de prévisualisation
+                imagePreview.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.src = "static/img/person.png"; // Réinitialise l'image si aucun fichier n'est sélectionné
+            errorMessage.textContent = "Please choose a valid file.";
+        }
+    });
+
+    if (event.target && event.target.id === "save-button") {
+        event.preventDefault();
+    // saveButton.addEventListener("click", async function (e) {
+   
+    // e.stopPropagation(); // Empêche le comportement par défaut du bouton
+    
+    
     const _profileImage = document.getElementById('imageUpload');
     const _username = document.getElementById('user');
     const _password = document.getElementById('password2');
     const _confirmPassword = document.getElementById('confirm-password');
     const _email = document.getElementById('email');
-    const errorMessage = document.getElementById('account-error');
+    const errorMessage = document.getElementById('error-message');
 
-    if (_username.value.trim() === "") {
+    if (_username === "") {
         errorMessage.textContent = "Username is required.";
     }
 
-    if (_password.value.trim() === "") {
+    if (_password === "") {
         errorMessage.textContent = "Password is required.";
     }
 
-    if (_confirmPassword.value.trim() === "") {
+    if (_confirmPassword === "") {
         errorMessage.textContent = "Please confirm password.";
-    } else if (_password.value !== _confirmPassword.value) {
+    } else if (_password !== _confirmPassword) {
         errorMessage.textContent = "Passwords are not the same.";
     }
 
-    if (_email.value.trim() === "") {
+    if (_email === "") {
         errorMessage.textContent = "Email is required.";
     }
 
@@ -439,57 +560,178 @@ document.getElementById("enter-button").addEventListener("click", async function
 
 
     const formData = new FormData();
-    formData.append('username', _username.value.trim());
-    formData.append('password', _password.value.trim());
-    formData.append('email', _email.value.trim());
+    formData.append('username', _username);
+    formData.append('password', _password);
+    formData.append('email', _email);
     formData.append('image_avatar', _profileImage.files[0]);
 
     console.table(Array.from(formData.entries()));
 
-    fetch('https://localhost:8080/add-player/', {
-        method: 'POST',
-        body: formData,
-    })
-    .then(response => {
-        if (response.ok) {
-            navigateTo("login-page"); // Redirige l'utilisateur
-            return response.json();
-        } else {
-            throw new Error('Erreur lors de l\'envoi des données');
+    try {
+        const response = await fetch('https://' + window.location.host + '/add-player/', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error('Error while submitting the form');
         }
-    })
-    .then(result => {
-        console.log('Succès:', result);
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-    });
+
+        const result = await response.json();
+        console.log('Success:', result);
+        navigateTo("login-page"); // Redirige l'utilisateur
+    } catch (error) {
+        console.error('Error:', error);
+        errorMessage.textContent = "An error occurred. Please try again.";
+    }
+            
+    }
+}
 });
-
-});
-
-
-// function setupImageUpload(inputId, previewId) {
-//     const imageUpload = document.getElementById(inputId);
-//     const imagePreview = document.getElementById(previewId);
-  
-//     if (imageUpload && imagePreview) {
-//       // Écouteur d'événement pour le changement de fichier
-//       imageUpload.addEventListener('change', (event) => {
-//         const file = event.target.files[0]; // Récupère le premier fichier sélectionné
-  
-//         if (file) {
-//           const reader = new FileReader(); // Crée un FileReader
-  
-//           // Quand le fichier est lu
-//           reader.onload = (e) => {
-//             imagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
-//           };
-  
-//           reader.readAsDataURL(file); // Lit le fichier comme une URL de données
-//         }
-//       });
 //     }
-//   }
+// });
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById("test-pong")) {
+        navigateTo('game-page')
+    }
+});
+
+function getCookie(name) {
+    let cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+        let [key, value] = cookie.split("=");
+        if (key === name) {
+            return decodeURIComponent(value);  // Décoder les valeurs encodées
+        }
+    }
+    return null; // Retourne `null` si le cookie n'existe pas
+}
 
 
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("settings-page")) {
+    let session = getCookie("user_id");
+    console.log("User ID:", session);
+    let url = "https://" + window.location.host + "/user/" + session +'/';
+    console.log(url);
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log("User ID from API:", data);
+            let userID = data.user.id;
+
+            const settings_img = document.getElementById("settings-img");
+                    
+            const li = document.createElement("li");
+            if (data.user.image_avatar !== null)
+                li.innerHTML = `<img id="newImagePreview" class="preview" src=${data.user.image_avatar}>`;
+            else
+            li.innerHTML = `<img id="newImagePreview" class="preview" src=${data.user.image_avatar}>`;
+            settings_img.appendChild(li);
+            
+            document.getElementById("save-settings").addEventListener("click", async function (e) {
+                e.preventDefault(); // Empêche le comportement par défaut du bouton
+            
+                // Récupère les valeurs du formulaire
+                const _profileImage = document.getElementById('newImageUpload');
+                const _username = document.getElementById('username').value.trim();
+                const _password = document.getElementById('password2').value.trim();
+                const _confirmPassword = document.getElementById('confirm-password').value.trim();
+                const _email = document.getElementById('email').value.trim();
+        
+                const formData = new FormData();
+        
+                formData.append('player_id', userID);
+        
+                if (_username !== "") {
+                    formData.append('username', _username);
+                }
+        
+                if (_email !== "") {
+                    formData.append('email', _email);
+                }
+        
+                if (_profileImage.files[0]) {
+                    formData.append('image_avatar', _profileImage.files[0]);
+                }
+                if (_password !== "") {
+                    formData.append('password', _password);
+                }
+                if (_password !== "" && _confirmPassword !== "" && _password !== _confirmPassword) {
+                    errorMessage.textContent = "Passwords are not the same.";
+                } else if (_password === "" && _confirmPassword !== "") {
+                    errorMessage.textContent = "Please enter a new password before confirming.";
+                }
+        
+                console.table(Array.from(formData.entries()));
+                
+                try {
+                    // Envoie une requête POST à l'API
+                    const response = await fetch("https://" + window.location.host + "/update-player/", {
+                        method: "PUT",
+                        body: formData,
+                    });
+        
+                    if (!response.ok) {
+                        throw new Error('Error while submitting the form');
+                    }
+            
+                    const result = await response.json();
+                    console.log('Success:', result);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    errorMessage.textContent = "An error occurred. Please try again.";
+                }
+            
+            });
+        })
+        
+        .catch(error => console.error("Erreur lors du chargement des param du user_id :", error));
+    
+
+    
+}
+    }); 
+
+
+function deleteCookie(name) {
+    document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+}
+
+
+document.addEventListener("click", async function (event) {
+    
+// document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("settings-page")) {
+        if (event.target && event.target.id === "logout") {
+            event.preventDefault();
+        // document.getElementById("logout").addEventListener("click", async function (e) {
+            console.log("Cookies restants avand delete :", document.cookie);
+            deleteCookie("user_id");
+            console.log("Cookies restants apres delete :", document.cookie);
+            navigateTo("login-page");
+        // });
+    }
+}
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("login-page")) {
+        console.log("Cookies restants :", document.cookie);
+        if (document.cookie.includes("user_id=")) {
+            navigateTo("home-page");
+        }
+    }
+});
+
+function reloadScript(url) {
+    let oldScript = document.querySelector("script[src^='" + url + "']");
+    if (oldScript) oldScript.remove(); // Supprime l'ancien script
+
+    let newScript = document.createElement("script");
+    newScript.src = url + "?v=" + new Date().getTime(); // Ajoute un cache-buster
+    document.body.appendChild(newScript);
+}
+    

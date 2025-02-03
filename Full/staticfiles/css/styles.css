@@ -272,7 +272,7 @@ input {
   align-items: center;
 }
 
-#create-account .rectangle .content {
+#create-account-page .rectangle .content {
   font-family: 'Audiowide', sans-serif;
   margin: 20px;
   padding: 10px;
@@ -358,6 +358,8 @@ input {
   border-radius: 15px;
   transition: all 0.3s ease;
   white-space: nowrap;
+  border: 1px solid #fff;
+  cursor: pointer;
 }
 
 .custom-button:hover {
@@ -497,39 +499,6 @@ input {
   cursor: pointer; /* Garde le curseur de clic */
 }
 
-.game-rectangle {
-  position: relative;
-  width: 25%;
-  margin-top: 18em;
-  left: 2%;
-  margin-left: auto;
-  margin-right: auto;
-  background-color: #281f79;
-  border-radius: 60px;
-  border: 1px solid #ffffff;
-  box-shadow: 0px 0px 15px 5px #ffffff;
-  opacity: 0.9;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 120%;
-  font-family: 'Audiowide', sans-serif;
-  padding: 10px 5px;
-  transition: all 0.3s ease;
-}
-
-.game-rectangle:hover {
-  background-color: #D25CB9;
-  transform: scale(1.05);
-}
-
-.game-rectangle:active {
-  background-color: #D25CB9;
-  transform: scale(0.95);
-}
-
 .start-game {
   color: #fff;
   font-family: 'Audiowide', sans-serif;
@@ -629,6 +598,7 @@ input {
   border-radius: 15px;
   transition: all 0.3s ease;
   white-space: nowrap;
+  border: 1px solid #fff;
 }
 
 .settings-profileImage:hover {
@@ -643,7 +613,7 @@ input {
   transform: scale(0.95);
 }
 
-.save-button {
+#save-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -655,17 +625,19 @@ input {
   line-height: normal;
   margin-bottom: 2%;
   border-radius: 60px;
-  background-color: #D25CB9;
+  background-color: #fff;
   transition: all 0.3s ease;
+  border: 1px solid #fff;
+  color: #000;
 }
 
-.save-button:hover {
-  background-color: #281f79;
+#save-button:hover {
+  background-color: #51FBF2;
   transform: scale(1.05);
 }
 
-.save-button:active {
-  background-color: #281f79;
+#save-button:active {
+  background-color: #51FBF2;
   transform: scale(0.95);
 }
 
@@ -708,50 +680,6 @@ input {
   line-height: normal;
   margin-top: 7%;
   margin-bottom: 3%;
-}
-
-.a2f {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80%;
-  height: 18%;
-  background-color: #E085CB;
-  border-radius: 30px;
-  font-family: 'Audiowide', sans-serif;
-  margin-top: 2%;
-  color: #fff;
-  flex-direction: column;
-}
-
-.a2f-title {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 90%;
-  color: #000;
-  margin-top: 6%;
-  margin-bottom: 0;
-}
-
-#a2f-button {
-  font-size: 13px;
-  border: none;
-  background-color: transparent;
-  color: #000;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-}
-
-.switch-button {
-  font-size: 160%;
-  margin-right: 2%;
-}
-
-.a2f-explain {
-  font-size: 65%;
-  margin-left: 20%;
 }
 
 .logout {
@@ -1222,4 +1150,195 @@ input {
   width: 40px; /* Taille de l'image */
   height: 40px; /* Taille de l'image */
   border-radius: 50%; /* Image ronde */
+}
+
+.game-types {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5%;
+  flex-direction: column;
+}
+
+.choose-game {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 15px;
+}
+
+.pongs {
+  display: flex;
+  white-space: nowrap;
+  margin-bottom: 5em;
+  gap: 16%;
+  margin-top: 20em;
+}
+
+.game-rectangle {
+  position: relative;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 90%;
+  font-family: 'Audiowide', sans-serif;
+  padding: 10px 8px;
+  transition: all 0.3s ease;
+}
+
+.game-rectangle:hover, .tournament-rectangle:hover {
+  background-color: #D25CB9;
+  transform: scale(1.05);
+}
+
+.game-rectangle:active, .tournament-rectangle:active {
+  background-color: #D25CB9;
+  transform: scale(0.95);
+}
+
+.tournament-rectangle {
+  position: relative;
+  width: 25%;
+  left: 2%;
+  background-color: #281f79;
+  border-radius: 60px;
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 15px 5px #ffffff;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 90%;
+  font-family: 'Audiowide', sans-serif;
+  padding: 10px 5px;
+  transition: all 0.3s ease;
+}
+
+.difficulty-buttons {
+  display: flex;
+  position: fixed;
+  top: 50%;
+  left: 37.5%;
+  gap: 10px;
+}
+
+.difficulty-btn {
+
+  padding: 10px 20px;
+  font-size: 18px;
+  margin: 5px;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  border-radius: 5px;
+  background-color: #444;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.difficulty-btn:hover {
+  background-color: #666;
+}
+
+.difficulty-btn.selected {
+  background-color: #ff79d1;
+  color: white;
+  font-weight: bold;
+}
+
+.difficulty-btn.active {
+  color: white;
+  font-weight: bold;
+}
+
+#easy {
+  background-color: #4CAF50; /* Green for Easy */
+}
+
+#medium {
+  background-color: #FF9800; /* Orange for Medium */
+}
+
+#hard {
+  background-color: #F44336; /* Red for Hard */
+}
+
+#easy.active {
+  background-color: #388E3C; /* Darker Green */
+}
+
+#medium.active {
+  background-color: #F57C00; /* Darker Orange */
+}
+
+#hard.active {
+  background-color: #D32F2F; /* Darker Red */
+}
+
+.save-button {
+  width: 12%;
+  height: 110%;
+  background-color: #fff;
+  color: #000000;
+  font-size: 10px;
+  border-radius: 30px;
+  left: 5%;
+  font-family: 'Audiowide', sans-serif;
+  margin-bottom: 2em;
+  border: 1px solid #fff;
+  transition: all 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: #281f79;
+  transform: scale(1.05);
+  color: #fff;
+}
+
+.save-button:active {
+  background-color: #281f79;
+  transform: scale(0.95);
+  color: #fff;
+}
+
+canvas {
+  display: block;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.save-settings {
+  width: 10%;
+  height: 4%;
+  background-color: #fff;
+  color: #000000;
+  font-size: 10px;
+  border-radius: 30px;
+  left: 5%;
+  font-family: 'Audiowide', sans-serif;
+  margin-bottom: 2em;
+  border: 1px solid #fff;
+  transition: all 0.3s ease;
+  margin-top: 5%;
+}
+
+.save-settings:hover {
+  background-color: #ff79d1;
+  transform: scale(1.05);
+  color: #fff;
+}
+
+.save-settings:active {
+  background-color: #ff79d1;
+  transform: scale(0.95);
+  color: #fff;
 }
