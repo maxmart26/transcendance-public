@@ -35,7 +35,7 @@ class Intra42OAuth2(BaseOAuth2):
 
     def auth_url(self):
         # Supprime les paramètres additionnels de redirect_uri
-        redirect_uri = 'http://localhost:8080/auth/complete/intra42/'  # URL exacte
+        redirect_uri = 'https://paul-f4br9s2:4438/auth/complete/intra42/'  # URL exacte
         url = f"{self.AUTHORIZATION_URL}?client_id={self.setting('KEY')}&redirect_uri={redirect_uri}&response_type=code"
         return url
     

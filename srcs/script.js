@@ -372,7 +372,7 @@ const formData = new FormData();
 
     console.table(Array.from(formData.entries()));
 
-fetch('https://localhost:8080/add-player/', {
+fetch('https://' + window.location.host + '/add-player/', {
     method: 'POST',
     body: formData,
 })

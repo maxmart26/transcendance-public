@@ -244,7 +244,7 @@ def login_42(request):
 
 CLIENT_ID = "u-s4t2ud-740be05e283130d59321a2b45f94cc9f8d7c90cce47668da972834e6b5ce5492"
 CLIENT_SECRET = "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"
-REDIRECT_URI = "http://localhost:8080/auth/complete/intra42/"
+REDIRECT_URI = "https://paul-f4br9s2:4438/auth/complete/intra42/"
 
 def oauth_callback(request):
       # Étape 1 : Récupérer le code d'autorisation

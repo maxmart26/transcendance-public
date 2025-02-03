@@ -22,7 +22,7 @@ const pagesContent = {
               <img class="img" src="static/img/line1.png" />
           </div>
           <div class="login">
-            <button onclick="window.location.href='https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-740be05e283130d59321a2b45f94cc9f8d7c90cce47668da972834e6b5ce5492&redirect_uri=http://localhost:8080/auth/complete/intra42/&response_type=code'" class="button2">
+            <button onclick="window.location.href='https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-740be05e283130d59321a2b45f94cc9f8d7c90cce47668da972834e6b5ce5492&redirect_uri=https://' + window.location.host + '/auth/complete/intra42/&response_type=code'" class="button2">
                 <p class="text">Login with</p>
                 <img class="element-icon" src="static/img/42.png" />
             </button>
@@ -437,7 +437,7 @@ document.addEventListener("click", async function (event) {
     console.table(Array.from(formData.entries()));
     try {
         // Envoie une requête POST à l'API
-        const response = await fetch("http://localhost:8080/login/", {
+        const response = await fetch("https://" + window.location.host + "/login/", {
             method: "POST",
             body: formData,
         });
@@ -536,7 +536,7 @@ document.addEventListener("click", async function (event) {
     console.table(Array.from(formData.entries()));
 
     try {
-        const response = await fetch('http://localhost:8080/add-player/', {
+        const response = await fetch('https://' + window.location.host + '/add-player/', {
             method: 'POST',
             body: formData,
         });
@@ -581,7 +581,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (document.getElementById("settings-page")) {
     let session = getCookie("user_id");
     console.log("User ID:", session);
-    let url = "http://localhost:8080/user/" + session +'/';
+    let url = "https://" + window.location.host + "/user/" + session +'/';
     console.log(url);
     fetch(url)
         .then(response => response.json())
@@ -636,7 +636,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 
                 try {
                     // Envoie une requête POST à l'API
-                    const response = await fetch("http://localhost:8080/update-player/", {
+                    const response = await fetch("https://" + window.location.host + "/update-player/", {
                         method: "PUT",
                         body: formData,
                     });
