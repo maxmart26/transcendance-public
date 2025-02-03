@@ -17,6 +17,7 @@ from rest_framework_simplejwt.views import (
 )
 from myapp.views import PlayerListView
 
+
 schema_view = get_schema_view(
     openapi.Info(
         title="API Documentation",
