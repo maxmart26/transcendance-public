@@ -259,7 +259,8 @@ function draw(status) {
 		return;
 	}
 
-	this.context.font = '100px Impact';
+	//this.context.font = '100px Impact';
+	this.context.font = '900 100px Ubuntu';
 	this.context.textAlign = 'center';
 
 	this.context.fillStyle = '#ffffff';

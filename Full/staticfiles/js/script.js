@@ -300,11 +300,6 @@ const pagesContent = {
             <button id="medium" onclick="load_game('medium')" class="difficulty-btn">Medium</button>
             <button id="hard" onclick="load_game('hard')" class="difficulty-btn">Hard</button>
         </div>
-        <div id="online-game-container">
-            <canvas></canvas>
-        </div>
-        
-        
     </div>
   `,
   "tournament-page": `
