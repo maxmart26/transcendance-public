@@ -445,11 +445,6 @@ document.querySelectorAll('a.nav-link').forEach(link => {
     });
 });
 
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     if (document.getElementById("login-page")) {
-//     document.getElementById("enter-button").addEventListener("click", async function (e) {
-//     e.preventDefault(); // Empêche le comportement par défaut du bouton
 document.addEventListener("click", async function (event) {
     if (event.target && event.target.id === "enter-button") {
         event.preventDefault();
@@ -489,18 +484,12 @@ document.addEventListener("click", async function (event) {
 }   
 });
 
-//     }
-// }); 
-
 document.addEventListener("click", async function (event) {
-    
-// document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById("create-account-page")) {
 
     const imageUpload = document.getElementById('imageUpload');
     const imagePreview = document.getElementById('imagePreview');
     const errorMessage = document.getElementById('account-error');
-    const saveButton = document.getElementById('save-button');
     
     // Ajoute un gestionnaire pour l'input file
     imageUpload.addEventListener('change', function () {
@@ -524,17 +513,13 @@ document.addEventListener("click", async function (event) {
 
     if (event.target && event.target.id === "save-button") {
         event.preventDefault();
-    // saveButton.addEventListener("click", async function (e) {
-   
-    // e.stopPropagation(); // Empêche le comportement par défaut du bouton
     
     
     const _profileImage = document.getElementById('imageUpload');
-    const _username = document.getElementById('user');
-    const _password = document.getElementById('password2');
-    const _confirmPassword = document.getElementById('confirm-password');
-    const _email = document.getElementById('email');
-    const errorMessage = document.getElementById('error-message');
+    const _username = document.getElementById('user').value.trim();
+    const _password = document.getElementById('password2').value.trim();
+    const _confirmPassword = document.getElementById('confirm-password').value.trim();
+    const _email = document.getElementById('email').value.trim();
 
     if (_username === "") {
         errorMessage.textContent = "Username is required.";
@@ -549,6 +534,9 @@ document.addEventListener("click", async function (event) {
     } else if (_password !== _confirmPassword) {
         errorMessage.textContent = "Passwords are not the same.";
     }
+
+    console.log(_password);
+    console.log(_confirmPassword);
 
     if (_email === "") {
         errorMessage.textContent = "Email is required.";
@@ -566,6 +554,8 @@ document.addEventListener("click", async function (event) {
     formData.append('image_avatar', _profileImage.files[0]);
 
     console.table(Array.from(formData.entries()));
+
+    console.table(window.location.host);
 
     try {
         const response = await fetch('https://' + window.location.host + '/add-player/', {
@@ -588,8 +578,6 @@ document.addEventListener("click", async function (event) {
     }
 }
 });
-//     }
-// });
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById("test-pong")) {
