@@ -401,41 +401,19 @@ document.getElementById("enter-button").addEventListener("click", async function
         errorMessage.textContent = "Server error. Please try again later.";
     }
 });
-});
 
 
-// function setupImageUpload(inputId, previewId) {
-//     const imageUpload = document.getElementById(inputId);
-//     const imagePreview = document.getElementById(previewId);
-  
-//     if (imageUpload && imagePreview) {
-//       // Écouteur d'événement pour le changement de fichier
-//       imageUpload.addEventListener('change', (event) => {
-//         const file = event.target.files[0]; // Récupère le premier fichier sélectionné
-  
-//         if (file) {
-//           const reader = new FileReader(); // Crée un FileReader
-  
-//           // Quand le fichier est lu
-//           reader.onload = (e) => {
-//             imagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
-//           };
-  
-//           reader.readAsDataURL(file); // Lit le fichier comme une URL de données
-//         }
-//       });
-//     }
-//   }
-
-document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("save-button").addEventListener("click", async function (e) {
     e.preventDefault(); // Empêche le comportement par défaut du bouton
+
+    console.log("saving infos");
+
     const _profileImage = document.getElementById('imageUpload');
     const _username = document.getElementById('user');
     const _password = document.getElementById('password2');
     const _confirmPassword = document.getElementById('confirm-password');
     const _email = document.getElementById('email');
-    const errorMessage = document.getElementById('error-message');
+    const errorMessage = document.getElementById('account-error');
 
     if (_username.value.trim() === "") {
         errorMessage.textContent = "Username is required.";
@@ -487,4 +465,31 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Erreur:', error);
     });
 });
+
 });
+
+
+// function setupImageUpload(inputId, previewId) {
+//     const imageUpload = document.getElementById(inputId);
+//     const imagePreview = document.getElementById(previewId);
+  
+//     if (imageUpload && imagePreview) {
+//       // Écouteur d'événement pour le changement de fichier
+//       imageUpload.addEventListener('change', (event) => {
+//         const file = event.target.files[0]; // Récupère le premier fichier sélectionné
+  
+//         if (file) {
+//           const reader = new FileReader(); // Crée un FileReader
+  
+//           // Quand le fichier est lu
+//           reader.onload = (e) => {
+//             imagePreview.src = e.target.result; // Définit la source de l'image de prévisualisation
+//           };
+  
+//           reader.readAsDataURL(file); // Lit le fichier comme une URL de données
+//         }
+//       });
+//     }
+//   }
+
+
