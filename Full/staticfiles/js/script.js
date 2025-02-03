@@ -297,8 +297,8 @@ const pagesContent = {
         </div>
         <div class="difficulty-buttons">
             <button id="easy" onclick="window.location.href='create-game/easy/'" class="difficulty-btn">Easy</button>
-            <button id="medium" href="#create-game/medium" class="difficulty-btn">Medium</button>
-            <button id="hard" href="#create-game/hard" class="difficulty-btn">Hard</button>
+            <button id="medium" onclick="window.location.href='create-game/medium/'" class="difficulty-btn">Medium</button>
+            <button id="hard" onclick="window.location.href='create-game/hard/'" class="difficulty-btn">Hard</button>
         </div>
         <div id="online-game-container">
             <canvas></canvas>
