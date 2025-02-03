@@ -53,7 +53,7 @@ def create_game(request, difficulty):
     else:
         match_id = uuid.uuid4()
         waiting_games[difficulty][match_id] = user_id
-    return redirect(f'/game/{match_id}/')
+    return redirect('game', match_id=match_id)
 
 @sync_to_async
 def set_matchid_cookie(response, match_id):
@@ -68,7 +68,8 @@ def set_matchid_cookie(response, match_id):
     )
 
 async def game(request, match_id):
-    response = render(request, 'game-page.html')
+    #response = render(request, 'index.html')
+    response = HttpResponse(status=204)
     await set_matchid_cookie(response, match_id)
     return response
 

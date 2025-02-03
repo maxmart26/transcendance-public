@@ -3,6 +3,19 @@ body {
   padding: 0;
   font-family: 'Audiowide', sans-serif;
   overflow-x: hidden;
+
+  /* mes modifs pour ajuster la position du jeu, si un truc est cassé c'est ici : */
+  /* display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; */
+}
+
+canvas {
+  position: absolute;
+  z-index: 1;
+  top: 25%;
+  left: 30%;
 }
 
 .login-page {
