@@ -296,15 +296,10 @@ const pagesContent = {
               </div>
         </div>
         <div class="difficulty-buttons">
-            <button id="easy" onclick="window.location.href='create-game/easy/'" class="difficulty-btn">Easy</button>
-            <button id="medium" onclick="window.location.href='create-game/medium/'" class="difficulty-btn">Medium</button>
-            <button id="hard" onclick="window.location.href='create-game/hard/'" class="difficulty-btn">Hard</button>
+            <button id="easy" onclick="load_game('easy')" class="difficulty-btn">Easy</button>
+            <button id="medium" onclick="load_game('medium')" class="difficulty-btn">Medium</button>
+            <button id="hard" onclick="load_game('hard')" class="difficulty-btn">Hard</button>
         </div>
-        <div id="online-game-container">
-            <canvas></canvas>
-        </div>
-        
-        
     </div>
   `,
   "tournament-page": `
@@ -377,8 +372,8 @@ const pagesContent = {
         </div>
     </div>
     `,
-    "game-page":`
-    <div id="game-page">
+    "pong-game-page":`
+    <div id="pong-game">
         <div class="home-navbar">
             <div class="navbar-left">
                 <p class="text-wrapper">PONG</p>
@@ -393,36 +388,68 @@ const pagesContent = {
                 </div>
             </div>
         </div>
-        <h1>ft_PONG</h1>
-        <canvas></canvas>
-        <p id='test-pong'>C'est bon transcendence c fini.</p>
-
-        {% load static %}
-        <script>
-            const script = document.createElement('script');
-            script.src = "{% static 'js/drawGame.js' %}";
-            script.defer = true;
-            document.body.appendChild(script);
-            script.onload = function() {
-                    init_game();
-            };
-        </script>
     </div>
-    `
+    `,
 };
+
+let game_running = false;
 
 function getPageName(page) {
     return page.endsWith('-page') ? page : `${page}-page`;
 }
 
+function getCurrentTab() {
+    const hash = window.location.hash;
+    if (hash)
+        return hash.substring(1); // Supprimer le '#'
+    return null;
+}
+
 // Fonction pour gérer la navigation avec l'historique
 function navigateTo(page, addToHistory = true) {
     const normalizedPage = getPageName(page);
+    if (normalizedPage == 'pong-game-page')
+        document.body.id = 'pong-game-page';
+    else
+        document.body.id = '';
     if (addToHistory) {
         window.history.pushState({ normalizedPage }, normalizedPage, `#${normalizedPage}`);
     }
     const app = document.getElementById('pong');
     app.innerHTML = pagesContent[normalizedPage] || `<h1>Page not found</h1>`;
+}
+
+function load_game(difficulty){
+    window.location.href='create-game/' + difficulty + '/'
+    wait_cookie();
+    function wait_cookie(){
+        if (document.cookie.includes('match_id')){
+            navigateTo('pong-game-page', true);
+            const pongGameTab = document.getElementById('pong-game');
+            const canvas = document.createElement('canvas')
+            pongGameTab.appendChild(canvas);
+            const script = document.createElement('script');
+            script.src = pong_url;
+            script.defer = true;
+            pongGameTab.appendChild(script);
+            script.onload = () => {
+                init_game();
+            }
+
+            const interval = setInterval(() => {
+                if (getCurrentTab() !== 'pong-game-page'){
+                    kill();
+                    script.remove();
+                    canvas.remove();
+	                deleteCookie('match_id');
+	                console.log("game killed.");
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+        else
+            setTimeout(wait_cookie, 100);
+    }
 }
 
 // Initialisation
@@ -577,12 +604,6 @@ document.addEventListener("click", async function (event) {
             
     }
 }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById("test-pong")) {
-        navigateTo('game-page')
-    }
 });
 
 function getCookie(name) {

@@ -218,7 +218,6 @@ def login(request):
             httponly=True,       # HTTPOnly pour la sécurité (non accessible en JS)
             secure=True,         # True si vous utilisez HTTPS
             samesite='Strict',   # Protéger contre les attaques CSRF
-            max_age=3600,        # Durée de vie du cookie (en secondes, ici 1 heure)
         )
         response.set_cookie(
             key='user_id',       # Nom du cookie
@@ -226,7 +225,6 @@ def login(request):
             httponly=False,      # Accessible via JavaScript si besoin (optionnel)
             secure=True,         # True si vous utilisez HTTPS
             samesite='Strict',   # Protéger contre les attaques CSRF
-            max_age=3600,        # Durée de vie du cookie (en secondes, ici 1 heure)
         )
         return response
     else:
@@ -313,7 +311,6 @@ def oauth_callback(request):
             httponly=True,  # HTTPOnly pour empêcher l'accès via JavaScript
             secure=True,  # True si vous utilisez HTTPS
             samesite='Strict',  # Protéger contre les attaques CSRF
-            max_age=3600,  # Durée de vie du cookie en secondes (1 heure)
         )
         response.set_cookie(
             key='user_id',  # Nom du cookie
@@ -321,7 +318,6 @@ def oauth_callback(request):
             httponly=False,  # Accessible via JavaScript si nécessaire
             secure=True,  # True si vous utilisez HTTPS
             samesite='Strict',  # Protéger contre les attaques CSRF
-            max_age=3600,  # Durée de vie du cookie en secondes (1 heure)
         )
         return response
 

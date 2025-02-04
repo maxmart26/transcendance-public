@@ -16,14 +16,17 @@ this.paddle_width = 15;
 this.ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height / 2 - (ball_size / 2)};
 this.player1 = {};
 this.player2 = {};
-let round_nb = 0;
 this.game_status = 'waiting';
-let winner = 'Michel';
 
-let match_id;
-let player_id;
-let player_nb = 0;
-let difficulty;
+this.round_nb = 0;
+this.winner = 'Michel';
+
+this.match_id;
+this.player_id;
+this.player_nb;
+this.difficulty;
+
+this.socket = null;
 
 function getCookieValue(cookieName) {
 	const name = cookieName + "=";
@@ -102,7 +105,7 @@ function draw(status) {
 	this.context.strokeStyle = '#4bdae0';
 	this.context.stroke();
 
-	this.context.font = '50px Impact';
+	this.context.font = '50px Audiowide';
 	this.context.textAlign = 'center';
 
 	if (status == 'waiting')
@@ -121,7 +124,7 @@ function draw(status) {
 		this.context.shadowOffsetY = 0;
 		this.context.shadowBlur = 0;
 		this.context.fillStyle = '#ffffff';
-		this.context.font = '50px Impact';
+		this.context.font = '50px Audiowide';
 		this.context.textAlign = 'center';
 		this.context.fillText('Waiting for players...',
 			this.canvas.width / 2,
@@ -146,7 +149,7 @@ function draw(status) {
 	this.context.shadowOffsetY = 0;
 	this.context.shadowBlur = 0;
 
-	this.context.font = '50px Impact';
+	this.context.font = '50px Audiowide';
 	this.context.textAlign = 'center';
 
 	this.context.fillStyle = '#eba811';
@@ -211,7 +214,7 @@ function draw(status) {
 	if (player_nb == 'spectator')
 	{
 	
-		this.context.font = '50px Impact';
+		this.context.font = '50px Audiowide';
 		this.context.textAlign = 'center';
 		this.context.fillStyle = '#ffffff'
 		this.context.shadowOffsetX = -1;
@@ -249,14 +252,14 @@ function draw(status) {
 		this.context.shadowBlur = 0;
 		this.context.fillStyle = '#ffffff';
 		this.context.textAlign = 'center';
-		this.context.font = '50px Impact';
+		this.context.font = '50px Audiowide';
 		this.context.fillText(winner + ' won!',
 			this.canvas.width / 2,
 			this.canvas.height / 2 + 20);
 		return;
 	}
 
-	this.context.font = '100px Impact';
+	this.context.font = '100px Audiowide';
 	this.context.textAlign = 'center';
 
 	this.context.fillStyle = '#ffffff';
@@ -295,8 +298,7 @@ function start_game(socket)
 {	
 	socket.send(JSON.stringify({
 		'type': 'match_start',
-		'match_id': self.match_id,
-		'player_id': player_id
+		'match_id': self.match_id
 	}))
 	console.log("Match starts.\n");
 	draw('playing');
@@ -327,13 +329,14 @@ function start_game(socket)
 					player2.score_bo++;
 				console.log(player_nb + " received a game over notification.\n");
 				draw('over');
+				kill();
 				break;
 		}
 	};
 
 	document.addEventListener('keydown', (event) => {
 		let action = null;
-
+		event.stopPropagation();
 		if (event.key === 'ArrowUp') {
 			action = 'move_up';
 		} else if (event.key === 'ArrowDown') {
@@ -349,12 +352,22 @@ function start_game(socket)
 	});
 
 	document.addEventListener('keyup', (event) => {
+		event.stopPropagation();
 		socket.send(JSON.stringify({
 			'type': 'action',
 			'action': 'noo',
 			'player_nb': player_nb
 		}));
 	});
+}
+
+function kill()
+{
+	socket.send(JSON.stringify({
+		'type': 'player_disconnect',
+		'id': self.player_id
+	}))
+	socket.close();
 }
 
 function init_game()
@@ -366,7 +379,7 @@ function init_game()
 	console.log("Match_id: " + match_id);
 	console.log("Player_id: " + player_id);
 
-	const socket = new WebSocket('wss://' + window.location.host + '/ws/game/' + match_id + '/');
+	socket = new WebSocket('wss://' + window.location.host + '/ws/game/' + match_id + '/');
 
 	socket.onopen = function(e) {
 		console.log("WebSocket state open");
@@ -378,8 +391,9 @@ function init_game()
 		console.log("Received new " + data.type + "\n");
 		if (data.type === 'match_setup')
 		{
-			match_id = data.match_id
-			difficulty = data.difficulty
+			match_id = data.match_id;
+			difficulty = data.difficulty;
+			round_nb = 0;
 
 			player1.id = data.player1;
 			player1.name = data.player1_name;
@@ -415,7 +429,7 @@ function init_game()
 	};
 
 	socket.onclose = function(e) {
-		console.error('Socket WebSocket closed (error)');
+		console.error('Socket WebSocket closed');
 	};
 	socket.onerror = function(err) {
 		console.error('Error WebSocket :', err);

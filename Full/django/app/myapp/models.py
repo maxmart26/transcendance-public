@@ -33,11 +33,13 @@ class Player(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(_('password'), max_length=128)
     email = models.EmailField(max_length=128, unique=True)
     image_avatar = models.ImageField(upload_to='avatar/', null=True, blank=True)
-    nb_game_play = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    nb_game_win = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    nb_game_play = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    nb_game_win = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     color = models.CharField(max_length=7, default='#ff79d1')
+
+    games_history = models.JSONField(default=dict)
 
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
     nb_friends = models.IntegerField(default=0)

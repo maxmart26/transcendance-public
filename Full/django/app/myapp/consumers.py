@@ -7,7 +7,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
 from .models import Match, Player
-from .views import games
+from .views import games, waiting_games
 
 class MatchManager(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -23,10 +23,18 @@ class MatchManager(AsyncWebsocketConsumer):
 				'match_id': self.match.id
 			})
 
-	async def disconnect(self):
+	async def disconnect(self, _):
+		for difficulty in waiting_games:
+			for match_id in waiting_games[difficulty]:
+				if waiting_games[difficulty][match_id] == self.player_id:
+					del waiting_games[difficulty][match_id]
+					print(f"User ", self.player_id, " has been removed from ", difficulty, " waiting list.", file=sys.stderr)
+					break
+
 		print("Client ", self.player_id, " disconnected.\n", file=sys.stderr)
+
 		await self.channel_layer.group_send(
-						self.channel_group,
+				f"match_{self.match_id}",
 			{	'type': 'client.disconnected',
 				'info': 'client_disconnected',
 				'client': self.player_id
@@ -44,10 +52,15 @@ class MatchManager(AsyncWebsocketConsumer):
 			# if self.match.status == 'waiting': self.match.status = 'starting'
 			# elif self.match.status == 'starting': self.match.status == 'playing'
 			print("match is ", self.match.status, "\n", file=sys.stderr)
+			self.player1.nb_game_play += 1
+			self.player2.nb_game_play += 1
 			asyncio.create_task(self.game.game_starter(self.channel_layer))
 
 		elif type == 'action':
 			await self.game.action(info_json.get('action'), info_json.get('player_nb'))
+
+		elif type == 'player_disconnect':
+			self.player_id = info_json.get('id')
 
 #===========================================================
 
@@ -96,7 +109,16 @@ class MatchManager(AsyncWebsocketConsumer):
 		
 	async def game_over(self, event):
 		winner = self.player1.username
-		if event['winner'] == '2': winner = self.player2.username
+		if event['winner'] == '2':
+			winner = self.player2.username
+			self.player2.nb_game_win += 1
+			self.player2.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'win'}
+			self.player1.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'lose'}
+		else:
+			self.player1.nb_game_win += 1
+			self.player1.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'win'}
+			self.player2.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'lose'}
+			
 		print("Player ", event['winner'], "won! (", winner, ")\n", file=sys.stderr)
 		await self.send(text_data=json.dumps({'type': event["info"],
 											'status': event['status'],
@@ -104,9 +126,9 @@ class MatchManager(AsyncWebsocketConsumer):
 		
 	async def client_disconnected(self, event):
 		winner = self.player1.username
-		if event['client'] == self.player1.id: winner = self.player2.username
+		if str(event['client']) == str(self.player1.id): winner = self.player2.username
 		await self.channel_layer.group_send(
-						self.channel_group,
+				f"match_{self.match_id}",
 			{	'type': 'game.over',
 				'info': 'game_over',
 				"status": 'over',
