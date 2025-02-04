@@ -337,7 +337,7 @@ function start_game(socket)
 
 	document.addEventListener('keydown', (event) => {
 		let action = null;
-
+		event.stopPropagation();
 		if (event.key === 'ArrowUp') {
 			action = 'move_up';
 		} else if (event.key === 'ArrowDown') {
@@ -353,6 +353,7 @@ function start_game(socket)
 	});
 
 	document.addEventListener('keyup', (event) => {
+		event.stopPropagation();
 		socket.send(JSON.stringify({
 			'type': 'action',
 			'action': 'noo',

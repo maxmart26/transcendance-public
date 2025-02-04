@@ -408,6 +408,10 @@ function getCurrentTab() {
 // Fonction pour gérer la navigation avec l'historique
 function navigateTo(page, addToHistory = true) {
     const normalizedPage = getPageName(page);
+    if (normalizedPage == 'pong-game-page')
+        document.body.id = 'pong-game-page';
+    else
+        document.body.id = '';
     if (addToHistory) {
         window.history.pushState({ normalizedPage }, normalizedPage, `#${normalizedPage}`);
     }

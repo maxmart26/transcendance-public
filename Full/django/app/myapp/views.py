@@ -68,7 +68,6 @@ def set_matchid_cookie(response, match_id):
     )
 
 async def game(request, match_id):
-    #response = render(request, 'index.html')
     response = HttpResponse(status=204)
     await set_matchid_cookie(response, match_id)
     return response

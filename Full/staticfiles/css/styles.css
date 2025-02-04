@@ -11,6 +11,10 @@ body {
   min-height: 100vh; */
 }
 
+body#pong-game-page {
+  overflow: hidden;
+}
+
 canvas {
   position: absolute;
   z-index: 1;
@@ -1239,9 +1243,9 @@ input {
 
 .difficulty-buttons {
   display: flex;
-  position: fixed;
+  position: absolute;
   top: 50%;
-  left: 37.5%;
+  left: 42%;
   gap: 10px;
 }
 
