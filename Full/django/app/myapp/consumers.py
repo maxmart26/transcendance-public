@@ -125,8 +125,8 @@ class MatchManager(AsyncWebsocketConsumer):
 											'winner': winner}))
 		
 	async def client_disconnected(self, event):
-		winner = self.player1.username
-		if str(event['client']) == str(self.player1.id): winner = self.player2.username
+		winner = '1'
+		if str(event['client']) == str(self.player1.id): winner = '2'
 		await self.channel_layer.group_send(
 				f"match_{self.match_id}",
 			{	'type': 'game.over',
