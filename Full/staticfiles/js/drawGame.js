@@ -105,7 +105,7 @@ function draw(status) {
 	this.context.strokeStyle = '#4bdae0';
 	this.context.stroke();
 
-	this.context.font = '50px Impact';
+	this.context.font = '50px Audiowide';
 	this.context.textAlign = 'center';
 
 	if (status == 'waiting')
@@ -124,7 +124,7 @@ function draw(status) {
 		this.context.shadowOffsetY = 0;
 		this.context.shadowBlur = 0;
 		this.context.fillStyle = '#ffffff';
-		this.context.font = '50px Impact';
+		this.context.font = '50px Audiowide';
 		this.context.textAlign = 'center';
 		this.context.fillText('Waiting for players...',
 			this.canvas.width / 2,
@@ -149,7 +149,7 @@ function draw(status) {
 	this.context.shadowOffsetY = 0;
 	this.context.shadowBlur = 0;
 
-	this.context.font = '50px Impact';
+	this.context.font = '50px Audiowide';
 	this.context.textAlign = 'center';
 
 	this.context.fillStyle = '#eba811';
@@ -214,7 +214,7 @@ function draw(status) {
 	if (player_nb == 'spectator')
 	{
 	
-		this.context.font = '50px Impact';
+		this.context.font = '50px Audiowide';
 		this.context.textAlign = 'center';
 		this.context.fillStyle = '#ffffff'
 		this.context.shadowOffsetX = -1;
@@ -252,15 +252,14 @@ function draw(status) {
 		this.context.shadowBlur = 0;
 		this.context.fillStyle = '#ffffff';
 		this.context.textAlign = 'center';
-		this.context.font = '50px Impact';
+		this.context.font = '50px Audiowide';
 		this.context.fillText(winner + ' won!',
 			this.canvas.width / 2,
 			this.canvas.height / 2 + 20);
 		return;
 	}
 
-	//this.context.font = '100px Impact';
-	this.context.font = '900 100px Ubuntu';
+	this.context.font = '100px Audiowide';
 	this.context.textAlign = 'center';
 
 	this.context.fillStyle = '#ffffff';
