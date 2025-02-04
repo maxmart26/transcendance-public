@@ -121,11 +121,8 @@ function draw(status) {
 				700,
 				100);
 		this.context.shadowOffsetX = 0;
-		this.context.shadowOffsetY = 0;
 		this.context.shadowBlur = 0;
 		this.context.fillStyle = '#ffffff';
-		this.context.font = '50px Audiowide';
-		this.context.textAlign = 'center';
 		this.context.fillText('Waiting for players...',
 			this.canvas.width / 2,
 			this.canvas.height / 2 + 15);
@@ -134,7 +131,6 @@ function draw(status) {
 
 	this.context.fillStyle = this.diff_color[difficulty]
 	this.context.shadowOffsetX = -1;
-	this.context.shadowOffsetY = 0;
 	this.context.shadowBlur = 15;
 	this.context.shadowColor = this.diff_color[difficulty];
 
@@ -145,13 +141,8 @@ function draw(status) {
 		60
 	);
 
-	this.context.shadowOffsetX = 0;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 0;
-
 	this.context.font = '50px Audiowide';
 	this.context.textAlign = 'center';
-
 	this.context.fillStyle = '#eba811';
 	this.context.shadowOffsetX = -1;
 	this.context.shadowOffsetY = 0;
@@ -166,7 +157,6 @@ function draw(status) {
 	);
 
 	//Dessiner le score du BO
-
 	if (player1.score_bo > 0)
 	{
 		this.context.fillRect(
@@ -213,9 +203,6 @@ function draw(status) {
 
 	if (player_nb == 'spectator')
 	{
-	
-		this.context.font = '50px Audiowide';
-		this.context.textAlign = 'center';
 		this.context.fillStyle = '#ffffff'
 		this.context.shadowOffsetX = -1;
 		this.context.shadowOffsetY = 0;
@@ -232,7 +219,6 @@ function draw(status) {
 		this.context.shadowOffsetX = 0;
 		this.context.shadowOffsetY = 0;
 		this.context.shadowBlur = 0;
-		
 		}
 	
 	if (status == 'over')
