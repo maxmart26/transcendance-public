@@ -78,9 +78,7 @@ const pagesContent = {
               </div>
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                  <div class="profile-container>
-                    <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
-                  </div>
+                  <div id="profile-container" class="profile-container"></div>
               </div>
         </div>
         <div class="game-types">
@@ -104,9 +102,7 @@ const pagesContent = {
               </div>
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                  <div class="profile-container">
-                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
-                  </div>
+                  <div id="profile-container" class="profile-container"></div>
               </div>
           </div>
           <div class="rectangle">
@@ -118,9 +114,7 @@ const pagesContent = {
               <div class="profile">
                   <div class="recap-infos">
                       <div class="icon">
-                          <div id="settings-img" class="people-contour">
-                              
-                          </div>
+                          <div id="settings-img" class="people-contour"></div>
                           <div class="file">
                               <div class="upload">
                                   <input type="file" id="newImageUpload" accept="image/*" hidden>
@@ -161,48 +155,24 @@ const pagesContent = {
               </div>
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                  <div class="profile-container">
-                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
-                  </div>
+                  <div id="profile-container" class="profile-container"></div>
               </div>
         </div>
         <div class="rectangle">
             <p class="lead-title">LEADERBOARD</p>
             <div class="lead-players">
-                <div id="second" class="rank">
-                    <p class="rank-title">2nd</p>
-                    <img src="static/img/42.png" alt="Profile" class="lead-img">
-                    <p class="rank-username">Username</p>
-                </div>
-                <div id="first" class="rank">
-                    <p class="rank-title">1st</p>
-                    <img src="static/img/fox.png" alt="Profile" class="first-img">
-                    <p class="rank-username">Username</p>
-                </div>
-                <div id="third" class="rank">
-                    <p class="rank-title">3rd</p>
-                    <img src="static/img/fox.png" alt="Profile" class="lead-img">
-                    <p class="rank-username">Username</p>
-                </div>
+                <div id="second" class="rank"></div>
+                <div id="first" class="rank"></div>
+                <div id="third" class="rank"></div>
             </div>
             <div class="scoreboard">
                 <div class="ranklist">
                     <p class="ranklist-title">Rank</p>
-                    <p class="ranklist-player">1.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                    <p class="ranklist-player">2.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                    <p class="ranklist-player">3.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                    <p class="ranklist-player">4.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                    <p class="ranklist-player">5.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                    <p class="ranklist-player">6.<img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                    <div id="ranklist" class="rank-list"></div>
                 </div>
                 <div class="score">
                     <p class="ranklist-title">Score</p>
-                    <p class="score-nb">20</p>
-                    <p class="score-nb">18</p>
-                    <p class="score-nb">14</p>
-                    <p class="score-nb">6</p>
-                    <p class="score-nb">2</p>
-                    <p class="score-nb">1</p>
+                    <div id="score-list" class="score-list"></div>
                 </div>
             </div>
         </div>
@@ -219,9 +189,7 @@ const pagesContent = {
               </div>
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                  <div class="profile-container">
-                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
-                  </div>
+                  <div id="profile-container" class="profile-container"></div>
               </div>
         </div>
         <div class="lead-rectangle">
@@ -229,7 +197,7 @@ const pagesContent = {
             <div class="profile-infos">
                 <div class="profile-recap">
                     <div class="user">
-                        <img src="static/img/fox.png" alt="Profile" class="first-img">
+                        <div id="profile-container"></div>
                         <div class="user-online">
                             <p class="profile-username">Username</p>
                             <div class="online">ONLINE</div>
@@ -270,9 +238,7 @@ const pagesContent = {
               </div>
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                  <div class="profile-container">
-                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
-                  </div>
+                  <div id="profile-container" class="profile-container"></div>
               </div>
         </div>
         <div id="game-container"></div>
@@ -290,9 +256,7 @@ const pagesContent = {
               </div>
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                  <div class="profile-container">
-                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
-                  </div>
+                  <div id="profile-container" class="profile-container"></div>
               </div>
         </div>
         <div class="difficulty-buttons">
@@ -313,9 +277,7 @@ const pagesContent = {
               </div>
               <div class="navbar-right">
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                  <div class="profile-container">
-                      <button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
-                  </div>
+                  <div id="profile-container" class="profile-container"></div>
               </div>
         </div>
         <div id="online-game-container"></div>
@@ -338,9 +300,7 @@ const pagesContent = {
             </div>
             <div class="navbar-right">
                 <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                <div class="profile-container">
-                    <button id="profile-img" onclick=""><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
-                </div>
+                <div id="profile-container" class="profile-container"></div>
             </div>
         </div>
         <div class="friends-rectangle">
@@ -383,9 +343,7 @@ const pagesContent = {
             </div>
             <div class="navbar-right">
                 <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                <div class="profile-container">
-                    <button id="profile-img" onclick=""><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>
-                </div>
+                <div id="profile-container" class="profile-container"></div>
             </div>
         </div>
     </div>
@@ -393,6 +351,94 @@ const pagesContent = {
 };
 
 let game_running = false;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        
+        let session = getCookie("user_id");
+        console.log("User ID:", session);
+        let url = "https://" + window.location.host + "/user/" + session +'/';
+        console.log(url);
+        // Remplace l'URL par l'endpoint de ton API qui retourne l'image de l'utilisateur
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch profile image');
+
+        const data = await response.json();
+        
+        const profilePic = document.getElementById("profile-container");
+        
+        if (data.user.image_avatar && profilePic) {
+            const li = document.createElement("li");
+            if (data.user.image_avatar !== null)
+                li.innerHTML = `<button id="profile-img" onclick="window.location.href='#profile-page'"><img src=${data.user.image_avatar} alt="Profile" class="profile-image"></button>`;
+            else
+                li.innerHTML = `<button id="profile-img" onclick="window.location.href='#profile-page'"><img src="static/img/fox.png" alt="Profile" class="profile-image"></button>`;
+
+            profilePic.appendChild(li);
+        }
+    } catch (error) {
+        console.error('Error loading profile image:', error);
+    }
+
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        let url = "https://" + window.location.host + "/leaderboard/";
+        console.log(url);
+        // Remplace l'URL par l'endpoint de ton API qui retourne l'image de l'utilisateur
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch leaderboard');
+
+        const data = await response.json();
+        
+        if (document.getElementById("leaderboard-page")) {
+            let i = 0;
+            const first = document.getElementById("first");
+            const second = document.getElementById("second");
+            const third = document.getElementById("third");
+            const ranklist = document.getElementById("ranklist");
+            const score = document.getElementById("score-list");
+            
+            while (i < 5) {
+                const li = document.createElement("li");
+                const li2 = document.createElement("li");
+                const li3 = document.createElement("li");
+                if (data[i]) {
+                
+                li.innerHTML = `<p class="rank-title">Rank ${i+1}</p>
+                <img src=${data[i].image_avatar} alt="Profile" class="first-img">
+                <p class="rank-username">${data[i].username}</p>`;
+
+                li2.innerHTML = `<p class="ranklist-player">${i+1}.<img src=${data[i].image_avatar} alt="Profile" class="ranklist-img">${data[i].username}</p>`;
+                
+                li3.innerHTML = `<p class="score-nb">${data[i].nb_game_win}</p>`;
+                
+                ranklist.appendChild(li2);
+                score.appendChild(li3);
+                
+            }
+            else {
+                if (i < 3) {
+                li.innerHTML = `<p class="rank-title">Rank ${i+1}</p>
+                <img src="static/img/person.png" alt="Profile" class="first-img">
+                <p class="rank-username">Username</p>`;
+                }
+            }
+            if (i === 0)
+                first.appendChild(li);
+            else if (i === 1)
+                second.appendChild(li);
+            else if (i == 2)
+                third.appendChild(li);
+
+            i++;
+        }
+        }
+    } catch (error) {
+        console.error('Error loading profile image:', error);
+    }
+});
 
 function getPageName(page) {
     return page.endsWith('-page') ? page : `${page}-page`;
@@ -618,7 +664,8 @@ function getCookie(name) {
 }
 
 
-document.addEventListener("DOMContentLoaded", function() {
+
+document.addEventListener("click", async function (event) {
     if (document.getElementById("settings-page")) {
     let session = getCookie("user_id");
     console.log("User ID:", session);
@@ -626,21 +673,23 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log(url);
     fetch(url)
         .then(response => response.json())
-        .then(data => {
+        .then(async data => {
             console.log("User ID from API:", data);
             let userID = data.user.id;
 
             const settings_img = document.getElementById("settings-img");
                     
             const li = document.createElement("li");
+
+            if (event.target && event.target.id === "save-settings") {
+                event.preventDefault();
             if (data.user.image_avatar !== null)
                 li.innerHTML = `<img id="newImagePreview" class="preview" src=${data.user.image_avatar}>`;
             else
-            li.innerHTML = `<img id="newImagePreview" class="preview" src=${data.user.image_avatar}>`;
+                li.innerHTML = `<img id="newImagePreview" class="preview" src="static/img/person.png">`;
             settings_img.appendChild(li);
             
-            document.getElementById("save-settings").addEventListener("click", async function (e) {
-                e.preventDefault(); // Empêche le comportement par défaut du bouton
+            
             
                 // Récupère les valeurs du formulaire
                 const _profileImage = document.getElementById('newImageUpload');
@@ -669,8 +718,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 if (_password !== "" && _confirmPassword !== "" && _password !== _confirmPassword) {
                     errorMessage.textContent = "Passwords are not the same.";
+                    return ;
                 } else if (_password === "" && _confirmPassword !== "") {
                     errorMessage.textContent = "Please enter a new password before confirming.";
+                    return ;
                 }
         
                 console.table(Array.from(formData.entries()));
@@ -688,19 +739,17 @@ document.addEventListener("DOMContentLoaded", function() {
             
                     const result = await response.json();
                     console.log('Success:', result);
+                    navigateTo("settings-page");
                     
                 } catch (error) {
                     console.error('Error:', error);
                     errorMessage.textContent = "An error occurred. Please try again.";
                 }
             
-            });
+            }
         })
         
-        .catch(error => console.error("Erreur lors du chargement des param du user_id :", error));
-    
-
-    
+        .catch(error => console.error("Erreur lors du chargement des param du user_id :", error));  
 }
     }); 
 
@@ -711,17 +760,11 @@ function deleteCookie(name) {
 
 
 document.addEventListener("click", async function (event) {
-    
-// document.addEventListener("DOMContentLoaded", function() {
     if (document.getElementById("settings-page")) {
         if (event.target && event.target.id === "logout") {
             event.preventDefault();
-        // document.getElementById("logout").addEventListener("click", async function (e) {
-            console.log("Cookies restants avand delete :", document.cookie);
             deleteCookie("user_id");
-            console.log("Cookies restants apres delete :", document.cookie);
             navigateTo("login-page");
-        // });
     }
 }
 });
@@ -734,13 +777,4 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 });
-
-function reloadScript(url) {
-    let oldScript = document.querySelector("script[src^='" + url + "']");
-    if (oldScript) oldScript.remove(); // Supprime l'ancien script
-
-    let newScript = document.createElement("script");
-    newScript.src = url + "?v=" + new Date().getTime(); // Ajoute un cache-buster
-    document.body.appendChild(newScript);
-}
     
