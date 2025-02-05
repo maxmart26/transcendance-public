@@ -56,16 +56,7 @@ class Player(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
-    
-class Match(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    player1 = models.CharField(max_length=255, null=True, blank=True)
-    player2 = models.CharField(max_length=255, null=True, blank=True)
-    status = models.CharField(max_length=20, default='waiting')
-    difficulty = models.CharField(max_length=6, default='medium')
 
-    def __str__(self):
-        return str(self.id)
     def add_friend(self, player):
         """Ajoute un ami à la liste d'amis"""
         if player != self and player not in self.friends.all():
@@ -79,3 +70,20 @@ class Match(models.Model):
             self.friends.remove(player)
             self.nb_friends = self.friends.count()
             self.save()
+    
+class Match(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    player1 = models.CharField(max_length=255, null=True, blank=True)
+    player2 = models.CharField(max_length=255, null=True, blank=True)
+    status = models.CharField(max_length=20, default='waiting')
+    difficulty = models.CharField(max_length=6, default='medium')
+
+    def __str__(self):
+        return str(self.id)
+
+class Tournament(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    status = models.CharField(max_length=5, default='open')
+    players = models.JSONField(default=dict)
+    games = models.JSONField(default=dict)
+    

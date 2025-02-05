@@ -87,7 +87,7 @@ const pagesContent = {
                 <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
                 <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">PONG 3D (local)</button>
             </div>
-            <button onclick="navigateTo('tournament-page')" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
+            <button onclick="tournament()" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
         </div>      
     </div>
   `,
@@ -279,14 +279,17 @@ const pagesContent = {
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div id="profile-container" class="profile-container"></div>
               </div>
+              <div class="playerlist">
+                <div class="playerlist-container">
+                    <div class="ranklist">
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Waiting for player...</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Waiting for player...</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Waiting for player...</p>
+                    </div>
+                </div>
+              </div>
         </div>
-        <div id="online-game-container"></div>
-        <div class="difficulty-buttons">
-            <button id="easy" class="difficulty-btn">Easy</button>
-            <button id="medium" class="difficulty-btn">Medium</button>
-            <button id="hard" class="difficulty-btn">Hard</button>
-        </div>
-        
     </div>
   `,
   "friends-page": `
@@ -349,8 +352,6 @@ const pagesContent = {
     </div>
     `,
 };
-
-let game_running = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -463,6 +464,25 @@ function navigateTo(page, addToHistory = true) {
     }
     const app = document.getElementById('pong');
     app.innerHTML = pagesContent[normalizedPage] || `<h1>Page not found</h1>`;
+}
+
+function tournament(){
+    window.location.href='tournament/';
+    wait_cookie();
+    function wait_cookie(){
+        if (document.cookie.includes('tourn_id')){
+            navigateTo('tournament-page', true);
+            const interval = setInterval(() => {
+                if (getCurrentTab() !== 'tournament-page'){
+	                deleteCookie('tourn_id');
+                    console.log("Tournament left.");
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+        else
+            setTimeout(wait_cookie, 100);
+    }
 }
 
 function load_game(difficulty){

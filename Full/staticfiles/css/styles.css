@@ -812,6 +812,18 @@ input {
   white-space: nowrap;
 }
 
+.playerlist {
+  position:absolute;
+  top:250%;
+  left:43%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 80%;
+  white-space: nowrap;
+}
+
 .ranklist {
   display: flex;
   align-items: center;
@@ -830,6 +842,7 @@ input {
   color: #fff;
   font-size: 13px;
   margin-top: 4%;
+  width: 150px;
 }
 
 .ranklist-img {
@@ -1088,6 +1101,22 @@ input {
 
 .ranklist-container {
   max-height: 200px; /* Limite la hauteur visible */
+  width: fit-content;
+  overflow-y: auto; /* Ajoute une barre de défilement verticale si le contenu dépasse */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #fff;
+  display: flex; /* Organise les deux colonnes côte à côte */
+  align-items: flex-start; /* Aligne les éléments en haut */
+  gap: 20px; /* Ajoute un espace entre les colonnes */
+  margin-bottom: 50%;
+  margin-top: 1%;
+}
+
+.playerlist-container {
+  max-height: 500px; /* Limite la hauteur visible */
+  width: 300px;
   overflow-y: auto; /* Ajoute une barre de défilement verticale si le contenu dépasse */
   border: 1px solid #ccc;
   border-radius: 5px;

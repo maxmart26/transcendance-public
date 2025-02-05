@@ -8,7 +8,7 @@ from .permissions import IsAdminOrReadOnly
 from .serializers import PlayerSerializer
 from rest_framework.views import APIView
 from django.shortcuts import render, redirect
-from .models import Match
+from .models import Match, Player, Tournament
 from .game.Pong import PongGame
 from asgiref.sync import sync_to_async
 
@@ -33,10 +33,38 @@ def get_all_players(request):
 def homepage(request):
     return render(request, 'index.html')
 
+waiting_tourn = None
+
+def tournament(request):
+    user_id = request.COOKIES.get('user_id')
+    user = Player.objects.get(id=user_id)
+
+    global waiting_tourn
+
+    if waiting_tourn != None:
+        if len(waiting_tourn.players) == 4:
+            waiting_tourn.status = 'closed'
+        elif len(waiting_tourn.players) < 4:
+            waiting_tourn.players[user_id] = user
+    else:
+        waiting_tourn = Tournament.objects.create(id=uuid.uuid4(), status='open')
+        waiting_tourn.players[user_id] = user
+    
+    return redirect('init_tourn', tourn_id=waiting_tourn.id)
+
+async def init_tourn(request, tourn_id):
+    response = HttpResponse(status=204)
+    await set_cookie(response, 'tourn_id', tourn_id)
+    return response
+
 waiting_games = {'easy': {}, 'medium': {}, 'hard': {}}
 games = {}
 
 def create_game(request, difficulty):
+
+    global waiting_games
+    global games
+
     user_id = request.COOKIES.get('user_id')
     if not user_id:
         try:
@@ -56,9 +84,9 @@ def create_game(request, difficulty):
     return redirect('game', match_id=match_id)
 
 @sync_to_async
-def set_matchid_cookie(response, match_id):
+def set_cookie(response, name, match_id):
     response.set_cookie(
-    key='match_id',
+    key=name,
     value=str(match_id),
     httponly=False,     
     secure=True,
@@ -69,7 +97,7 @@ def set_matchid_cookie(response, match_id):
 
 async def game(request, match_id):
     response = HttpResponse(status=204)
-    await set_matchid_cookie(response, match_id)
+    await set_cookie(response, 'match_id', match_id)
     return response
 
 from .serializers import PlayerAll
