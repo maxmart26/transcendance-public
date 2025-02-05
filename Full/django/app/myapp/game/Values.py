@@ -5,7 +5,7 @@ BALL_SIZE = 20
 BALL_SPEED = {
 	'easy': 5,
 	'medium': 8,
-	'hard': 12
+	'hard': 10
 }
 
 PADDLE_HEIGHT = 120
