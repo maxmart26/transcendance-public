@@ -282,10 +282,10 @@ const pagesContent = {
               <div class="playerlist">
                 <div class="playerlist-container">
                     <div class="ranklist">
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
+                        <p class="ranklist-player"><img alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
+                        <p class="ranklist-player"><img alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
+                        <p class="ranklist-player"><img alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
+                        <p class="ranklist-player"><img alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
                     </div>
                 </div>
               </div>
@@ -473,28 +473,50 @@ function tournament(){
         if (document.cookie.includes('tourn_id')){
             navigateTo('tournament-page', true);
 
-            playerNames = ['Michel', 'Laura'];
-            playerElements = document.querySelectorAll("#tournament-page .ranklist-player");
+            socket = new WebSocket('wss://' + window.location.host + '/ws/tournament/' + getCookie('tourn_id') + '/');
+            user_id = getCookie('user_id');
 
-            playerElements.forEach((element, index) => {
-                const imgElement = element.querySelector(".ranklist-img");
-                const nameElement = element.querySelector(".player-name");
-
-                if (playerNames[index])
+            socket.onopen = function(e) {
+                console.log("WebSocket state open");
+            };
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                console.log("Received new " + data.type + "\n");
+                if (data.type === 'players_list')
                 {
-                    nameElement.textContent = playerNames[index];
-                    imgElement.setAttribute("src", "static/img/fox.png");
-                }
-                else
-                {
-                    nameElement.textContent = "Waiting for player...";
-                    imgElement.setAttribute("src", "static/img/fox.png");
-                }
-            })
+                    playersName = data.players_name;
+                    playersIMG = data.players_pic;
+                    playerElements = document.querySelectorAll("#tournament-page .ranklist-player");
 
+                    playerElements.forEach((element, index) => {
+                        const imgElement = element.querySelector(".ranklist-img");
+                        const nameElement = element.querySelector(".player-name");
+        
+                        if (playersName[index])
+                            nameElement.textContent = playersName[index];
+                        else
+                            nameElement.textContent = "Waiting for player...";
+                        if (playersIMG[index])
+                            imgElement.setAttribute("src", "/media/" + playersIMG[index]);
+                        else
+                            imgElement.setAttribute("src", "static/img/fox.png");
+                    })
+                }
+            };
+            socket.onclose = function(e) {
+                console.error('Socket WebSocket closed');
+            };
+            socket.onerror = function(err) {
+                console.error('Error WebSocket :', err);
+            };
             const interval = setInterval(() => {
                 if (getCurrentTab() !== 'tournament-page'){
+                    socket.send(JSON.stringify({
+                        'type': 'player_disconnect',
+                        'id': user_id
+                    }));
 	                deleteCookie('tourn_id');
+                    socket.close();
                     console.log("Tournament left.");
                     clearInterval(interval);
                 }

@@ -13,6 +13,7 @@ from .game.Pong import PongGame
 from asgiref.sync import sync_to_async
 
 import sys
+import json
 import uuid
 import random
 import asyncio
@@ -33,24 +34,25 @@ def get_all_players(request):
 def homepage(request):
     return render(request, 'index.html')
 
-waiting_tourn = None
+tourn_id = None
 
 def tournament(request):
     user_id = request.COOKIES.get('user_id')
-    user = Player.objects.get(id=user_id)
+    global tourn_id
 
-    global waiting_tourn
-
-    if waiting_tourn != None:
-        if len(waiting_tourn.players) == 4:
-            waiting_tourn.status = 'closed'
-        elif len(waiting_tourn.players) < 4:
-            waiting_tourn.players[user_id] = user
+    if (tourn_id):
+        tournament = Tournament.objects.get(id=tourn_id)
+        if len(tournament.players) == 4:
+            tournament.status = 'closed'
+            tourn_id = None
+        elif len(tournament.players) < 4 and user_id not in tournament.players:
+            tournament.players.append(user_id)
     else:
-        waiting_tourn = Tournament.objects.create(id=uuid.uuid4(), status='open')
-        waiting_tourn.players[user_id] = user
-    
-    return redirect('init_tourn', tourn_id=waiting_tourn.id)
+        tourn_id = uuid.uuid4()
+        tournament = Tournament.objects.create(id=tourn_id, status='open', players=[user_id], games=[])
+    tournament.save()
+    print("(view) Tournament ", tournament.id, "\nPlayers list: ", tournament.players, "\n", file=sys.stderr)
+    return redirect('init_tourn', tourn_id=tournament.id)
 
 async def init_tourn(request, tourn_id):
     response = HttpResponse(status=204)

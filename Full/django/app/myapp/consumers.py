@@ -6,7 +6,9 @@ import uuid
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
-from .models import Match, Player
+from django.db import transaction
+
+from .models import Match, Player, Tournament
 from .views import games, waiting_games
 
 class MatchManager(AsyncWebsocketConsumer):
@@ -42,8 +44,8 @@ class MatchManager(AsyncWebsocketConsumer):
 
 	async def receive(self, text_data):
 		info_json = json.loads(text_data)
-
 		type = info_json.get('type')
+		print("Consumer received ", type, "\n", file=sys.stderr)
 		
 		if (type == 'match_start'):
 			self.game = games[str(self.match.id)]
@@ -118,7 +120,10 @@ class MatchManager(AsyncWebsocketConsumer):
 			self.player1.nb_game_win += 1
 			self.player1.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'win'}
 			self.player2.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'lose'}
-			
+		
+		await self.save(self.player1)
+		await self.save(self.player2)
+
 		print("Player ", event['winner'], "won! (", winner, ")\n", file=sys.stderr)
 		await self.send(text_data=json.dumps({'type': event["info"],
 											'status': event['status'],
@@ -138,6 +143,10 @@ class MatchManager(AsyncWebsocketConsumer):
 #===========================================================
 
 	@database_sync_to_async
+	def save_state(self, obj):
+		obj.save()
+
+	@database_sync_to_async
 	def get_match(self, match_id):
 		try:
 			match = Match.objects.get(id=match_id)
@@ -147,7 +156,6 @@ class MatchManager(AsyncWebsocketConsumer):
 			print("Match ", match_id, "not found, yet. (consumer)\n", file=sys.stderr)
 		return match
 		
-
 	@database_sync_to_async
 	def get_player(self, player_id):
 		try:
@@ -158,24 +166,23 @@ class MatchManager(AsyncWebsocketConsumer):
 			print("Player ", player_id, "not found, yet. (consumer)\n", file=sys.stderr)
 		return player
 	
-
 	################################################################################################################################
-
-from .views import waiting_tourn
 
 class TournamentManager(AsyncWebsocketConsumer):
 	async def connect(self):
-		self.tourn_id = self.scope['url_route']['kwargs']['match_id']
+		self.tourn_id = self.scope['url_route']['kwargs']['tourn_id']
 		await self.channel_layer.group_add(f"match_{self.tourn_id}", self.channel_name)
 		await self.accept()
 
-		self.tournament = waiting_tourn;
+		self.tournament = await self.get_tournament(self.tourn_id);
+		print("(consumer) Tournament ", self.tournament.id, "\nPlayers list: ", self.tournament.players, "\n", file=sys.stderr)
 		players_name = [];
 		players_pic = [];
 
 		for player_id in self.tournament.players:
-			players_name.append(self.tournament.players[player_id].username)
-			players_pic.append(self.tournament.players[player_id].image_avatar)
+			player = await self.get_player(player_id)
+			players_name.append(player.username)
+			players_pic.append(str(player.image_avatar))
 
 		await self.channel_layer.group_send(
 		f"match_{self.tourn_id}",
@@ -185,21 +192,16 @@ class TournamentManager(AsyncWebsocketConsumer):
 		})
 
 	async def disconnect(self, _):
-		pass
-
-	async def receive(self, text_data):
-		info_json = json.loads(text_data)
-		type = info_json.get('type')
-
-		if (type == "player_disconnect"):
-			self.tournament.players.pop(info_json.get('id'))
+			self.tournament = await self.get_tournament(self.tourn_id);
+			print("(consumer disco) Tournament ", self.tournament.id, "\nPlayers list: ", self.tournament.players, "\n", file=sys.stderr)
 
 			players_name = [];
 			players_pic = [];
 
 			for player_id in self.tournament.players:
-				players_name.append(self.tournament.players[player_id].username)
-				players_pic.append(self.tournament.players[player_id].image_avatar)
+				player = await self.get_player(player_id)
+				players_name.append(player.username)
+				players_pic.append(str(player.image_avatar))
 
 			await self.channel_layer.group_send(
 			f"match_{self.tourn_id}",
@@ -208,10 +210,45 @@ class TournamentManager(AsyncWebsocketConsumer):
 				'players_pic': players_pic
 			})
 
+	async def receive(self, text_data):
+		info_json = json.loads(text_data)
+		type = info_json.get('type')
+		print("Consumer received ", type, "\n", file=sys.stderr)
+
+		if (type == "player_disconnect"):
+			self.tournament.players.remove(info_json.get('id'))
+			await self.save_state(self.tournament)
 #===========================================================
 
 	async def players_list(self, event):
+		self.tournament = await self.get_tournament(self.tourn_id);
 		await self.send(text_data=json.dumps({'type': 'players_list',
 			'players_name' : event['players_name'],
 			'players_pic' : event['players_pic'],
 		}))
+
+#===========================================================
+
+	@database_sync_to_async
+	def save_state(self, obj):
+		obj.save()
+
+	@database_sync_to_async
+	def get_tournament(self, tourn_id):
+		try:
+			tourn = Tournament.objects.get(id=tourn_id)
+			print("Tournament ", tourn.id, "found! (consumer)\n", file=sys.stderr)
+		except Tournament.DoesNotExist:
+			tourn = None
+			print("Tournament ", tourn_id, "not found. (consumer)\n", file=sys.stderr)
+		return tourn
+	
+	@database_sync_to_async
+	def get_player(self, player_id):
+		try:
+			player = Player.objects.get(id=player_id)
+			print("Player ", player.id, "found! (consumer)\n", file=sys.stderr)
+		except Match.DoesNotExist:
+			player = None
+			print("Player ", player_id, "not found, yet. (consumer)\n", file=sys.stderr)
+		return player

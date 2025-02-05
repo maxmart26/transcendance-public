@@ -16,9 +16,6 @@ all:
 down:
 	docker compose -f ./Full/docker-compose.yml down
 
-test:
-	docker compose -f ./Full/docker-compose.yml up --build
-
 re:
 	docker compose -f ./Full/docker-compose.yml up -d --build --force-recreate
 
