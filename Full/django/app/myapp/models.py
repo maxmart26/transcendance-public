@@ -88,7 +88,7 @@ class Match(models.Model):
 
 class Tournament(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    status = models.CharField(max_length=5, default='open')
+    status = models.CharField(max_length=7, default='open')
     players = models.JSONField(default=list)
     games = models.JSONField(default=list)
 

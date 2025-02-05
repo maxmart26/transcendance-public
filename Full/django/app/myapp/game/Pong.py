@@ -55,6 +55,8 @@ class PongGame():
 			self.check_score()
 			if (self.player1.score_bo >= 2 or self.player2.score_bo >= 2):
 				await self.end_game()
+				self.status = 'over'
+				break
 			else:
 				await self.send_state()
 				await asyncio.sleep(1/TICK_RATE)

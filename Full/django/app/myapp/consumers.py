@@ -30,9 +30,7 @@ class MatchManager(AsyncWebsocketConsumer):
 			for match_id in waiting_games[difficulty]:
 				if waiting_games[difficulty][match_id] == self.player_id:
 					del waiting_games[difficulty][match_id]
-					print(f"User ", self.player_id, " has been removed from ", difficulty, " waiting list.", file=sys.stderr)
 					break
-
 		print("Client ", self.player_id, " disconnected.\n", file=sys.stderr)
 
 		await self.channel_layer.group_send(
@@ -97,7 +95,6 @@ class MatchManager(AsyncWebsocketConsumer):
 		}))
 
 	async def game_state(self, event):
-		print("\n\nconsumer received state (", event['ball'],")\n\n")
 		await self.send(text_data=json.dumps({'type': event["info"],
 											'ball': event["ball"],
 											'player1_y': event["player1_y"],
@@ -121,13 +118,14 @@ class MatchManager(AsyncWebsocketConsumer):
 			self.player1.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'win'}
 			self.player2.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'lose'}
 		
-		await self.save(self.player1)
-		await self.save(self.player2)
+		await self.save_state(self.player1)
+		await self.save_state(self.player2)
 
 		print("Player ", event['winner'], "won! (", winner, ")\n", file=sys.stderr)
 		await self.send(text_data=json.dumps({'type': event["info"],
 											'status': event['status'],
 											'winner': winner}))
+		self.close()
 		
 	async def client_disconnected(self, event):
 		winner = '1'
@@ -175,7 +173,17 @@ class TournamentManager(AsyncWebsocketConsumer):
 		await self.accept()
 
 		self.tournament = await self.get_tournament(self.tourn_id);
-		print("(consumer) Tournament ", self.tournament.id, "\nPlayers list: ", self.tournament.players, "\n", file=sys.stderr)
+
+		if len(self.tournament.players) >= 3: #change to 4
+			print("Tournament is ready !\n", file=sys.stderr)
+			self.tournament.status = 'closed'
+			await self.channel_layer.group_send(
+			f"match_{self.tourn_id}",
+			{	'type': 'init.tournament',
+				'id': self.tournament.id
+			})
+			return
+
 		players_name = [];
 		players_pic = [];
 
@@ -193,7 +201,6 @@ class TournamentManager(AsyncWebsocketConsumer):
 
 	async def disconnect(self, _):
 			self.tournament = await self.get_tournament(self.tourn_id);
-			print("(consumer disco) Tournament ", self.tournament.id, "\nPlayers list: ", self.tournament.players, "\n", file=sys.stderr)
 
 			players_name = [];
 			players_pic = [];
@@ -217,7 +224,10 @@ class TournamentManager(AsyncWebsocketConsumer):
 
 		if (type == "player_disconnect"):
 			self.tournament.players.remove(info_json.get('id'))
+			if (len(self.tournament.players) == 0):
+				self.tournament.delete()
 			await self.save_state(self.tournament)
+
 #===========================================================
 
 	async def players_list(self, event):
@@ -225,6 +235,11 @@ class TournamentManager(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps({'type': 'players_list',
 			'players_name' : event['players_name'],
 			'players_pic' : event['players_pic'],
+		}))
+
+	async def init_tournament(self, event):
+		await self.send(text_data=json.dumps({'type': 'init_tournament',
+			'id' : str(event['id'])
 		}))
 
 #===========================================================

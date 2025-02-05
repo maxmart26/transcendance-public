@@ -473,18 +473,20 @@ function tournament(){
         if (document.cookie.includes('tourn_id')){
             navigateTo('tournament-page', true);
 
-            socket = new WebSocket('wss://' + window.location.host + '/ws/tournament/' + getCookie('tourn_id') + '/');
+            socket_tourn = new WebSocket('wss://' + window.location.host + '/ws/tournament/' + getCookie('tourn_id') + '/');
             user_id = getCookie('user_id');
+            playing = false;
 
-            socket.onopen = function(e) {
+            socket_tourn.onopen = function(e) {
                 console.log("WebSocket state open");
             };
-            socket.onmessage = function(event) {
+            socket_tourn.onmessage = function(event) {
                 const data = JSON.parse(event.data);
                 console.log("Received new " + data.type + "\n");
                 if (data.type === 'players_list')
                 {
                     playersName = data.players_name;
+                    console.log("Player: " + playersName + '(' + playersName.length + ')');
                     playersIMG = data.players_pic;
                     playerElements = document.querySelectorAll("#tournament-page .ranklist-player");
 
@@ -502,22 +504,61 @@ function tournament(){
                             imgElement.setAttribute("src", "static/img/fox.png");
                     })
                 }
+                else if (data.type == 'init_tournament')
+                {
+                    console.log("starting tourney");
+	                deleteCookie('match_id');
+                    load_tourn_game();
+                }
+                    
             };
-            socket.onclose = function(e) {
+            socket_tourn.onclose = function(e) {
                 console.error('Socket WebSocket closed');
             };
-            socket.onerror = function(err) {
+            socket_tourn.onerror = function(err) {
                 console.error('Error WebSocket :', err);
             };
             const interval = setInterval(() => {
-                if (getCurrentTab() !== 'tournament-page'){
-                    socket.send(JSON.stringify({
+                if (getCurrentTab() !== 'tournament-page' && getCurrentTab() !== 'pong-game-page'){
+                    socket_tourn.send(JSON.stringify({
                         'type': 'player_disconnect',
                         'id': user_id
                     }));
 	                deleteCookie('tourn_id');
-                    socket.close();
+                    socket_tourn.close();
                     console.log("Tournament left.");
+                    clearInterval(interval);
+                }
+            }, 100);
+        }
+        else
+            setTimeout(wait_cookie, 100);
+    }
+}
+
+function load_tourn_game(){
+    window.location.href='tournament/game/';
+    wait_cookie();
+    function wait_cookie(){
+        if (document.cookie.includes('match_id')){
+            navigateTo('pong-game-page', true);
+            const pongGameTab = document.getElementById('pong-game');
+            const canvas = document.createElement('canvas')
+            pongGameTab.appendChild(canvas);
+            const script = document.createElement('script');
+            script.src = pongtourney_url;
+            script.defer = true;
+            pongGameTab.appendChild(script);
+            script.onload = () => {
+                init_game();
+            }
+            const interval = setInterval(() => {
+                if (getCurrentTab() !== 'pong-game-page'){
+                    kill();
+                    script.remove();
+                    canvas.remove();
+	                deleteCookie('match_id');
+	                console.log("game killed.");
                     clearInterval(interval);
                 }
             }, 1000);

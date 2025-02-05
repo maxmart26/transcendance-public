@@ -34,24 +34,32 @@ def get_all_players(request):
 def homepage(request):
     return render(request, 'index.html')
 
-tourn_id = None
+tourn_list = []
+games = {}
+
+def create_tourn_games(tournament):
+    i = 0
+    for match_id in tournament.games:
+        game = Match.objects.create(id=match_id, difficulty='medium')
+        i+=1
+    print(i, " games created for tournament ", tournament.id, "\n", file=sys.stderr)
 
 def tournament(request):
     user_id = request.COOKIES.get('user_id')
-    global tourn_id
+    global tourn_list
 
-    if (tourn_id):
-        tournament = Tournament.objects.get(id=tourn_id)
-        if len(tournament.players) == 4:
-            tournament.status = 'closed'
-            tourn_id = None
-        elif len(tournament.players) < 4 and user_id not in tournament.players:
+    if tourn_list:
+        tournament = Tournament.objects.get(id=tourn_list[0])
+        if len(tournament.players) < 3 and user_id not in tournament.players: #change back to 4
             tournament.players.append(user_id)
+            if len(tournament.players) == 3: #chnge back to 4
+                tournament.status = 'closed'
+                tourn_list.remove(tournament.id)
     else:
-        tourn_id = uuid.uuid4()
-        tournament = Tournament.objects.create(id=tourn_id, status='open', players=[user_id], games=[])
+        tourn_list.append(uuid.uuid4())
+        tournament = Tournament.objects.create(id=tourn_list[0], status='open', players=[user_id], games=[str(uuid.uuid4()), str(uuid.uuid4()), str(uuid.uuid4()), str(uuid.uuid4())])
+        create_tourn_games(tournament)
     tournament.save()
-    print("(view) Tournament ", tournament.id, "\nPlayers list: ", tournament.players, "\n", file=sys.stderr)
     return redirect('init_tourn', tourn_id=tournament.id)
 
 async def init_tourn(request, tourn_id):
@@ -59,8 +67,45 @@ async def init_tourn(request, tourn_id):
     await set_cookie(response, 'tourn_id', tourn_id)
     return response
 
+def start_tourn(request):
+    tourn_id = request.COOKIES.get('tourn_id')
+    user_id = request.COOKIES.get('user_id')
+
+    tournament = Tournament.objects.get(id=tourn_id)
+    global games
+
+    player1 = tournament.players[0]
+    player2 = tournament.players[1]
+    # player3 = tournament.players[2]
+    # player4 = tournament.players[3]
+
+    # tempo, tournois a 2 joueurs:
+
+    game = Match.objects.get(id=tournament.games[0])
+    if not game.player1 or not game.player2:
+        game.player1 = player1
+        game.player2 = player2
+        game.save()
+
+    if str(game.id) not in games:
+        games[str(game.id)] = PongGame(game.id, 'medium')
+
+    if (user_id == player1 or user_id == player2):
+        return redirect('game', match_id=game.id)
+
+    # game = Match.objects.get(id=tournament.games[0])
+    # game.player1 = player1
+    # game.player2 = player3
+    # if (user_id == player1 or user_id == player3):
+    #     return redirect('game', match_id=game.id)
+
+    # game = Match.objects.get(id=tournament.games[1])
+    # game.player1 = player2
+    # game.player2 = player4
+    # if (user_id == player2 or user_id == player4):
+    #     return redirect('game', match_id=game.id)
+    
 waiting_games = {'easy': {}, 'medium': {}, 'hard': {}}
-games = {}
 
 def create_game(request, difficulty):
 
