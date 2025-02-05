@@ -7,9 +7,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
 from django.db import transaction
+from django.shortcuts import redirect
 
 from .models import Match, Player, Tournament
-from .views import games, waiting_games
+from .views import games, waiting_games, game
 
 class MatchManager(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -227,6 +228,11 @@ class TournamentManager(AsyncWebsocketConsumer):
 			if (len(self.tournament.players) == 0):
 				self.tournament.delete()
 			await self.save_state(self.tournament)
+		elif (type == "get_next_game"):
+			if (info_json.get('result') == 'winner'):
+				redirect('game', match_id=self.tournament.games[2])
+			else:
+				redirect('game', match_id=self.tournament.games[3])
 
 #===========================================================
 

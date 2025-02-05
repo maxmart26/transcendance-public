@@ -25,6 +25,8 @@ this.match_id;
 this.player_id;
 this.player_nb;
 this.difficulty;
+this.finals = false;
+this.status = 'waiting';
 
 this.socket = null;
 
@@ -220,7 +222,7 @@ function draw(status) {
 		this.context.shadowOffsetX = 0;
 		this.context.shadowOffsetY = 0;
 		this.context.shadowBlur = 0;
-		}
+	}
 	
 	if (status == 'over')
 	{
@@ -229,11 +231,24 @@ function draw(status) {
 		this.context.shadowOffsetY = 0;
 		this.context.shadowBlur = 15;
 		this.context.shadowColor = '#ff79d1';
-			this.context.fillRect(
+		this.context.fillRect(
 				this.canvas.width / 2 - 350,
 				this.canvas.height / 2 - 48,
 				700,
 				100);
+				this.context.fillStyle = '#ffffff'
+		this.context.shadowOffsetX = -1;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 15;
+		this.context.shadowColor = '#4bdae0';
+	
+		// Draw the difficulty
+		this.context.fillText(
+			'Waiting for next game...',
+			(this.canvas.width / 2),
+			this.canvas.height - 50
+		);
+
 		this.context.shadowOffsetX = 0;
 		this.context.shadowOffsetY = 0;
 		this.context.shadowBlur = 0;
@@ -244,6 +259,26 @@ function draw(status) {
 			this.canvas.width / 2,
 			this.canvas.height / 2 + 20);
 		return;
+	}
+
+	if (finals && player_nb !== 'spectator')
+	{
+		this.context.fillStyle = '#ffd700'
+		this.context.shadowOffsetX = -1;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 15;
+		this.context.shadowColor = '#ffd700';
+	
+		// Draw the difficulty
+		this.context.fillText(
+			'FINALS',
+			(this.canvas.width / 2),
+			this.canvas.height - 50
+		);
+	
+		this.context.shadowOffsetX = 0;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 0;
 	}
 
 	this.context.font = '100px Audiowide';
@@ -285,7 +320,7 @@ function start_game(socket)
 {	
 	socket.send(JSON.stringify({
 		'type': 'match_start',
-		'match_id': self.match_id
+		'match_id': this.match_id
 	}))
 	console.log("Match starts.\n");
 	draw('playing');
@@ -309,14 +344,45 @@ function start_game(socket)
 				break;
 			
 			case 'game_over':
+				deleteCookie('match_id');
 				winner = data.winner;
 				if (winner == player1.name)
+				{
 					player1.score_bo++;
+					winner_id = player1.id;
+				}
 				else if (winner == player2.name)
+				{
 					player2.score_bo++;
+					winner_id = player2.id;
+				}
 				console.log(player_nb + " received a game over notification.\n");
 				draw('over');
-				kill();
+				// restart la game avec l'adversaire suivant
+				finals=true;
+				if (winner_id == player_id)
+					socket.send(JSON.stringify({
+						'type': 'get_next_game',
+						'player_id': player_id,
+						'match_id': this.match_id,
+						'result': 'winner'
+					}));
+				else
+					socket.send(JSON.stringify({
+						'type': 'get_next_game',
+						'player_id': player_id,
+						'match_id': this.match_id,
+						'result': 'loser'
+					}));
+				socket.close();
+				wait_cookie();
+				function wait_cookie(){
+					console.log("old match: " + this.match_id + "\ncookie: "+getCookieValue('match_id'));
+					if (document.cookie.includes('match_id') && getCookieValue('match_id') !== 'Undefined' && getCookieValue('match_id') !== this.match_id)
+						init_game();
+					else
+						setTimeout(wait_cookie, 100);
+				}
 				break;
 		}
 	};
@@ -359,14 +425,14 @@ function kill()
 
 function init_game()
 {
-	draw('waiting');
+	draw(self.status);
 
 	player_id = getCookieValue('user_id')
-	match_id = getCookieValue('match_id')
-	console.log("Match_id: " + match_id);
+	this.match_id = getCookieValue('match_id')
+	console.log("Match_id: " + this.match_id);
 	console.log("Player_id: " + player_id);
 
-	socket = new WebSocket('wss://' + window.location.host + '/ws/game/' + match_id + '/');
+	socket = new WebSocket('wss://' + window.location.host + '/ws/game/' + this.match_id + '/');
 
 	socket.onopen = function(e) {
 		console.log("WebSocket state open");
@@ -378,7 +444,7 @@ function init_game()
 		console.log("Received new " + data.type + "\n");
 		if (data.type === 'match_setup')
 		{
-			match_id = data.match_id;
+			this.match_id = data.match_id;
 			difficulty = data.difficulty;
 			round_nb = 0;
 
