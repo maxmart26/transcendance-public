@@ -16,7 +16,6 @@ this.paddle_width = 15;
 this.ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height / 2 - (ball_size / 2)};
 this.player1 = {};
 this.player2 = {};
-this.game_status = 'waiting';
 
 this.round_nb = 0;
 this.winner = 'Michel';
@@ -26,7 +25,7 @@ this.player_id;
 this.player_nb;
 this.difficulty;
 this.finals = false;
-this.status = 'waiting';
+var bracket;
 
 this.socket = null;
 
@@ -98,6 +97,25 @@ function draw(status) {
 		this.context.shadowBlur = 0;
 	}
 
+	this.context.font = '50px Audiowide';
+	this.context.textAlign = 'center';
+	this.context.shadowOffsetX = -1;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 15;
+
+	this.context.fillStyle = '#ffffff'
+
+	this.context.shadowColor = '#4bdae0';
+
+	this.context.fillText(
+		"TOURNAMENT",
+		(this.canvas.width / 2),
+		60
+	);
+
+	this.context.fillStyle = '#eba811';
+	this.context.shadowColor = '#eba811';
+
 	// Draw the net (Line in the middle)
 	this.context.beginPath();
 	this.context.setLineDash([7, 15]);
@@ -130,27 +148,6 @@ function draw(status) {
 			this.canvas.height / 2 + 15);
 		return;
 	}
-
-	this.context.fillStyle = '#ffffff'
-	this.context.shadowOffsetX = -1;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 15;
-	this.context.shadowColor = '#4bdae0';
-
-	// Draw the difficulty
-	this.context.fillText(
-		"TOURNAMENT",
-		(this.canvas.width / 2),
-		60
-	);
-
-	this.context.font = '50px Audiowide';
-	this.context.textAlign = 'center';
-	this.context.fillStyle = '#eba811';
-	this.context.shadowOffsetX = -1;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 15;
-	this.context.shadowColor = '#eba811';
 
 	// Draw the current round number
 	this.context.fillText(
@@ -339,8 +336,8 @@ function start_game(socket)
 				player2.score = data.player2_score;
 				player2.score_bo = data.player2_scorebo;
 				round_nb = data.round_nb;
-				this.game_status = data.status
-				draw(this.game_status);
+				this.status = data.status
+				draw(this.status);
 				break;
 			
 			case 'game_over':
@@ -349,35 +346,56 @@ function start_game(socket)
 				if (winner == player1.name)
 				{
 					player1.score_bo++;
-					winner_id = player1.id;
+					var winner_id = player1.id;
 				}
-				else if (winner == player2.name)
+				else
 				{
 					player2.score_bo++;
-					winner_id = player2.id;
+					var winner_id = player2.id;
 				}
 				console.log(player_nb + " received a game over notification.\n");
 				draw('over');
-				// restart la game avec l'adversaire suivant
-				finals=true;
-				if (winner_id == player_id)
-					socket.send(JSON.stringify({
+					if (winner_id == player_id)
+						var result = 'winner';
+					else
+						var result = 'loser';
+				if (finals){
+					socket_tourn.send(JSON.stringify({
+						'type': 'end_tournament',
+						'player_id': player_id,
+						'match_id': this.match_id,
+						'bracket': bracket,
+						'result': result
+					}));
+					socket.close();
+				}
+				else{
+					bracket = result;
+					socket_tourn.send(JSON.stringify({
 						'type': 'get_next_game',
 						'player_id': player_id,
 						'match_id': this.match_id,
-						'result': 'winner'
+						'result': result
 					}));
+				}
+				break;
+		}
+	};
+
+	socket_tourn.onmessage = function(event) {
+		const data = JSON.parse(event.data);
+		console.log("Received new " + data.type + "\n");
+
+		switch (data.type) {
+			case 'next_game':
+				if (bracket == data.bracket)
+					document.cookie = "match_id=" + data.id;
 				else
-					socket.send(JSON.stringify({
-						'type': 'get_next_game',
-						'player_id': player_id,
-						'match_id': this.match_id,
-						'result': 'loser'
-					}));
+					break;
+				finals=true;
 				socket.close();
 				wait_cookie();
 				function wait_cookie(){
-					console.log("old match: " + this.match_id + "\ncookie: "+getCookieValue('match_id'));
 					if (document.cookie.includes('match_id') && getCookieValue('match_id') !== 'Undefined' && getCookieValue('match_id') !== this.match_id)
 						init_game();
 					else
@@ -425,7 +443,10 @@ function kill()
 
 function init_game()
 {
-	draw(self.status);
+	if (finals)
+		draw('over');
+	else
+		draw('waiting');
 
 	player_id = getCookieValue('user_id')
 	this.match_id = getCookieValue('match_id')

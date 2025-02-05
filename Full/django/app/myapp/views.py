@@ -50,9 +50,9 @@ def tournament(request):
 
     if tourn_list:
         tournament = Tournament.objects.get(id=tourn_list[0])
-        if len(tournament.players) < 3 and user_id not in tournament.players: #change back to 4
+        if len(tournament.players) < 4 and user_id not in tournament.players:
             tournament.players.append(user_id)
-            if len(tournament.players) == 3: #chnge back to 4
+            if len(tournament.players) == 4:
                 tournament.status = 'closed'
                 tourn_list.remove(tournament.id)
     else:
@@ -76,34 +76,45 @@ def start_tourn(request):
 
     player1 = tournament.players[0]
     player2 = tournament.players[1]
-    # player3 = tournament.players[2]
-    # player4 = tournament.players[3]
+    player3 = tournament.players[2]
+    player4 = tournament.players[3]
 
     # tempo, tournois a 2 joueurs:
+    # game = Match.objects.get(id=tournament.games[0])
+    # if not game.player1 or not game.player2:
+    #     game.player1 = player1
+    #     game.player2 = player2
+    #     game.save()
+
+    # if str(game.id) not in games:
+    #     games[str(game.id)] = PongGame(game.id, 'medium')
+
+    # if (user_id == player1 or user_id == player2):
+    #     return redirect('game', match_id=game.id)
 
     game = Match.objects.get(id=tournament.games[0])
     if not game.player1 or not game.player2:
         game.player1 = player1
-        game.player2 = player2
+        game.player2 = player3
         game.save()
 
     if str(game.id) not in games:
         games[str(game.id)] = PongGame(game.id, 'medium')
 
-    if (user_id == player1 or user_id == player2):
+    if (user_id == player1 or user_id == player3):
         return redirect('game', match_id=game.id)
 
-    # game = Match.objects.get(id=tournament.games[0])
-    # game.player1 = player1
-    # game.player2 = player3
-    # if (user_id == player1 or user_id == player3):
-    #     return redirect('game', match_id=game.id)
+    game = Match.objects.get(id=tournament.games[1])
+    if not game.player1 or not game.player2:
+        game.player1 = player2
+        game.player2 = player4
+        game.save()
 
-    # game = Match.objects.get(id=tournament.games[1])
-    # game.player1 = player2
-    # game.player2 = player4
-    # if (user_id == player2 or user_id == player4):
-    #     return redirect('game', match_id=game.id)
+    if str(game.id) not in games:
+        games[str(game.id)] = PongGame(game.id, 'medium')
+
+    if (user_id == player2 or user_id == player4):
+        return redirect('game', match_id=game.id)
     
 waiting_games = {'easy': {}, 'medium': {}, 'hard': {}}
 

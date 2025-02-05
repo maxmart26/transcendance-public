@@ -174,10 +174,10 @@ class TournamentManager(AsyncWebsocketConsumer):
 		await self.accept()
 
 		self.tournament = await self.get_tournament(self.tourn_id);
-
-		if len(self.tournament.players) >= 3: #change to 4
+		if len(self.tournament.players) >= 4:
 			print("Tournament is ready !\n", file=sys.stderr)
 			self.tournament.status = 'closed'
+			self.save_state(self.tournament)
 			await self.channel_layer.group_send(
 			f"match_{self.tourn_id}",
 			{	'type': 'init.tournament',
@@ -185,8 +185,8 @@ class TournamentManager(AsyncWebsocketConsumer):
 			})
 			return
 
-		players_name = [];
-		players_pic = [];
+		players_name = []
+		players_pic = []
 
 		for player_id in self.tournament.players:
 			player = await self.get_player(player_id)
@@ -230,9 +230,39 @@ class TournamentManager(AsyncWebsocketConsumer):
 			await self.save_state(self.tournament)
 		elif (type == "get_next_game"):
 			if (info_json.get('result') == 'winner'):
-				redirect('game', match_id=self.tournament.games[2])
+				match = await self.get_match(self.tournament.games[2])
+				if (not match.player1):
+					match.player1 = info_json.get('player_id')
+					print("Player1 for ", match.id, " is set.", file=sys.stderr)
+				elif (not match.player2):
+					match.player2 = info_json.get('player_id')
+					print("Player2 for ", match.id, " is set.", file=sys.stderr)
+				self.save_state(match)
+
+				if (match.player1 and match.player2):
+					await self.channel_layer.group_send(
+					f"match_{self.tourn_id}",
+					{	'type': 'next.game',
+						'bracket': 'winner',
+						'id': self.tournament.games[2]
+					})
 			else:
-				redirect('game', match_id=self.tournament.games[3])
+				match = await self.get_match(self.tournament.games[3])
+				if (not match.player1):
+					match.player1 = info_json.get('player_id')
+					print("Player1 for ", match.id, " is set.", file=sys.stderr)
+				elif (not match.player2):
+					match.player2 = info_json.get('player_id')
+					print("Player1 for ", match.id, " is set.", file=sys.stderr)
+				self.save_state(match)
+
+				if (match.player1 and match.player2):
+					await self.channel_layer.group_send(
+					f"match_{self.tourn_id}",
+					{	'type': 'next.game',
+						'bracket': 'loser',
+						'id': self.tournament.games[3]
+					})
 
 #===========================================================
 
@@ -247,6 +277,12 @@ class TournamentManager(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps({'type': 'init_tournament',
 			'id' : str(event['id'])
 		}))
+
+	async def next_game(self, event):
+		await self.send(text_data=json.dumps({'type': 'next_game',
+				'id' : event['id'],
+				'bracket' : event['bracket'],
+				}))
 
 #===========================================================
 
@@ -273,3 +309,13 @@ class TournamentManager(AsyncWebsocketConsumer):
 			player = None
 			print("Player ", player_id, "not found, yet. (consumer)\n", file=sys.stderr)
 		return player
+	
+	@database_sync_to_async
+	def get_match(self, match_id):
+		try:
+			match = Match.objects.get(id=match_id)
+			print("Match ", match.id, "found! (consumer)\n", file=sys.stderr)
+		except Match.DoesNotExist:
+			match = None
+			print("Match ", match_id, "not found, yet. (consumer)\n", file=sys.stderr)
+		return match
