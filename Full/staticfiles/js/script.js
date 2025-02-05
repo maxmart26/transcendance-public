@@ -77,6 +77,10 @@ const pagesContent = {
                   <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
               </div>
               <div class="navbar-right">
+                    <div class="search-box">
+                        <input type="text" id="search-player" placeholder="Rechercher un joueur..." />
+                        <div id="search-results"></div>
+                    </div>
                   <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
                   <div id="profile-container" class="profile-container"></div>
               </div>
@@ -196,35 +200,34 @@ const pagesContent = {
             <p class="profile-title">PROFILE</p>
             <div class="profile-infos">
                 <div class="profile-recap">
-                    <div class="user">
-                        <div id="profile-container"></div>
-                        <div class="user-online">
-                            <p class="profile-username">Username</p>
-                            <div class="online">ONLINE</div>
-                        </div>
-                    </div>
+                    <div id="user" class="user"></div>
                     <div class="recap-items">
-                        <div class="item-infos">
-                            <img src="static/img/dice.png" alt="Profile" class="profile-icon">
-                            <p class="item-nb">3</p>
-                            <p class="item-title">Games</p>
-                        </div>
-                        <div class="item-infos">
-                            <img src="static/img/trophy.png" alt="Profile" class="profile-icon">
-                            <p class="item-nb">1</p>
-                            <p class="item-title">Victories</p>
-                        </div>
-                        <div class="item-infos">
-                            <img src="static/img/heart.png" alt="Profile" class="profile-icon">
-                            <p class="item-nb">5</p>
-                            <p class="item-title">Friends</p>
-                        </div>
+                        <div id="nb-games" class="item-infos"></div>
+                        <div id="nb-win" class="item-infos"></div>
+                        <div id="nb-friends" class="item-infos"></div>
                     </div>
                 </div>
                 <div class="profile-stats">
                 </div>
             </div>
+            <div class="recap-games">
+                <p class="recap-title">LATEST GAMES</p>
+                <table id="match-history">
+                    <thead>
+                        <tr>
+                            <th>Opponent</th>
+                            <th>Date</th>
+                            <th>Result</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Les lignes de matchs seront ajoutées dynamiquement ici -->
+                    </tbody>
+                </table>
+            </div>
         </div>
+        
     </div>
   `,
   "game-page": `
@@ -440,6 +443,59 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        let session = getCookie("user_id");
+        console.log("User ID:", session);
+        let url = "https://" + window.location.host + "/user/" + session +'/';
+        console.log(url);
+        // Remplace l'URL par l'endpoint de ton API qui retourne l'image de l'utilisateur
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch user infos');
+
+        const data = await response.json();
+        
+        if (document.getElementById("profile-page")) {
+            const user = document.getElementById("user");
+            const games = document.getElementById("nb-games");
+            const win = document.getElementById("nb-win");
+            const friends = document.getElementById("nb-friends");
+
+            const li = document.createElement("li");
+            const li2 = document.createElement("li");
+            const li3 = document.createElement("li");
+            const li4 = document.createElement("li");
+            
+            
+            li.innerHTML = `<div id="profile-image"><img src=${data.user.image_avatar} alt="Profile" class="profile-image"></div>
+            <div class="user-online">
+                <p id="profile-username" class="profile-username">${data.user.username}</p>
+                <div class="online">ONLINE</div>
+            </div>`;
+
+            li2.innerHTML = `<img src="static/img/dice.png" alt="Profile" class="profile-icon">
+            <p class="item-nb">${data.user.nb_game_play}</p>
+            <p class="item-title">Games</p>`;
+            
+            li3.innerHTML = `<img src="static/img/trophy.png" alt="Profile" class="profile-icon">
+            <p class="item-nb">${data.user.nb_game_win}</p>
+            <p class="item-title">Victories</p>`;
+
+            li4.innerHTML = `<img src="static/img/heart.png" alt="Profile" class="profile-icon">
+            <p class="item-nb">5</p>
+            <p class="item-title">Friends</p>`;
+            
+            user.appendChild(li);
+            games.appendChild(li2);
+            win.appendChild(li3);
+            friends.appendChild(li4);
+        
+        }
+    } catch (error) {
+        console.error('Error loading profile image:', error);
+    }
+});
+
 function getPageName(page) {
     return page.endsWith('-page') ? page : `${page}-page`;
 }
@@ -454,6 +510,14 @@ function getCurrentTab() {
 // Fonction pour gérer la navigation avec l'historique
 function navigateTo(page, addToHistory = true) {
     const normalizedPage = getPageName(page);
+
+    // Vérifie si on veut afficher un profil spécifique
+    let userId = null;
+    if (normalizedPage.startsWith("profile/")) {
+        userId = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
+        normalizedPage = "profile";
+    }
+
     if (normalizedPage == 'pong-game-page')
         document.body.id = 'pong-game-page';
     else
@@ -463,6 +527,34 @@ function navigateTo(page, addToHistory = true) {
     }
     const app = document.getElementById('pong');
     app.innerHTML = pagesContent[normalizedPage] || `<h1>Page not found</h1>`;
+
+    if (normalizedPage === "profile") {
+        loadUserProfile(userId);
+    }
+}
+
+async function loadUserProfile(userId = null) {
+    let sessionUserId = getCookie("user_id"); // ID du joueur connecté
+
+    // Détermine quel profil charger
+    let profileId = userId || sessionUserId;
+    if (!profileId) return console.error("Aucun utilisateur trouvé.");
+
+    try {
+        const response = await fetch(`https://${window.location.host}/user/${profileId}/`);
+        if (!response.ok) throw new Error("Profil introuvable");
+
+        const data = await response.json();
+        
+        document.getElementById("profile-username").textContent = data.user.username;
+
+        // Gérer l’image de profil (par défaut si supprimée)
+        const profileImage = document.getElementById("profile-image");
+        profileImage.src = data.user.image_avatar || "static/img/person.png";
+
+    } catch (error) {
+        console.error("Erreur lors du chargement du profil:", error);
+    }
 }
 
 function load_game(difficulty){
@@ -776,5 +868,87 @@ document.addEventListener("DOMContentLoaded", function() {
             navigateTo("home-page");
         }
     }
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
+    let session = getCookie("user_id"); // Récupère l'ID du joueur connecté
+    let url = `https://${window.location.host}/user/${session}/matches/`; // API pour récupérer les matchs
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Erreur de chargement des matchs");
+
+        const matches = await response.json();
+        populateMatchHistory(matches);
+    } catch (error) {
+        console.error("Erreur :", error);
+    }
+});
+
+function populateMatchHistory(matches) {
+    const tbody = document.querySelector("#match-history tbody");
+    tbody.innerHTML = ""; // Vide le tableau avant de le remplir
+
+    // Tri des matchs par date (du plus récent au plus ancien)
+    matches.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    matches.forEach(match => {
+        const row = document.createElement("tr");
+
+        // On regarde si l'opponent existe toujours dans la db
+        const opponentName = match.opponent ? match.opponent : "Deleted User";
+
+        row.innerHTML = `
+            <td>${opponentName}</td>
+            <td>${new Date(match.date).toLocaleDateString()}</td>
+            <td>${match.result}</td>
+            <td>${match.score}</td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", async function () {
+    const searchInput = document.getElementById("search-player");
+    const searchResults = document.getElementById("search-results");
+
+    searchInput.addEventListener("input", async function () {
+        const query = searchInput.value.trim().toLowerCase();
+        if (query.length < 1) {
+            searchResults.style.display = "none";
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://${window.location.host}/search-player/?q=${query}`);
+            const players = await response.json();
+
+            searchResults.innerHTML = ""; // Efface les anciens résultats
+            if (players.length === 0) {
+                searchResults.innerHTML = "<div>Aucun joueur trouvé</div>";
+            } else {
+                players.forEach(player => {
+                    const div = document.createElement("div");
+                    div.textContent = player.username || "Deleted User";
+                    div.addEventListener("click", () => {
+                        navigateTo(`profile-page/${player.id}`);
+                    });
+                    searchResults.appendChild(div);
+                });
+            }
+
+            searchResults.style.display = "block";
+        } catch (error) {
+            console.error("Erreur lors de la recherche des joueurs:", error);
+        }
+    });
+
+    // Cacher la liste de résultats si on clique ailleurs
+    document.addEventListener("click", function (event) {
+        if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+            searchResults.style.display = "none";
+        }
+    });
 });
     

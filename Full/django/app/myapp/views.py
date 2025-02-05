@@ -55,6 +55,16 @@ def create_game(request, difficulty):
         waiting_games[difficulty][match_id] = user_id
     return redirect('game', match_id=match_id)
 
+def search_player(request):
+    query = request.GET.get('q', '').strip().lower()
+    if not query:
+        return JsonResponse([], safe=False)
+
+    players = Player.objects.filter(username__icontains=query)[:10]
+    results = [{"id": p.id, "username": p.username} for p in players]
+
+    return JsonResponse(results, safe=False)
+
 @sync_to_async
 def set_matchid_cookie(response, match_id):
     response.set_cookie(
@@ -79,3 +89,6 @@ class PlayerListView(APIView):
         players = Player.objects.all()
         serializer = PlayerAll(players, many=True)
         return Response(serializer.data)
+
+
+
