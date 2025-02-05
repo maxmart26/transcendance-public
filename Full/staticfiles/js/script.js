@@ -282,10 +282,10 @@ const pagesContent = {
               <div class="playerlist">
                 <div class="playerlist-container">
                     <div class="ranklist">
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Waiting for player...</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Waiting for player...</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Waiting for player...</p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
+                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img"><span class="player-name"></span></p>
                     </div>
                 </div>
               </div>
@@ -472,6 +472,26 @@ function tournament(){
     function wait_cookie(){
         if (document.cookie.includes('tourn_id')){
             navigateTo('tournament-page', true);
+
+            playerNames = ['Michel', 'Laura'];
+            playerElements = document.querySelectorAll("#tournament-page .ranklist-player");
+
+            playerElements.forEach((element, index) => {
+                const imgElement = element.querySelector(".ranklist-img");
+                const nameElement = element.querySelector(".player-name");
+
+                if (playerNames[index])
+                {
+                    nameElement.textContent = playerNames[index];
+                    imgElement.setAttribute("src", "static/img/fox.png");
+                }
+                else
+                {
+                    nameElement.textContent = "Waiting for player...";
+                    imgElement.setAttribute("src", "static/img/fox.png");
+                }
+            })
+
             const interval = setInterval(() => {
                 if (getCurrentTab() !== 'tournament-page'){
 	                deleteCookie('tourn_id');

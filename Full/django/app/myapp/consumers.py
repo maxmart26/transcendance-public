@@ -157,3 +157,61 @@ class MatchManager(AsyncWebsocketConsumer):
 			player = None
 			print("Player ", player_id, "not found, yet. (consumer)\n", file=sys.stderr)
 		return player
+	
+
+	################################################################################################################################
+
+from .views import waiting_tourn
+
+class TournamentManager(AsyncWebsocketConsumer):
+	async def connect(self):
+		self.tourn_id = self.scope['url_route']['kwargs']['match_id']
+		await self.channel_layer.group_add(f"match_{self.tourn_id}", self.channel_name)
+		await self.accept()
+
+		self.tournament = waiting_tourn;
+		players_name = [];
+		players_pic = [];
+
+		for player_id in self.tournament.players:
+			players_name.append(self.tournament.players[player_id].username)
+			players_pic.append(self.tournament.players[player_id].image_avatar)
+
+		await self.channel_layer.group_send(
+		f"match_{self.tourn_id}",
+		{	'type': 'players.list',
+			'players_name': players_name,
+			'players_pic': players_pic
+		})
+
+	async def disconnect(self, _):
+		pass
+
+	async def receive(self, text_data):
+		info_json = json.loads(text_data)
+		type = info_json.get('type')
+
+		if (type == "player_disconnect"):
+			self.tournament.players.pop(info_json.get('id'))
+
+			players_name = [];
+			players_pic = [];
+
+			for player_id in self.tournament.players:
+				players_name.append(self.tournament.players[player_id].username)
+				players_pic.append(self.tournament.players[player_id].image_avatar)
+
+			await self.channel_layer.group_send(
+			f"match_{self.tourn_id}",
+			{	'type': 'players.list',
+				'players_name': players_name,
+				'players_pic': players_pic
+			})
+
+#===========================================================
+
+	async def players_list(self, event):
+		await self.send(text_data=json.dumps({'type': 'players_list',
+			'players_name' : event['players_name'],
+			'players_pic' : event['players_pic'],
+		}))
