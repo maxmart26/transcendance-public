@@ -227,6 +227,13 @@ def login(request):
             secure=True,         # True si vous utilisez HTTPS
             samesite='Strict',   # Protéger contre les attaques CSRF
         )
+        response.set_cookie(
+            key='user_username',       # Nom du cookie
+            value=user.username,       # ID de l'utilisateur connecté
+            httponly=False,      # Accessible via JavaScript si besoin (optionnel)
+            secure=True,         # True si vous utilisez HTTPS
+            samesite='Strict',   # Protéger contre les attaques CSRF
+        )
         return response
     else:
         return Response(
@@ -317,6 +324,13 @@ def oauth_callback(request):
             secure=True,  # True si vous utilisez HTTPS
             samesite='Strict',  # Protéger contre les attaques CSRF
         )
+        response.set_cookie(
+            key='user_username',       # Nom du cookie
+            value=str(player.username),       # ID de l'utilisateur connecté
+            httponly=False,      # Accessible via JavaScript si besoin (optionnel)
+            secure=True,         # True si vous utilisez HTTPS
+            samesite='Strict',   # Protéger contre les attaques CSRF
+        )
         return response
 
     except IntegrityError as e:
@@ -364,12 +378,12 @@ class ProtectedView(APIView):
     ]
 )
 @api_view(['GET']) 
-def get_user_info(request, user_id):
+def get_user_info(request, username):
     """
     Récupère les informations d'un utilisateur via son ID.
     """
     # Recherche l'utilisateur par son ID
-    user = get_object_or_404(Player, id=user_id)
+    user = get_object_or_404(Player, username=username)
 
     # Retourne les informations de l'utilisateur
     user_data = {
@@ -381,6 +395,12 @@ def get_user_info(request, user_id):
         'nb_game_win': user.nb_game_win,
         'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S'),
         'updated_at': user.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+        'games_history': user.games_history,  # JSONField, stocke l'historique des parties
+        'nb_friends': user.nb_friends,  # Nombre total d'amis
+        'friends': [
+            {'id': str(friend.id), 'username': friend.username, 'email': friend.email}
+            for friend in user.friends.all()
+        ],
     }
 
     return JsonResponse({'user': user_data}, status=200)
