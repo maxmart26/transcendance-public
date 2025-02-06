@@ -95,10 +95,10 @@ class Tournament(models.Model):
     status = models.CharField(max_length=7, default='open')
     players = models.JSONField(default=list)
     games = models.JSONField(default=list)
-    
-    first = models.CharField(max_length=255, null=True, blank=True)
-    second = models.CharField(max_length=255, null=True, blank=True)
-    third = models.CharField(max_length=255, null=True, blank=True)
+
+    first = models.CharField(max_length=20, null=True, blank=True)
+    second = models.CharField(max_length=20, null=True, blank=True)
+    third = models.CharField(max_length=20, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.clean()
