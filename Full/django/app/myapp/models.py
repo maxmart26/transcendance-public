@@ -85,12 +85,20 @@ class Match(models.Model):
 
     def __str__(self):
         return str(self.id)
+    
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 class Tournament(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     status = models.CharField(max_length=7, default='open')
     players = models.JSONField(default=list)
     games = models.JSONField(default=list)
+    
+    first = models.CharField(max_length=255, null=True, blank=True)
+    second = models.CharField(max_length=255, null=True, blank=True)
+    third = models.CharField(max_length=255, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.clean()

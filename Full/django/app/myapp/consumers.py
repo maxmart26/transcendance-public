@@ -11,6 +11,7 @@ from django.shortcuts import redirect
 
 from .models import Match, Player, Tournament
 from .views import games, waiting_games, game
+from .game.Pong import PongGame
 
 class MatchManager(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -237,7 +238,9 @@ class TournamentManager(AsyncWebsocketConsumer):
 				elif (not match.player2):
 					match.player2 = info_json.get('player_id')
 					print("Player2 for ", match.id, " is set.", file=sys.stderr)
-				self.save_state(match)
+					if str(match.id) not in games:
+						games[str(match.id)] = PongGame(match.id, 'medium')
+				await self.save_state(match)
 
 				if (match.player1 and match.player2):
 					await self.channel_layer.group_send(
@@ -253,8 +256,10 @@ class TournamentManager(AsyncWebsocketConsumer):
 					print("Player1 for ", match.id, " is set.", file=sys.stderr)
 				elif (not match.player2):
 					match.player2 = info_json.get('player_id')
-					print("Player1 for ", match.id, " is set.", file=sys.stderr)
-				self.save_state(match)
+					print("Player2 for ", match.id, " is set.", file=sys.stderr)
+					if str(match.id) not in games:
+						games[str(match.id)] = PongGame(match.id, 'medium')
+				await self.save_state(match)
 
 				if (match.player1 and match.player2):
 					await self.channel_layer.group_send(
@@ -263,6 +268,29 @@ class TournamentManager(AsyncWebsocketConsumer):
 						'bracket': 'loser',
 						'id': self.tournament.games[3]
 					})
+
+		elif (type == "end_tournament"):
+			if (info_json.get('bracket') == 'winner' and info_json.get('result') == 'winner'):
+				player = await self.get_player(info_json.get('player_id'))
+				if (player):
+					self.tournament.first = player.username
+			elif (info_json.get('bracket') == 'winner' and info_json.get('result') == 'loser'):
+				player = await self.get_player(info_json.get('player_id'))
+				if (player):
+					self.tournament.second = player.username
+			elif (info_json.get('bracket') == 'loser' and info_json.get('result') == 'winner'):
+				player = await self.get_player(info_json.get('player_id'))
+				if (player):
+					self.tournament.third = player.username
+
+			await self.save_state(self.tournament)
+			await self.channel_layer.group_send(
+				f"match_{self.tourn_id}",
+				{	'type': 'send.podium',
+					'first': self.tournament.first,
+					'second': self.tournament.second,
+					'third': self.tournament.third
+				})
 
 #===========================================================
 
@@ -282,6 +310,14 @@ class TournamentManager(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps({'type': 'next_game',
 				'id' : event['id'],
 				'bracket' : event['bracket'],
+				}))
+		
+	async def send_podium(self, event):
+		print("Tournament is over:\nFirst: ", event['first'], "\nSecond: ", event['second'], "\nThird: ", event['third'], file=sys.stderr)
+		await self.send(text_data=json.dumps({'type': 'podium',
+				'first': event['first'],
+				'second': event['second'],
+				'third': event['third']
 				}))
 
 #===========================================================

@@ -16,6 +16,7 @@ this.paddle_width = 15;
 this.ball = {x: this.canvas.width / 2 - (ball_size / 2), y: this.canvas.height / 2 - (ball_size / 2)};
 this.player1 = {};
 this.player2 = {};
+this.podium = ['Waiting...', 'Waiting...', 'Waiting...'];
 
 this.round_nb = 0;
 this.winner = 'Michel';
@@ -64,6 +65,60 @@ function draw(status) {
 		this.canvas.width,
 		this.canvas.height
 	);
+
+	if (status == 'podium')
+	{
+		this.context.font = '80px Audiowide';
+		this.context.textAlign = 'center';
+		this.context.shadowOffsetX = -1;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 15;
+
+		this.context.fillStyle = '#ffd700'
+		this.context.shadowColor = '#ffd700';
+		this.context.fillText(
+			this.podium[0],
+			(this.canvas.width / 2),
+			300
+		);
+		this.context.font = '120px Audiowide';
+		this.context.fillText(
+			"1",
+			(this.canvas.width / 2),
+			400
+		);
+
+		this.context.font = '80px Audiowide';
+		this.context.fillStyle = '#c0c0c0'
+		this.context.shadowColor = '#c0c0c0';
+		this.context.fillText(
+			this.podium[1],
+			(this.canvas.width / 2) - 300,
+			550
+		);
+		this.context.font = '100px Audiowide';
+		this.context.fillText(
+			"2",
+			(this.canvas.width / 2) - 300,
+			650
+		);
+		
+		this.context.font = '80px Audiowide';
+		this.context.fillStyle = '#b87333'
+		this.context.shadowColor = '#b87333';
+		this.context.fillText(
+			this.podium[2],
+			(this.canvas.width / 2) + 300,
+			650
+		);
+		this.context.font = '100px Audiowide';
+		this.context.fillText(
+			"3",
+			(this.canvas.width / 2) + 300,
+			750
+		);
+		return;
+	}
 
 	if (status == 'playing' || status == 'over')
 	{
@@ -238,13 +293,14 @@ function draw(status) {
 		this.context.shadowOffsetY = 0;
 		this.context.shadowBlur = 15;
 		this.context.shadowColor = '#4bdae0';
-	
-		// Draw the difficulty
-		this.context.fillText(
-			'Waiting for next game...',
-			(this.canvas.width / 2),
-			this.canvas.height - 50
-		);
+		
+		if (!finals){
+			this.context.fillText(
+				'Waiting for next game...',
+				(this.canvas.width / 2),
+				this.canvas.height - 50
+			);
+		}
 
 		this.context.shadowOffsetX = 0;
 		this.context.shadowOffsetY = 0;
@@ -265,8 +321,7 @@ function draw(status) {
 		this.context.shadowOffsetY = 0;
 		this.context.shadowBlur = 15;
 		this.context.shadowColor = '#ffd700';
-	
-		// Draw the difficulty
+
 		this.context.fillText(
 			'FINALS',
 			(this.canvas.width / 2),
@@ -354,11 +409,12 @@ function start_game(socket)
 					var winner_id = player2.id;
 				}
 				console.log(player_nb + " received a game over notification.\n");
+				socket.close();
 				draw('over');
-					if (winner_id == player_id)
-						var result = 'winner';
-					else
-						var result = 'loser';
+				if (winner_id == player_id)
+					var result = 'winner';
+				else
+					var result = 'loser';
 				if (finals){
 					socket_tourn.send(JSON.stringify({
 						'type': 'end_tournament',
@@ -367,7 +423,6 @@ function start_game(socket)
 						'bracket': bracket,
 						'result': result
 					}));
-					socket.close();
 				}
 				else{
 					bracket = result;
@@ -393,7 +448,6 @@ function start_game(socket)
 				else
 					break;
 				finals=true;
-				socket.close();
 				wait_cookie();
 				function wait_cookie(){
 					if (document.cookie.includes('match_id') && getCookieValue('match_id') !== 'Undefined' && getCookieValue('match_id') !== this.match_id)
@@ -401,6 +455,17 @@ function start_game(socket)
 					else
 						setTimeout(wait_cookie, 100);
 				}
+				break;
+
+			case 'podium':
+				console.log("Podium: #1 " + data.first + ", #2" + data.second + ", #3 " + data.third);
+				if (data.first && podium[0] === 'Waiting...')
+					podium[0] = data.first;
+				if (data.second && podium[1] === 'Waiting...')
+					podium[1] = data.second;
+				if (data.third && podium[2] === 'Waiting...')
+					podium[2] = data.third;
+				draw('podium');
 				break;
 		}
 	};
