@@ -117,6 +117,15 @@ function draw(status) {
 			(this.canvas.width / 2) + 300,
 			750
 		);
+
+		this.context.fillStyle = '#ffffff'
+		this.context.shadowColor = '#4bdae0';
+		this.context.font = '50px Audiowide';
+		this.context.fillText(
+			"TOURNAMENT",
+			(this.canvas.width / 2),
+			60
+		);
 		return;
 	}
 
