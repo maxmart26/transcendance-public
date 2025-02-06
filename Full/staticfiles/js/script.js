@@ -89,7 +89,7 @@ const pagesContent = {
             <p class="choose-game">Which game do you want to launch ?</p>
             <div class="pongs">
                 <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
-                <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">PONG 3D (local)</button>
+                <button onclick="start_3Dgame()" id="game" class="game-rectangle">PONG 3D (local)</button>
             </div>
             <button onclick="tournament()" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
         </div>      
@@ -244,8 +244,6 @@ const pagesContent = {
                   <div id="profile-container" class="profile-container"></div>
               </div>
         </div>
-        <div id="game-container"></div>
-        <div id="score">Joueur 1: 0 | Joueur 2: 0</div>
     </div>
   `,
   "online-game-page": `
@@ -658,6 +656,30 @@ function load_tourn_game(){
         else
             setTimeout(wait_cookie, 100);
     }
+}
+
+function start_3Dgame(){
+    navigateTo('game-page')
+    const pongGameTab = document.getElementById('game-page');
+    const div = document.createElement('div')
+    div.id = 'game-container'
+    pongGameTab.appendChild(div);
+    console.log("game container created");
+    const script = document.createElement('script');
+    script.src = pong3d_url;
+    script.defer = true;
+    script.type = 'module'
+    pongGameTab.appendChild(script);
+    script.onload = () => {
+        init();
+    }
+    const interval = setInterval(() => {
+        if (getCurrentTab() !== 'game-page'){
+            script.remove();
+            div.remove();
+            clearInterval(interval);
+        }
+    }, 1000);
 }
 
 function load_game(difficulty){
