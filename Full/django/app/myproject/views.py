@@ -19,6 +19,7 @@ import requests
 import os
 from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 import logging
 logger = logging.getLogger(__name__)
@@ -240,9 +241,6 @@ def login_42(request):
     )
     return redirect(oauth_url)
 
-CLIENT_ID = "u-s4t2ud-740be05e283130d59321a2b45f94cc9f8d7c90cce47668da972834e6b5ce5492"
-CLIENT_SECRET = "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"
-REDIRECT_URI = "https://paul-f4br9s2:4438/auth/complete/intra42/"
 
 def oauth_callback(request):
       # Étape 1 : Récupérer le code d'autorisation
@@ -254,10 +252,10 @@ def oauth_callback(request):
     token_url = "https://api.intra.42.fr/oauth/token"
     data = {
         'grant_type': 'authorization_code',
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
+        'client_id': settings.CLIENT_ID,
+        'client_secret': settings.CLIENT_SECRET,
         'code': code,
-        'redirect_uri': REDIRECT_URI,
+        'redirect_uri': settings.REDIRECT_URI,
     }
 
     response = requests.post(token_url, data=data)
