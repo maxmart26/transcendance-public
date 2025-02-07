@@ -67,6 +67,13 @@ def add_player(request):
             return Response({"error": "Tous les champs (username, password, email, image_avatar) sont requis."},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        if Player.objects.filter(email=email).exists():
+            return Response({"error": "Cet email est déjà utilisé."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if Player.objects.filter(username=username).exists():
+            return Response({"error": "Cet username est déjà utilisé."}, status=status.HTTP_400_BAD_REQUEST)
+
+
         hashed_password = make_password(password)
 
         player = Player.objects.create(username=username, password=hashed_password, email=email, image_avatar=image_avatar)

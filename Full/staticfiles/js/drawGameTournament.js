@@ -70,59 +70,87 @@ function draw(status) {
 	{
 		this.context.font = '80px Audiowide';
 		this.context.textAlign = 'center';
-		this.context.shadowOffsetX = -1;
-		this.context.shadowOffsetY = 0;
-		this.context.shadowBlur = 15;
 
-		this.context.fillStyle = '#ffd700'
-		this.context.shadowColor = '#ffd700';
+		this.context.fillStyle = '#ff79d1';
+		this.context.shadowOffsetX = 0;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 0;
+		//box #1
+		this.context.fillRect(
+			(this.canvas.width / 2) - 90,
+			315,
+			180,
+			505
+		);
+		//box #2
+		this.context.fillRect(
+			(this.canvas.width / 2) - 410,
+			565,
+			225,
+			250
+		);
+		//box #3
+		this.context.fillRect(
+			(this.canvas.width / 2) + 175,
+			665,
+			255,
+			150
+		);
+
+		this.context.fillStyle = '#ffffff'
+		this.context.shadowColor = '#4bdae0';
+		this.context.font = '100px Audiowide';
 		this.context.fillText(
 			this.podium[0],
 			(this.canvas.width / 2),
 			300
 		);
-		this.context.font = '120px Audiowide';
-		this.context.fillText(
-			"1",
-			(this.canvas.width / 2),
-			400
-		);
-
-		this.context.font = '80px Audiowide';
-		this.context.fillStyle = '#c0c0c0'
-		this.context.shadowColor = '#c0c0c0';
+		this.context.font = '85px Audiowide';
 		this.context.fillText(
 			this.podium[1],
 			(this.canvas.width / 2) - 300,
 			550
 		);
-		this.context.font = '100px Audiowide';
-		this.context.fillText(
-			"2",
-			(this.canvas.width / 2) - 300,
-			650
-		);
-		
-		this.context.font = '80px Audiowide';
-		this.context.fillStyle = '#b87333'
-		this.context.shadowColor = '#b87333';
+		this.context.font = '70px Audiowide';
 		this.context.fillText(
 			this.podium[2],
 			(this.canvas.width / 2) + 300,
 			650
 		);
-		this.context.font = '100px Audiowide';
+
+		this.context.shadowOffsetX = -1;
+		this.context.shadowOffsetY = 0;
+		this.context.shadowBlur = 15;
+
+		this.context.font = '120px Audiowide';
+		this.context.fillStyle = '#ffd700';
+		this.context.shadowColor = '#ffd700';
+		this.context.fillText(
+			"1",
+			(this.canvas.width / 2),
+			408
+		);
+		this.context.fillStyle = '#c0c0c0'
+		this.context.shadowColor = '#c0c0c0';
+		this.context.fillText(
+			"2",
+			(this.canvas.width / 2) - 300,
+			657
+		);
+		
+		this.context.fillStyle = '#b87333'
+		this.context.shadowColor = '#b87333';
 		this.context.fillText(
 			"3",
 			(this.canvas.width / 2) + 300,
-			750
+			757
 		);
 
 		this.context.fillStyle = '#ffffff'
 		this.context.shadowColor = '#4bdae0';
 		this.context.font = '50px Audiowide';
 		this.context.fillText(
-			"TOURNAMENT",
+			"- TOURNAMENT -",
 			(this.canvas.width / 2),
 			60
 		);
@@ -168,11 +196,10 @@ function draw(status) {
 	this.context.shadowBlur = 15;
 
 	this.context.fillStyle = '#ffffff'
-
 	this.context.shadowColor = '#4bdae0';
 
 	this.context.fillText(
-		"TOURNAMENT",
+		"- TOURNAMENT -",
 		(this.canvas.width / 2),
 		60
 	);
@@ -222,44 +249,36 @@ function draw(status) {
 
 	//Dessiner le score du BO
 	if (player1.score_bo > 0)
-	{
 		this.context.fillRect(
 			(this.canvas.width / 2) - 120 - 40,
 			100,
 			35,
 			15
 		);
-	}
 
 	if (player1.score_bo > 1)
-	{
 		this.context.fillRect(
 			(this.canvas.width / 2) - 120 - 90,
 			100,
 			35,
 			15
 		);
-	}
 
 	if (player2.score_bo > 0)
-	{
 		this.context.fillRect(
 			(this.canvas.width / 2) + 85 + 40,
 			100,
 			35,
 			15
 		);
-	}
 
 	if (player2.score_bo > 1)
-	{
 		this.context.fillRect(
 			(this.canvas.width / 2) + 85 + 90,
 			100,
 			35,
 			15
 		);
-	}
 
 	this.context.shadowOffsetX = 0;
 	this.context.shadowOffsetY = 0;
@@ -342,13 +361,29 @@ function draw(status) {
 		this.context.shadowBlur = 0;
 	}
 
+	this.context.shadowOffsetX = -1;
+	this.context.shadowOffsetY = 0;
+	this.context.shadowBlur = 15;
+	this.context.font = '40px Audiowide';
+	this.context.textAlign = 'center';
+	this.context.fillStyle = '#ffffff'
+	this.context.shadowColor = '#4bdae0';
+
+	this.context.fillText(
+		player1.name,
+		(this.canvas.width / 4),
+		this.canvas.height - 50
+	);
+	this.context.fillText(
+		player2.name,
+		3 * (this.canvas.width / 4),
+		this.canvas.height - 50
+	);
+
 	this.context.font = '100px Audiowide';
 	this.context.textAlign = 'center';
 
 	this.context.fillStyle = '#ffffff';
-	this.context.shadowOffsetX = -1;
-	this.context.shadowOffsetY = 0;
-	this.context.shadowBlur = 15;
 	this.context.shadowColor = '#ffffff';
 
 	// Draw the Ball
