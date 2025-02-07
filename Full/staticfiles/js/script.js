@@ -435,10 +435,6 @@ function navigateTo(page, addToHistory = true) {
         return;
     }
 
-    if (normalizedPage == 'profile-page') {
-        loadUserProfile(userId);
-    }
-
     initializePageScripts(normalizedPage, userId);
 }
 
@@ -458,6 +454,9 @@ function initializePageScripts(page, userId = null) {
     }
     if (page === "leaderboard-page") {
         initializeLeaderboard();
+    }
+    if (page === "friends-page") {
+        setFriendsPage();
     }
 }
 
@@ -701,7 +700,7 @@ function setupSettingsPage() {
             const imageUploadInput = document.getElementById("newImageUpload");
             const saveButton = document.getElementById("save-settings");
 
-            console.log(data.user.image_avatar);
+            console.log(settingsImgContainer);
             
             // Vérifie s'il y a déjà une image, sinon met une image par défaut
             if (data.user.image_avatar) {
@@ -874,6 +873,7 @@ document.addEventListener("click", async function (event) {
         if (event.target && event.target.id === "logout") {
             event.preventDefault();
             deleteCookie("user_id");
+            deleteCookie("access_token");
             navigateTo("login-page");
     }
 }
@@ -938,6 +938,78 @@ async function initializeLeaderboard() {
         console.error('Error loading profile image:', error);
     }
 //});
+}
+
+// ------------------------ FRIENDS PAGE --------------------------
+
+function setFriendsPage() {
+
+    let session = getCookie("user_id");
+    if (!session) {
+        console.error("No user session found.");
+        return;
+    }
+
+    let url = "https://" + window.location.host + "/friends/" + session + '/';
+
+    // Récupération et affichage des amis
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Friends list:", data);
+            const friendsContainer = document.querySelector(".ranklist");
+            const removeButtonsContainer = document.querySelector(".remove-buttons");
+
+        })
+        .catch(error => console.error("Error loading friends list:", error));
+
+    // Ajout d'un ami
+    document.querySelector(".add-friend").addEventListener("click", () => {
+        const username = document.getElementById("user").value.trim();
+        if (username === "") {
+            alert("Please enter a username.");
+            return;
+        }
+
+        fetch("https://" + window.location.host + "/add-friend/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: session, friend_username: username }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Friend added:", data);
+                alert("Friend added successfully!");
+                navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
+            } else {
+                alert(data.error || "Error adding friend.");
+            }
+        })
+        .catch(error => console.error("Error adding friend:", error));
+    });
+}
+
+// Supprimer un ami
+function removeFriend(friendId) {
+    let session = getCookie("user_id");
+
+    fetch("https://" + window.location.host + "/remove-friend/", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: session, friend_id: friendId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log("Friend removed:", data);
+            alert("Friend removed successfully!");
+            navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
+        } else {
+            alert(data.error || "Error removing friend.");
+        }
+    })
+    .catch(error => console.error("Error removing friend:", error));
 }
 
 // ------------------------ PROFILE PAGE ---------------------------

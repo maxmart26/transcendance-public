@@ -223,7 +223,7 @@ def login(request):
         response.set_cookie(
             key='access_token',  # Nom du cookie
             value=access_token,  # Valeur (ici le token JWT)
-            httponly=True,       # HTTPOnly pour la sécurité (non accessible en JS)
+            httponly=False,       # HTTPOnly pour la sécurité (non accessible en JS)
             secure=True,         # True si vous utilisez HTTPS
             samesite='Strict',   # Protéger contre les attaques CSRF
         )
