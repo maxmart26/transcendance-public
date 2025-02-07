@@ -700,7 +700,7 @@ function setupSettingsPage() {
             const imageUploadInput = document.getElementById("newImageUpload");
             const saveButton = document.getElementById("save-settings");
 
-            console.log(settingsImgContainer);
+            console.log("settingsImgContainer:", settingsImgContainer);
             
             // Vérifie s'il y a déjà une image, sinon met une image par défaut
             if (data.user.image_avatar) {
@@ -777,96 +777,6 @@ function setupSettingsPage() {
         })
         .catch(error => console.error("Erreur lors du chargement du user_id :", error));
 }
-
-/* function setupSettingsPage() {
-    document.addEventListener("click", async function (event) {
-    if (document.getElementById("settings-page")) {
-    let session = getCookie("user_id");
-    console.log("User ID:", session);
-    let url = "https://" + window.location.host + "/user/" + session +'/';
-    console.log(url);
-    fetch(url)
-        .then(response => response.json())
-        .then(async data => {
-            console.log("User ID from API:", data);
-            let userID = data.user.id;
-
-            const settings_img = document.getElementById("settings-img");
-                    
-            const li = document.createElement("li");
-
-            if (event.target && event.target.id === "save-settings") {
-                event.preventDefault();
-            if (data.user.image_avatar !== null)
-                li.innerHTML = `<img id="newImagePreview" class="preview" src=${data.user.image_avatar}>`;
-            else
-                li.innerHTML = `<img id="newImagePreview" class="preview" src="static/img/person.png">`;
-            settings_img.appendChild(li);
-            
-            
-            
-                // Récupère les valeurs du formulaire
-                const _profileImage = document.getElementById('newImageUpload');
-                const _username = document.getElementById('username').value.trim();
-                const _password = document.getElementById('password2').value.trim();
-                const _confirmPassword = document.getElementById('confirm-password').value.trim();
-                const _email = document.getElementById('email').value.trim();
-        
-                const formData = new FormData();
-        
-                formData.append('player_id', userID);
-        
-                if (_username !== "") {
-                    formData.append('username', _username);
-                }
-        
-                if (_email !== "") {
-                    formData.append('email', _email);
-                }
-        
-                if (_profileImage.files[0]) {
-                    formData.append('image_avatar', _profileImage.files[0]);
-                }
-                if (_password !== "") {
-                    formData.append('password', _password);
-                }
-                if (_password !== "" && _confirmPassword !== "" && _password !== _confirmPassword) {
-                    errorMessage.textContent = "Passwords are not the same.";
-                    return ;
-                } else if (_password === "" && _confirmPassword !== "") {
-                    errorMessage.textContent = "Please enter a new password before confirming.";
-                    return ;
-                }
-        
-                console.table(Array.from(formData.entries()));
-                
-                try {
-                    // Envoie une requête POST à l'API
-                    const response = await fetch("https://" + window.location.host + "/update-player/", {
-                        method: "PUT",
-                        body: formData,
-                    });
-        
-                    if (!response.ok) {
-                        throw new Error('Error while submitting the form');
-                    }
-            
-                    const result = await response.json();
-                    console.log('Success:', result);
-                    navigateTo("settings-page");
-                    
-                } catch (error) {
-                    console.error('Error:', error);
-                    errorMessage.textContent = "An error occurred. Please try again.";
-                }
-            
-            }
-        })
-        
-        .catch(error => console.error("Erreur lors du chargement des param du user_id :", error));  
-}
-    });
-} */
 
 document.addEventListener("click", async function (event) {
     if (document.getElementById("settings-page")) {
