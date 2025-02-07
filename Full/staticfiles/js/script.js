@@ -944,13 +944,14 @@ async function initializeLeaderboard() {
 
 function setFriendsPage() {
 
-    let session = getCookie("user_id");
+    console.log("testfriend");
+    let session = getCookie("user_username");
     if (!session) {
         console.error("No user session found.");
         return;
     }
 
-    let url = "https://" + window.location.host + "/friends/" + session + '/';
+    let url = "https://" + window.location.host + "/user/" + session + '/';
 
     // Récupération et affichage des amis
     fetch(url)
@@ -973,8 +974,10 @@ function setFriendsPage() {
 
         fetch("https://" + window.location.host + "/add-friend/", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_id: session, friend_username: username }),
+            headers: { "Content-Type": "application/json",
+                "Authorization": "Bearer " + getCookie("access_token"),
+            },
+            body: JSON.stringify({ friend_username: username }),
         })
         .then(response => response.json())
         .then(data => {

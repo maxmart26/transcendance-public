@@ -20,6 +20,8 @@ import os
 from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.core.files.base import ContentFile
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -310,9 +312,18 @@ def oauth_callback(request):
                 'nb_game_win': 0,
             }
         )
-        if not created:  # Si l'utilisateur existait déjà
-            player.image_avatar = avatar_url  # Mise à jour éventuelle de l'avatar
-            player.save()
+
+        if avatar_url:
+            image_response = requests.get(avatar_url)
+            if image_response.status_code == 200:
+                image_name = f"avatars/{username}.jpg"  # Nom du fichier
+                player.image_avatar.save(image_name, ContentFile(image_response.content), save=True)
+
+        if not created and avatar_url:
+            image_response = requests.get(avatar_url)
+            if image_response.status_code == 200:
+                image_name = f"avatars/{username}.jpg"
+                player.image_avatar.save(image_name, ContentFile(image_response.content), save=True)
 
         # Connecter l'utilisateur
         login(request, player)
@@ -405,7 +416,7 @@ def get_user_info(request, username):
         'games_history': user.games_history,  # JSONField, stocke l'historique des parties
         'nb_friends': user.nb_friends,  # Nombre total d'amis
         'friends': [
-            {'id': str(friend.id), 'username': friend.username, 'email': friend.email}
+            {'id': str(friend.id), 'username': friend.username, 'email': friend.email, 'image_avatar': friend.image_avatar.url if friend.image_avatar else None}
             for friend in user.friends.all()
         ],
     }
