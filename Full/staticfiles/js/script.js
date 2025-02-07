@@ -364,10 +364,9 @@ const pagesContent = {
 //document.addEventListener('DOMContentLoaded', async () => {
 async function initializeProfilePic () {
     try {
-        
         let session = getCookie("user_username");
         console.log("User ID:", session);
-        let url = "https://" + window.location.host + "/user/" + session +'/';
+        let url = "https://" + window.location.host + "/user/" + session + '/';
         console.log(url);
         // Remplace l'URL par l'endpoint de ton API qui retourne l'image de l'utilisateur
         const response = await fetch(url);
@@ -415,6 +414,7 @@ function navigateTo(page, addToHistory = true) {
     if (normalizedPage.startsWith("profile/")) {
         userId = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
         normalizedPage = "profile-page";
+        loadProfilePage();
     }
 
     if (normalizedPage == 'pong-game-page')
@@ -443,11 +443,11 @@ function navigateTo(page, addToHistory = true) {
 function initializePageScripts(page, userId = null) {
     initializeNavbar();
     initializeProfilePic();
-    /* if (page === "home-page") {
+    if (page === "home-page") {
         initializeSearchBar();
-    }*/
+    }
     if (page === "profile-page" && userId) {
-        loadUserProfile(userId);
+        loadProfilePage(userId);
     }
     if (page === "settings-page") {
         setupSettingsPage();
@@ -522,7 +522,6 @@ function getCookie(name) {
 function deleteCookie(name) {
     document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 }
-
 
 // ----------------- LOGIN PAGE ----------------------------------
 
@@ -783,6 +782,7 @@ document.addEventListener("click", async function (event) {
         if (event.target && event.target.id === "logout") {
             event.preventDefault();
             deleteCookie("user_id");
+            deleteCookie("user_username");
             deleteCookie("access_token");
             navigateTo("login-page");
     }
@@ -925,86 +925,100 @@ function removeFriend(friendId) {
 // ------------------------ PROFILE PAGE ---------------------------
 
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        let session = getCookie("user_username");
-        console.log("User ID:", session);
-        let url = "https://" + window.location.host + "/user/" + session +'/';
-        console.log(url);
-        // Remplace l'URL par l'endpoint de ton API qui retourne l'image de l'utilisateur
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to fetch user infos');
+function loadProfilePage() {
+    // Récupérer l'ID de l'utilisateur connecté (session) ou l'ID passé dans l'URL
+    let session = getCookie("user_username");
+    if (!session) {
+        console.error("Utilisateur non connecté");
+        return;
+    }
 
-        const data = await response.json();
-        
-        if (document.getElementById("profile-page")) {
+    // Récupérer les informations utilisateur depuis l'API
+    let url = `https://${window.location.host}/user/${session}/`;
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Échec du chargement des informations utilisateur');
+            return response.json();
+        })
+        .then(data => {
             const user = document.getElementById("user");
             const games = document.getElementById("nb-games");
             const win = document.getElementById("nb-win");
             const friends = document.getElementById("nb-friends");
 
+            // Créer et insérer les informations de l'utilisateur dans le DOM
             const li = document.createElement("li");
+            li.innerHTML = `
+                <div id="profile-image">
+                    <img src="${data.user.image_avatar}" alt="Profile" class="profile-image">
+                </div>
+                <div class="user-online">
+                    <p id="profile-username" class="profile-username">${data.user.username}</p>
+                    <div class="online">ONLINE</div>
+                </div>`;
+
             const li2 = document.createElement("li");
+            li2.innerHTML = `
+                <img src="static/img/dice.png" alt="Games" class="profile-icon">
+                <p class="item-nb">${data.user.nb_game_play}</p>
+                <p class="item-title">Games</p>`;
+
             const li3 = document.createElement("li");
+            li3.innerHTML = `
+                <img src="static/img/trophy.png" alt="Wins" class="profile-icon">
+                <p class="item-nb">${data.user.nb_game_win}</p>
+                <p class="item-title">Victories</p>`;
+
             const li4 = document.createElement("li");
-            
-            
-            li.innerHTML = `<div id="profile-image"><img src=${data.user.image_avatar} alt="Profile" class="profile-image"></div>
-            <div class="user-online">
-                <p id="profile-username" class="profile-username">${data.user.username}</p>
-                <div class="online">ONLINE</div>
-            </div>`;
+            li4.innerHTML = `
+                <img src="static/img/heart.png" alt="Friends" class="profile-icon">
+                <p class="item-nb">${data.user.nb_friends}</p>
+                <p class="item-title">Friends</p>`;
 
-            li2.innerHTML = `<img src="static/img/dice.png" alt="Profile" class="profile-icon">
-            <p class="item-nb">${data.user.nb_game_play}</p>
-            <p class="item-title">Games</p>`;
-            
-            li3.innerHTML = `<img src="static/img/trophy.png" alt="Profile" class="profile-icon">
-            <p class="item-nb">${data.user.nb_game_win}</p>
-            <p class="item-title">Victories</p>`;
-
-            li4.innerHTML = `<img src="static/img/heart.png" alt="Profile" class="profile-icon">
-            <p class="item-nb">${data.user.nb_friends}</p>
-            <p class="item-title">Friends</p>`;
-            
+            // Ajouter les éléments dans la page
             user.appendChild(li);
             games.appendChild(li2);
             win.appendChild(li3);
             friends.appendChild(li4);
-        
-        }
-    } catch (error) {
-        console.error('Error loading profile image:', error);
-    }
-});
 
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement du profil utilisateur:", error);
+        });
 
-document.addEventListener("DOMContentLoaded", async () => {
-    let session = getCookie("user_username"); // Récupère l'ID du joueur connecté
-    let url = `https://${window.location.host}/user/${session}/matches/`; // API pour récupérer les matchs
+    // Charger l'historique des matchs
+    loadMatchHistory(session);
+}
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Erreur de chargement des matchs");
+// Fonction pour charger l'historique des matchs
+function loadMatchHistory(session) {
+    let url = `https://${window.location.host}/user/${session}/matches/`;
+    
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Erreur lors du chargement des matchs');
+            return response.json();
+        })
+        .then(matches => {
+            populateMatchHistory(matches);
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement des matchs :", error);
+        });
+}
 
-        const matches = await response.json();
-        populateMatchHistory(matches);
-    } catch (error) {
-        console.error("Erreur :", error);
-    }
-});
-
+// Fonction pour afficher les matchs dans le tableau
 function populateMatchHistory(matches) {
     const tbody = document.querySelector("#match-history tbody");
-    tbody.innerHTML = ""; // Vide le tableau avant de le remplir
+    tbody.innerHTML = ""; // Vider le tableau avant d'ajouter les nouveaux résultats
 
-    // Tri des matchs par date (du plus récent au plus ancien)
+    // Trier les matchs par date (du plus récent au plus ancien)
     matches.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     matches.forEach(match => {
         const row = document.createElement("tr");
 
-        // On regarde si l'opponent existe toujours dans la db
+        // Vérifier si l'adversaire existe toujours dans la base de données
         const opponentName = match.opponent ? match.opponent : "Deleted User";
 
         row.innerHTML = `
@@ -1018,7 +1032,9 @@ function populateMatchHistory(matches) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", async function () {
+// -------------------------------- HOME PAGE -------------------------------------------------
+
+function initializeSearchBar() {
     const searchInput = document.getElementById("search-player");
     const searchResults = document.getElementById("search-results");
 
@@ -1059,7 +1075,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             searchResults.style.display = "none";
         }
     });
-});
+}
 
 // ---------------- GAME -----------------------------------------
 
