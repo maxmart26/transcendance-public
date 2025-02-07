@@ -361,7 +361,8 @@ const pagesContent = {
 
 // Affichage image de profil sur toutes les pages
 
-document.addEventListener('DOMContentLoaded', async () => {
+//document.addEventListener('DOMContentLoaded', async () => {
+async function initializeProfilePic () {
     try {
         
         let session = getCookie("user_id");
@@ -389,8 +390,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error loading profile image:', error);
     }
 
-});
-
+//});
+}
 
 
 function getPageName(page) {
@@ -404,7 +405,7 @@ function getCurrentTab() {
     return null;
 }
 
-// Gestion de la navigation avec l'historique
+// Gestion de la navigation vers les pages avec historique
 
 function navigateTo(page, addToHistory = true) {
     const normalizedPage = getPageName(page);
@@ -437,6 +438,27 @@ function navigateTo(page, addToHistory = true) {
     if (normalizedPage == 'profile-page') {
         loadUserProfile(userId);
     }
+
+    initializePageScripts(normalizedPage, userId);
+}
+
+// Mise a jour des pages quand on clique dessus
+
+function initializePageScripts(page, userId = null) {
+    initializeNavbar();
+    initializeProfilePic();
+    /* if (page === "home-page") {
+        initializeSearchBar();
+    }*/
+    if (page === "profile-page" && userId) {
+        loadUserProfile(userId);
+    }
+    if (page === "settings-page") {
+        setupSettingsPage();
+    }
+    if (page === "leaderboard-page") {
+        initializeLeaderboard();
+    }
 }
 
 window.addEventListener("popstate", (event) => {
@@ -451,13 +473,15 @@ document.addEventListener('DOMContentLoaded', () => {
     navigateTo(initialPage, false); // Pas besoin d'ajouter dans l'historique au chargement
 });
 
-document.querySelectorAll('a.nav-link').forEach(link => {
-    link.addEventListener('click', (event) => {
-        event.preventDefault(); // Empêche le comportement par défaut
-        const page = link.getAttribute('href').replace('#', '');
-        navigateTo(page); // Navigue vers la page
+function initializeNavbar() {
+    document.querySelectorAll('.navbar-item').forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // Empêche le rechargement de la page
+            const page = link.getAttribute('href').replace('#', ''); // Extrait la page
+            navigateTo(page); // Charge la page correspondante
+        });
     });
-});
+}
 
 async function loadUserProfile(userId = null) {
     let sessionUserId = getCookie("user_id"); // ID du joueur connecté
@@ -656,7 +680,107 @@ document.addEventListener("click", async function (event) {
 
 // ---------------------- SETTINGS PAGE --------------------------
 
-document.addEventListener("click", async function (event) {
+function setupSettingsPage() {
+    // Vérifie si la page settings est affichée
+    if (!document.getElementById("settings-page")) return;
+
+    let session = getCookie("user_id");
+    console.log("User ID:", session);
+
+    let url = "https://" + window.location.host + "/user/" + session + "/";
+    console.log(url);
+
+    fetch(url)
+        .then(response => response.json())
+        .then(async data => {
+            console.log("User ID from API:", data);
+            let userID = data.user.id;
+
+            // Sélection des éléments HTML
+            const settingsImgContainer = document.getElementById("settings-img");
+            const imageUploadInput = document.getElementById("newImageUpload");
+            const saveButton = document.getElementById("save-settings");
+
+            console.log(data.user.image_avatar);
+            
+            // Vérifie s'il y a déjà une image, sinon met une image par défaut
+            if (data.user.image_avatar) {
+                settingsImgContainer.style.backgroundImage = `url('${data.user.image_avatar}')`;
+            } else {
+                settingsImgContainer.style.backgroundImage = "url('static/img/person.png')";
+            }
+
+            // Événement pour mettre à jour l'image sélectionnée
+            imageUploadInput.addEventListener("change", function () {
+                const file = imageUploadInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        settingsImgContainer.style.backgroundImage = `url('${e.target.result}')`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Gestion du clic sur le bouton "Save Settings"
+            saveButton.addEventListener("click", async function (event) {
+                event.preventDefault();
+
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password2').value.trim();
+                const confirmPassword = document.getElementById('confirm-password').value.trim();
+                const email = document.getElementById('email').value.trim();
+
+                const formData = new FormData();
+                formData.append('player_id', userID);
+
+                if (username !== "") {
+                    formData.append('username', username);
+                }
+                if (email !== "") {
+                    formData.append('email', email);
+                }
+                if (imageUploadInput.files[0]) {
+                    formData.append('image_avatar', imageUploadInput.files[0]);
+                }
+                if (password !== "") {
+                    formData.append('password', password);
+                }
+                if (password !== "" && confirmPassword !== "" && password !== confirmPassword) {
+                    alert("Les mots de passe ne correspondent pas.");
+                    return;
+                } else if (password === "" && confirmPassword !== "") {
+                    alert("Veuillez entrer un nouveau mot de passe avant de confirmer.");
+                    return;
+                }
+
+                console.table(Array.from(formData.entries()));
+
+                try {
+                    const response = await fetch("https://" + window.location.host + "/update-player/", {
+                        method: "PUT",
+                        body: formData,
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Erreur lors de la mise à jour du profil");
+                    }
+
+                    const result = await response.json();
+                    console.log("Succès :", result);
+                    navigateTo("settings-page");
+
+                } catch (error) {
+                    console.error("Erreur :", error);
+                    alert("Une erreur s'est produite. Veuillez réessayer.");
+                }
+            });
+        })
+        .catch(error => console.error("Erreur lors du chargement du user_id :", error));
+}
+
+/* function setupSettingsPage() {
+    document.addEventListener("click", async function (event) {
     if (document.getElementById("settings-page")) {
     let session = getCookie("user_id");
     console.log("User ID:", session);
@@ -743,6 +867,7 @@ document.addEventListener("click", async function (event) {
         .catch(error => console.error("Erreur lors du chargement des param du user_id :", error));  
 }
     });
+} */
 
 document.addEventListener("click", async function (event) {
     if (document.getElementById("settings-page")) {
@@ -756,7 +881,7 @@ document.addEventListener("click", async function (event) {
 
 // --------------------------- LEADERBOARD PAGE -------------------
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function initializeLeaderboard() {
     try {
         let url = "https://" + window.location.host + "/leaderboard/";
         console.log(url);
@@ -812,7 +937,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         console.error('Error loading profile image:', error);
     }
-});
+//});
+}
 
 // ------------------------ PROFILE PAGE ---------------------------
 
