@@ -365,7 +365,7 @@ const pagesContent = {
 async function initializeProfilePic () {
     try {
         
-        let session = getCookie("user_id");
+        let session = getCookie("user_username");
         console.log("User ID:", session);
         let url = "https://" + window.location.host + "/user/" + session +'/';
         console.log(url);
@@ -483,7 +483,7 @@ function initializeNavbar() {
 }
 
 async function loadUserProfile(userId = null) {
-    let sessionUserId = getCookie("user_id"); // ID du joueur connecté
+    let sessionUserId = getCookie("user_username"); // ID du joueur connecté
 
     // Détermine quel profil charger
     let profileId = userId || sessionUserId;
@@ -683,7 +683,7 @@ function setupSettingsPage() {
     // Vérifie si la page settings est affichée
     if (!document.getElementById("settings-page")) return;
 
-    let session = getCookie("user_id");
+    let session = getCookie("user_username");
     console.log("User ID:", session);
 
     let url = "https://" + window.location.host + "/user/" + session + "/";
@@ -927,7 +927,7 @@ function removeFriend(friendId) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        let session = getCookie("user_id");
+        let session = getCookie("user_username");
         console.log("User ID:", session);
         let url = "https://" + window.location.host + "/user/" + session +'/';
         console.log(url);
@@ -964,7 +964,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p class="item-title">Victories</p>`;
 
             li4.innerHTML = `<img src="static/img/heart.png" alt="Profile" class="profile-icon">
-            <p class="item-nb">5</p>
+            <p class="item-nb">${data.user.nb_friends}</p>
             <p class="item-title">Friends</p>`;
             
             user.appendChild(li);
@@ -980,7 +980,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 document.addEventListener("DOMContentLoaded", async () => {
-    let session = getCookie("user_id"); // Récupère l'ID du joueur connecté
+    let session = getCookie("user_username"); // Récupère l'ID du joueur connecté
     let url = `https://${window.location.host}/user/${session}/matches/`; // API pour récupérer les matchs
 
     try {
