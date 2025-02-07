@@ -1400,3 +1400,76 @@ canvas {
   align-items: center;
   justify-content: center;
 }
+
+.recap-games {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.recap-title {
+  color: #FAB005;
+  font-size: 94%;
+  font-family: 'Audiowide', sans-serif;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: white;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 80%;
+}
+
+th, td {
+  border: 1px solid #000;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background: #fff;
+  color: #FAB005;
+}
+
+tr:nth-child(even) {
+  background: #f2f2f2;
+}
+
+
+.search-box {
+  position: relative;
+}
+
+#search-player {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+#search-results {
+  position: absolute;
+  top: 35px;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+#search-results div {
+  padding: 10px;
+  cursor: pointer;
+  color: #000;
+}
+
+#search-results div:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}

@@ -9,4 +9,5 @@ urlpatterns = [
 	path('tournament/', views.tournament, name='tournament'),
 	path('tournament/<uuid:tourn_id>/', views.init_tourn, name='init_tourn'),
 	path('tournament/game/', views.start_tourn, name='start_tourn')
+	path('search-player/', views.search_player, name="search-player"),
 ]
