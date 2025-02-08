@@ -328,10 +328,12 @@ def oauth_callback(request):
         # Connecter l'utilisateur
         login(request, player)
         response = HttpResponseRedirect('/#home-page')
+        refresh = RefreshToken.for_user(player)  # Génère un JWT pour Django
+        access_token = str(refresh.access_token)
         response.set_cookie(
             key='access_token',  # Nom du cookie
-            value=token,  # Valeur du token d'accès
-            httponly=True,  # HTTPOnly pour empêcher l'accès via JavaScript
+            value=access_token,  # Valeur du token d'accès
+            httponly=False,  # HTTPOnly pour empêcher l'accès via JavaScript
             secure=True,  # True si vous utilisez HTTPS
             samesite='Strict',  # Protéger contre les attaques CSRF
         )
