@@ -1153,12 +1153,15 @@ function populateMatchHistory(matches) {
         } else {
             opponentName = "Deleted User"; // Cas improbable mais on le gère
         }
+        
+        // ✅ Ajoute une classe dynamique sur le texte "win" ou "lose"
+        const resultClass = match.result.toLowerCase() === "win" ? "win-text" : "lose-text";
 
         row.innerHTML = `
             <td>${opponentName}</td>
             <td>${new Date(match.date).toLocaleDateString()}</td>
-            <td>${match.result}</td>
-            <td>${match.score}</td>
+            <td><span class="${resultClass}">${match.result}</span></td>
+            <td>${match.score[1]}/${match.score[2]}</td>
         `;
 
         tbody.appendChild(row);

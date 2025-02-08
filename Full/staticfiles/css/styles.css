@@ -1475,3 +1475,13 @@ tr:nth-child(even) {
   background-color: #f0f0f0;
   color: #000;
 }
+
+.win-text {
+  color: #155724; /* ✅ Texte vert foncé */
+  font-weight: bold;
+}
+
+.lose-text {
+  color: #dd3243; /* ❌ Texte rouge foncé */
+  font-weight: bold;
+}

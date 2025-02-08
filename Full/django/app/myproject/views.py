@@ -433,7 +433,7 @@ def get_user_info(request, username):
         'games_history': user.games_history,  # JSONField, stocke l'historique des parties
         'nb_friends': user.nb_friends,  # Nombre total d'amis
         'friends': [
-            {'id': str(friend.id), 'username': friend.username, 'email': friend.email, 'image_avatar': friend.image_avatar.url if friend.image_avatar else None}
+            {'id': str(friend.id), 'username': friend.username, 'email': friend.email, 'image_avatar': friend.image_avatar.url if friend.image_avatar else None, 'online' : friend.is_online}
             for friend in user.friends.all()
         ],
     }
