@@ -860,9 +860,20 @@ document.addEventListener("click", async function (event) {
     if (document.getElementById("settings-page")) {
         if (event.target && event.target.id === "logout") {
             event.preventDefault();
-            deleteCookie("user_id");
-            deleteCookie("access_token");
-            navigateTo("login-page");
+            const response = await fetch("https://" + window.location.host + "/logout/", {
+                method: "POST",
+                credentials: "include", // ✅ Inclure les cookies de session
+            });
+            if (response.ok) {
+                console.log("Déconnexion réussie !");
+                document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "user_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "user_username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                navigateTo("login-page");            
+            } else {
+                console.error("Erreur lors de la déconnexion.");
+            }
+            
     }
 }
 });

@@ -9,7 +9,7 @@ from drf_yasg import openapi
 from myapp.models import Player
 from myapp.serializers import PlayerLead
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 from django.shortcuts import redirect
 from django.http import JsonResponse,HttpResponseRedirect
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -21,6 +21,8 @@ from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.views.decorators.csrf import csrf_exempt
+
 
 
 import logging
@@ -212,6 +214,8 @@ def login(request):
         # Vérifiez si l'utilisateur existe dans la base
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
+        user.is_online = True  # ✅ Marque comme "en ligne"
+        user.save(update_fields=["is_online"])
         response = Response(
             {
                 "message": "Login successful!",
@@ -250,12 +254,23 @@ def login(request):
             status=status.HTTP_401_UNAUTHORIZED,
         )
     
-def login_42(request):
-    oauth_url = (
-        "https://api.intra.42.fr/oauth/authorize"
-        f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code"
-    )
-    return redirect(oauth_url)
+@csrf_exempt  # Désactive la protection CSRF si tu l'appelles depuis un client externe
+def user_logout(request):
+    if request.user.is_authenticated:
+        # ✅ Marquer l'utilisateur comme hors ligne avant de le déconnecter
+        request.user.is_online = False
+        request.user.save(update_fields=["is_online"])
+
+        logout(request)  # Déconnecte l'utilisateur
+
+        response = JsonResponse({"message": "Logout successful!"})
+        response.delete_cookie("access_token")  # ✅ Supprime le token JWT
+        response.delete_cookie("user_id")
+        response.delete_cookie("user_username")
+        
+        return response
+    else:
+        return JsonResponse({"error": "User not authenticated"}, status=401)
 
 
 def oauth_callback(request):
@@ -485,3 +500,9 @@ def leaderboard(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
+def get_online_users(request):
+    online_users = Player.objects.filter(is_online=True).values("username", "email")
+    return JsonResponse(list(online_users), safe=False)
