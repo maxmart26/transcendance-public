@@ -1,4 +1,5 @@
 import uuid
+from asgiref.sync import async_to_sync
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
