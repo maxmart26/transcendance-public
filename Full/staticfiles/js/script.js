@@ -408,13 +408,11 @@ function getCurrentTab() {
 
 function navigateTo(page, addToHistory = true) {
     const normalizedPage = getPageName(page);
-
     // Vérifie si on veut afficher un profil spécifique
     let userId = null;
     if (normalizedPage.startsWith("profile/")) {
         userId = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
         normalizedPage = "profile-page";
-        loadProfilePage();
     }
 
     if (normalizedPage == 'pong-game-page')
@@ -443,10 +441,12 @@ function navigateTo(page, addToHistory = true) {
 function initializePageScripts(page, userId = null) {
     initializeNavbar();
     initializeProfilePic();
+    console.log(page);
     if (page === "home-page") {
         initializeSearchBar();
     }
     if (page === "profile-page" && userId) {
+        console.log("this is profile page");
         loadProfilePage(userId);
     }
     if (page === "settings-page") {
@@ -469,6 +469,7 @@ window.addEventListener("popstate", (event) => {
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
     const initialPage = window.location.hash.replace('#', '') || 'login-page';
+    console.log("hashtag remplace", initialPage);
     navigateTo(initialPage, false); // Pas besoin d'ajouter dans l'historique au chargement
 });
 
@@ -477,6 +478,7 @@ function initializeNavbar() {
         link.addEventListener('click', (event) => {
             event.preventDefault(); // Empêche le rechargement de la page
             const page = link.getAttribute('href').replace('#', ''); // Extrait la page
+            console.log("navbar: ", page);
             navigateTo(page); // Charge la page correspondante
         });
     });
@@ -1076,6 +1078,12 @@ function initializeSearchBar() {
         }
     });
 }
+
+document.addEventListener("click", function (event) {
+        if (document.getElementById("profile-img")) {
+            navigateTo('profile-page');
+        }
+    });
 
 // ---------------- GAME -----------------------------------------
 
