@@ -1107,7 +1107,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 document.addEventListener("DOMContentLoaded", async () => {
     let session = getCookie("user_username"); // Récupère l'ID du joueur connecté
-    let url = `https://${window.location.host}/user/${session}/matches/`; // API pour récupérer les matchs
+    let url = `https://${window.location.host}/user/${session}`; // API pour récupérer les matchs
 
     try {
         const response = await fetch(url);
@@ -1121,17 +1121,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function populateMatchHistory(matches) {
+    console.log(matches);
     const tbody = document.querySelector("#match-history tbody");
     tbody.innerHTML = ""; // Vide le tableau avant de le remplir
 
-    // Tri des matchs par date (du plus récent au plus ancien)
-    matches.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const currentUser = getCookie("user_username");
 
-    matches.forEach(match => {
+    // Tri des matchs par date (du plus récent au plus ancien)
+    console.log(matches.user.games_history);
+    const matchHistory = Object.values(matches.user.games_history);
+    matchHistory.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+    matchHistory.forEach(match => {
         const row = document.createElement("tr");
 
         // On regarde si l'opponent existe toujours dans la db
-        const opponentName = match.opponent ? match.opponent : "Deleted User";
+        let opponentName;
+        if (match.player1 === currentUser) {
+            opponentName = match.player2; // L'autre joueur est l'adversaire
+        } else if (match.player2 === currentUser) {
+            opponentName = match.player1; // L'autre joueur est l'adversaire
+        } else {
+            opponentName = "Deleted User"; // Cas improbable mais on le gère
+        }
 
         row.innerHTML = `
             <td>${opponentName}</td>
