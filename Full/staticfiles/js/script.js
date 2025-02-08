@@ -318,20 +318,8 @@ const pagesContent = {
             <div class="scoreboard">
                 <div class="ranklist-container">
                     <div class="ranklist">
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
                     </div>
                     <div class="remove-buttons">
-                        <button class="remove">Remove</button>
-                        <button class="remove">Remove</button>
-                        <button class="remove">Remove</button>
-                        <button class="remove">Remove</button>
-                        <button class="remove">Remove</button>
-                        <button class="remove">Remove</button>
                     </div>
                 </div>
             </div>
@@ -955,64 +943,109 @@ function setFriendsPage() {
 
     // Récupération et affichage des amis
     fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            console.log("Friends list:", data);
-            const friendsContainer = document.querySelector(".ranklist");
-            const removeButtonsContainer = document.querySelector(".remove-buttons");
+    .then(response => response.json())
+    .then(data => {
+        console.log("Friends list:", data.user.friends);
 
-        })
-        .catch(error => console.error("Error loading friends list:", error));
+        const friendsContainer = document.querySelector(".ranklist");
+        const removeButtonsContainer = document.querySelector(".remove-buttons");
+
+        // Vider les conteneurs avant de les remplir
+        friendsContainer.innerHTML = "";
+        removeButtonsContainer.innerHTML = "";
+
+        data.user.friends.forEach(friend => {
+            // Création de l'élément pour chaque ami
+            const friendElement = document.createElement("p");
+            friendElement.classList.add("ranklist-player");
+            friendElement.innerHTML = `
+                <img src="${friend.image_avatar || 'static/img/fox.png'}" alt="Profile" class="ranklist-img">
+                ${friend.username}
+            `;
+            friendsContainer.appendChild(friendElement);
+
+            // Bouton Remove pour chaque ami
+            const removeButton = document.createElement("button");
+            removeButton.classList.add("remove");
+            removeButton.textContent = "Remove";
+            removeButton.addEventListener("click", () => removeFriend(friend.username, removeButton));
+
+            removeButtonsContainer.appendChild(removeButton);
+        });
+    })
+    .catch(error => console.error("Error loading friends list:", error));
 
     // Ajout d'un ami
     document.querySelector(".add-friend").addEventListener("click", () => {
         const username = document.getElementById("user").value.trim();
+        
         if (username === "") {
             alert("Please enter a username.");
             return;
         }
-
+    
+        console.log(username);
+    
         fetch("https://" + window.location.host + "/add-friend/", {
             method: "POST",
-            headers: { "Content-Type": "application/json",
+            headers: { 
+                "Content-Type": "application/json",
                 "Authorization": "Bearer " + getCookie("access_token"),
             },
             body: JSON.stringify({ friend_username: username }),
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log("Friend added:", data);
-                alert("Friend added successfully!");
-                navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
-            } else {
-                alert(data.error || "Error adding friend.");
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Error adding friend: " + response.status);
             }
+            return response.json();  // Convertit la réponse en JSON si elle est OK
         })
-        .catch(error => console.error("Error adding friend:", error));
+        .then(data => {
+            alert("Friend added successfully!");
+            navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
+        })
+        .catch(error => {
+            console.error("Error adding friend:", error);
+            alert("Error adding friend. Please try again.");
+        });
     });
 }
 
 // Supprimer un ami
-function removeFriend(friendId) {
+function removeFriend(username, buttonElement) {
     let session = getCookie("user_id");
 
     fetch("https://" + window.location.host + "/remove-friend/", {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: session, friend_id: friendId }),
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + getCookie("access_token"),
+        },
+        body: JSON.stringify({ user_id: session, friend_username: username }),
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log("Friend removed:", data);
-            alert("Friend removed successfully!");
-            navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
-        } else {
-            alert(data.error || "Error removing friend.");
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to remove friend");
         }
+        return response.json();
     })
-    .catch(error => console.error("Error removing friend:", error));
+    .then(data => {
+        console.log("Friend removed:", data);
+
+        // Supprimer l'élément du DOM sans recharger la page
+        const friendElement = buttonElement.parentElement.querySelector(".ranklist-player");
+        if (friendElement) {
+            friendElement.remove();
+        }
+        buttonElement.remove(); // Supprimer le bouton "Remove" correspondant
+
+        alert("Friend removed successfully!");
+        navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
+    })
+    .catch(error => {
+        console.error("Error removing friend:", error);
+        alert("Error removing friend. Please try again.");
+    });
 }
 
 // ------------------------ PROFILE PAGE ---------------------------
@@ -1292,11 +1325,3 @@ function load_game(difficulty){
 }
 
 // ------------------------------------------------------------------
-
-
-
-
-
-
-
-    

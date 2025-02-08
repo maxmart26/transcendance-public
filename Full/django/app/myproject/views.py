@@ -441,7 +441,7 @@ def add_friend(request):
     except Player.DoesNotExist:
         return Response({"error": "Utilisateur non trouvé."}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(["POST"])
+@api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 def remove_friend(request):
     """Supprime un ami de la liste d'amis d'un joueur"""

@@ -1100,6 +1100,8 @@ input {
 }
 
 .ranklist-container {
+  min-width: 200px;
+  min-height: 100px;
   max-height: 200px; /* Limite la hauteur visible */
   width: fit-content;
   overflow-y: auto; /* Ajoute une barre de défilement verticale si le contenu dépasse */
