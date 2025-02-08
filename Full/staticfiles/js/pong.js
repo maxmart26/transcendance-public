@@ -1,5 +1,3 @@
-import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.172.0/three.module.min.js"
-
 let scene, renderer;
 let cameraP1, cameraP2;
 let paddle1, paddle2;
@@ -14,7 +12,7 @@ let isInitialized = false; // Variable globale pour indiquer si l'initialisation
 
 function init() {
     // 1. Créer une scène
-    scene = new THREE.Scene();
+    scene = new window.THREE.Scene();
 
     // 2. Créer deux caméras (PerspectiveCamera)
     cameraP1 = new THREE.PerspectiveCamera(100, window.innerWidth / 2 / window.innerHeight, 0.1, 1000);
@@ -29,6 +27,7 @@ function init() {
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     window.addEventListener('DOMContentLoaded', () => {
+        console.log("lf game container");
         const container = document.getElementById('game-container');
         if (!container) {
             console.error('Element #game-container not found');
