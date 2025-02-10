@@ -1038,23 +1038,7 @@ function loadProfilePage() {
 document.addEventListener("DOMContentLoaded", async () => {
     let session = getCookie("user_username"); // Récupère l'ID du joueur connecté
     let url = `https://${window.location.host}/user/${session}`; // API pour récupérer les matchs
-
-// Fonction pour charger l'historique des matchs
-function loadMatchHistory(session) {
-    let url = `https://${window.location.host}/user/${session}/matches/`;
-    
-    fetch(url)
-        .then(response => {
-            if (!response.ok) throw new Error('Erreur lors du chargement des matchs');
-            return response.json();
-        })
-        .then(matches => {
-            populateMatchHistory(matches);
-        })
-        .catch(error => {
-            console.error("Erreur lors du chargement des matchs :", error);
-        });
-}
+})
 
 // Fonction pour afficher les matchs dans le tableau
 function populateMatchHistory(matches) {
@@ -1142,7 +1126,7 @@ function initializeSearchBar() {
 }
 
 document.addEventListener("click", function (event) {
-        if (document.getElementById("profile-img")) {
+        if (event.target === document.getElementById("profile-img")) {
             navigateTo('profile-page');
         }
     });
