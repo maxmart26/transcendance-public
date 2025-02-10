@@ -123,9 +123,12 @@ AUTHENTICATION_BACKENDS = [
     'myapp.backend_42.Intra42OAuth2',  # Backend spécifique à l'API 42
     'django.contrib.auth.backends.ModelBackend',  # Authentification classique
 ]
-CLIENT_ID = config('INTRA_ID')
-CLIENT_SECRET = config('INTRA_SECRET')
-REDIRECT_URI = config('INTRA_REDIRECT_URI')
+import environ
+env = environ.Env()
+environ.Env.read_env()
+CLIENT_ID = env("INTRA_ID")
+CLIENT_SECRET = env("INTRA_SECRET")
+REDIRECT_URI = env("REDIRECT_URI")
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
