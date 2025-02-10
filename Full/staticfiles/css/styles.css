@@ -1136,6 +1136,8 @@ li .score-nb {
 }
 
 .ranklist-container {
+  min-width: 200px;
+  min-height: 100px;
   max-height: 200px; /* Limite la hauteur visible */
   width: fit-content;
   overflow-y: auto; /* Ajoute une barre de défilement verticale si le contenu dépasse */
@@ -1508,4 +1510,14 @@ tr:nth-child(even) {
 #search-results div:hover {
   background-color: #f0f0f0;
   color: #000;
+}
+
+.win-text {
+  color: #155724; /* ✅ Texte vert foncé */
+  font-weight: bold;
+}
+
+.lose-text {
+  color: #dd3243; /* ❌ Texte rouge foncé */
+  font-weight: bold;
 }

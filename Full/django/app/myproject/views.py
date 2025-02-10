@@ -9,7 +9,7 @@ from drf_yasg import openapi
 from myapp.models import Player
 from myapp.serializers import PlayerLead
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 from django.shortcuts import redirect
 from django.http import JsonResponse,HttpResponseRedirect
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -20,6 +20,10 @@ import os
 from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.core.files.base import ContentFile
+from django.views.decorators.csrf import csrf_exempt
+
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -210,6 +214,8 @@ def login(request):
         # Vérifiez si l'utilisateur existe dans la base
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
+        user.is_online = True  # ✅ Marque comme "en ligne"
+        user.save(update_fields=["is_online"])
         response = Response(
             {
                 "message": "Login successful!",
@@ -248,12 +254,23 @@ def login(request):
             status=status.HTTP_401_UNAUTHORIZED,
         )
     
-def login_42(request):
-    oauth_url = (
-        "https://api.intra.42.fr/oauth/authorize"
-        f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code"
-    )
-    return redirect(oauth_url)
+@csrf_exempt  # Désactive la protection CSRF si tu l'appelles depuis un client externe
+def user_logout(request):
+    if request.user.is_authenticated:
+        # ✅ Marquer l'utilisateur comme hors ligne avant de le déconnecter
+        request.user.is_online = False
+        request.user.save(update_fields=["is_online"])
+
+        logout(request)  # Déconnecte l'utilisateur
+
+        response = JsonResponse({"message": "Logout successful!"})
+        response.delete_cookie("access_token")  # ✅ Supprime le token JWT
+        response.delete_cookie("user_id")
+        response.delete_cookie("user_username")
+        
+        return response
+    else:
+        return JsonResponse({"error": "User not authenticated"}, status=401)
 
 
 def oauth_callback(request):
@@ -310,17 +327,28 @@ def oauth_callback(request):
                 'nb_game_win': 0,
             }
         )
-        if not created:  # Si l'utilisateur existait déjà
-            player.image_avatar = avatar_url  # Mise à jour éventuelle de l'avatar
-            player.save()
+
+        if avatar_url:
+            image_response = requests.get(avatar_url)
+            if image_response.status_code == 200:
+                image_name = f"avatars/{username}.jpg"  # Nom du fichier
+                player.image_avatar.save(image_name, ContentFile(image_response.content), save=True)
+
+        if not created and avatar_url:
+            image_response = requests.get(avatar_url)
+            if image_response.status_code == 200:
+                image_name = f"avatars/{username}.jpg"
+                player.image_avatar.save(image_name, ContentFile(image_response.content), save=True)
 
         # Connecter l'utilisateur
         login(request, player)
         response = HttpResponseRedirect('/#home-page')
+        refresh = RefreshToken.for_user(player)  # Génère un JWT pour Django
+        access_token = str(refresh.access_token)
         response.set_cookie(
             key='access_token',  # Nom du cookie
-            value=token,  # Valeur du token d'accès
-            httponly=True,  # HTTPOnly pour empêcher l'accès via JavaScript
+            value=access_token,  # Valeur du token d'accès
+            httponly=False,  # HTTPOnly pour empêcher l'accès via JavaScript
             secure=True,  # True si vous utilisez HTTPS
             samesite='Strict',  # Protéger contre les attaques CSRF
         )
@@ -405,7 +433,7 @@ def get_user_info(request, username):
         'games_history': user.games_history,  # JSONField, stocke l'historique des parties
         'nb_friends': user.nb_friends,  # Nombre total d'amis
         'friends': [
-            {'id': str(friend.id), 'username': friend.username, 'email': friend.email}
+            {'id': str(friend.id), 'username': friend.username, 'email': friend.email, 'image_avatar': friend.image_avatar.url if friend.image_avatar else None, 'online' : friend.is_online}
             for friend in user.friends.all()
         ],
     }
@@ -430,7 +458,7 @@ def add_friend(request):
     except Player.DoesNotExist:
         return Response({"error": "Utilisateur non trouvé."}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(["POST"])
+@api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 def remove_friend(request):
     """Supprime un ami de la liste d'amis d'un joueur"""
@@ -472,3 +500,9 @@ def leaderboard(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
+def get_online_users(request):
+    online_users = Player.objects.filter(is_online=True).values("username", "email")
+    return JsonResponse(list(online_users), safe=False)
