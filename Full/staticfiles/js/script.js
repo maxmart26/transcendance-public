@@ -374,10 +374,8 @@ async function initializeProfilePic () {
     } catch (error) {
         console.error('Error loading profile image:', error);
     }
-
 //});
 }
-
 
 function getPageName(page) {
     return page.endsWith('-page') ? page : `${page}-page`;
@@ -400,7 +398,6 @@ function navigateTo(page, addToHistory = true) {
         userId = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
         normalizedPage = "profile-page";
     }
-
     if (normalizedPage == 'pong-game-page')
         document.body.id = 'pong-game-page';
     else
@@ -419,7 +416,7 @@ function navigateTo(page, addToHistory = true) {
         return;
     }
 
-    initializePageScripts(normalizedPage, userId);
+    initializePageScripts(normalizedPage, getCookie('user_id'));
 }
 
 // Mise a jour des pages quand on clique dessus
@@ -1031,14 +1028,22 @@ function loadProfilePage() {
         .catch(error => {
             console.error("Erreur lors du chargement du profil utilisateur:", error);
         });
-
-    // Charger l'historique des matchs
-    loadMatchHistory(session);
 }
+
 document.addEventListener("DOMContentLoaded", async () => {
     let session = getCookie("user_username"); // Récupère l'ID du joueur connecté
     let url = `https://${window.location.host}/user/${session}`; // API pour récupérer les matchs
-})
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Erreur de chargement des matchs");
+
+        const matches = await response.json();
+        populateMatchHistory(matches);
+    } catch (error) {
+        console.error("Erreur :", error);
+    }
+});
 
 // Fonction pour afficher les matchs dans le tableau
 function populateMatchHistory(matches) {
