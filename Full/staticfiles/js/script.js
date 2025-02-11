@@ -89,7 +89,7 @@ const pagesContent = {
             <p class="choose-game">Which game do you want to launch ?</p>
             <div class="pongs">
                 <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
-                <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">PONG 3D (local)</button>
+                <button onclick="start_3Dgame()" id="game" class="game-rectangle">PONG 3D (local)</button>
             </div>
             <button onclick="tournament()" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
         </div>      
@@ -248,7 +248,6 @@ const pagesContent = {
             <div id="score">Joueur 1: 0 | Joueur 2: 0</div>
             
         </div>
-        <script src="js/pong.js"></script>
     </div>
   `,
   "online-game-page": `
@@ -1195,6 +1194,61 @@ function tournament(){
     }
 }
 
+function start_3Dgame(){
+    navigateTo('game-page');
+    const pongGameTab = document.getElementById('game-page');
+    const script = document.createElement('script');
+    console.log("pong3d url: ", pong3d_url);
+    script.src = pong3d_url;
+    script.defer = true;
+    script.type = 'module';
+    pongGameTab.appendChild(script);
+    let isInitialized = false;
+    script.onload = () => {
+        console.log("Script Pong chargé !");
+        if (typeof window.init === 'function') {
+            window.init();
+            isInitialized = true;
+          } else {
+            console.error("init n'est pas accessible sur window !");
+          }
+        console.log(isInitialized);
+        if (isInitialized) {
+        console.log("Init() exécuté !");
+
+        // Si l'initialisation a réussi, exécuter les autres fonctions
+        window.createBall();
+        window.updateScoreDisplay();
+        window.animate();
+    }
+}
+    const interval = setInterval(() => {
+        if (getCurrentTab() !== 'game-page'){
+            window.stopGame();
+            script.remove();
+            clearInterval(interval);
+        }
+    }, 1000);
+
+}
+
+
+// Fonction pour nettoyer le jeu
+function cleanupGame() {
+    isGameRunning = false; // Arrête l'animation
+    const container = document.getElementById('game-container');
+    if (container) {
+        container.innerHTML = ''; // Vide le conteneur du jeu
+    }
+    const gameOverElement = document.getElementById('gameOver');
+    if (gameOverElement) {
+        gameOverElement.remove(); // Supprime le message de fin si présent
+    }
+    const scoreElement = document.getElementById('score');
+    if (scoreElement) {
+        scoreElement.remove(); // Supprime le score
+    }
+}
 
 function load_tourn_game(){
     window.location.href='tournament/game/';

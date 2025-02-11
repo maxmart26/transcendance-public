@@ -1,3 +1,5 @@
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.172.0/three.module.min.js'
+
 let scene, renderer;
 let cameraP1, cameraP2;
 let paddle1, paddle2;
@@ -10,10 +12,15 @@ let gameOver = false; // Indicateur de fin de jeu
 
 let isInitialized = false; // Variable globale pour indiquer si l'initialisation a réussi
 
-function init() {
-    // 1. Créer une scène
-    scene = new window.THREE.Scene();
+export let gameAnimationId = null;
+export let gameRunning = false;
 
+export function init() {
+    console.log("fonction init");
+    gameRunning = true;
+    // 1. Créer une scène
+    scene = new THREE.Scene();
+    
     // 2. Créer deux caméras (PerspectiveCamera)
     cameraP1 = new THREE.PerspectiveCamera(100, window.innerWidth / 2 / window.innerHeight, 0.1, 1000);
     cameraP1.position.set(-9, 5, 0); // Caméra joueur 1
@@ -25,18 +32,20 @@ function init() {
 
     // 3. Créer le renderer
     renderer = new THREE.WebGLRenderer({ antialias: true });
+
     renderer.setSize(window.innerWidth, window.innerHeight);
-    window.addEventListener('DOMContentLoaded', () => {
-        console.log("lf game container");
-        const container = document.getElementById('game-container');
-        if (!container) {
-            console.error('Element #game-container not found');
-            isInitialized = false;
-            return;
-        }
-        isInitialized = true;
-        container.appendChild(renderer.domElement);
-    });
+    
+    console.log("lf game container");
+    const container = document.getElementById('game-container');
+    if (!container) {
+        console.error('Element #game-container not found');
+        isInitialized = false;
+        return;
+    }
+    console.log("init reussie");
+    isInitialized = true; 
+    container.appendChild(renderer.domElement);
+    
 
     
     // Activer le test de scissor une seule fois
@@ -46,7 +55,6 @@ function init() {
     // Redimensionner les caméras si la fenêtre change
     window.addEventListener('resize', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
-
         cameraP1.aspect = window.innerWidth / 2 / window.innerHeight;
         cameraP1.updateProjectionMatrix();
 
@@ -144,8 +152,11 @@ function render() {
 let paddle1x = 0;
 let paddle2x = 0;
 
-function animate() {
-    requestAnimationFrame(animate);
+export function animate() {
+    if (!gameRunning)
+        return;
+    
+    gameAnimationId = requestAnimationFrame(animate);
     
     if (!gameOver) {
         paddle1x = Math.max(-4.5, Math.min(4.5, paddle1x));
@@ -176,7 +187,7 @@ let ball;
 let ballSpeed = 0.1;
 let ballDirection = { x: Math.random() > 0.5 ? 1 : -1, y: Math.random() > 0.5 ? 1 : -1 };
 
-function createBall() {
+export function createBall() {
     const ballGeometry = new THREE.SphereGeometry(0.2, 32, 32);
     const ballMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
     ball = new THREE.Mesh(ballGeometry, ballMaterial);
@@ -267,54 +278,39 @@ function endGame(message) {
     };
 
     messageElement.appendChild(restartButton);
-    document.body.appendChild(messageElement);
+    const gamePage = document.getElementById("game-page");
+    gamePage.appendChild(messageElement);
 }
 
-function updateScoreDisplay() {
+export function updateScoreDisplay() {
     const scoreElement = document.getElementById('score');
     if (scoreElement) {
         scoreElement.textContent = `Joueur 1: ${scoreP1} | Joueur 2: ${scoreP2}`;
     }
 }
 
+export function stopGame() {
+    console.log("Arrêt du jeu !");
+    gameRunning = false; // Arrête la boucle d'animation dans animate()
 
-init();
+    if (gameAnimationId !== null) {
+    cancelAnimationFrame(gameAnimationId);
+    gameAnimationId = null;
+    }
 
-if (isInitialized) {
-    // Si l'initialisation a réussi, exécuter les autres fonctions
-    createBall();
-    updateScoreDisplay();
-    animate();
-
-    let isGameRunning = true; // Drapeau pour contrôler l'animation
-
-// Fonction pour nettoyer le jeu
-function cleanupGame() {
-    isGameRunning = false; // Arrête l'animation
+    // Optionnel : Nettoyer le conteneur du jeu, masquer les scores, etc.
     const container = document.getElementById('game-container');
     if (container) {
-        container.innerHTML = ''; // Vide le conteneur du jeu
-    }
-    const gameOverElement = document.getElementById('gameOver');
-    if (gameOverElement) {
-        gameOverElement.remove(); // Supprime le message de fin si présent
-    }
-    const scoreElement = document.getElementById('score');
-    if (scoreElement) {
-        scoreElement.remove(); // Supprime le score
+    container.innerHTML = ''; // Supprime le canvas et/ou autres éléments du jeu
     }
 }
 
+window.init = init;
+window.createBall = createBall;
+window.updateScoreDisplay = updateScoreDisplay;
+window.animate = animate;
+window.stopGame = stopGame;
 
-// Détecte le changement de page en surveillant le hash dans l'URL
-window.addEventListener('hashchange', () => {
-    const currentHash = window.location.hash;
-    if (currentHash !== '#game-page') {
-        cleanupGame();
-    }
-});
-} else {
-    console.warn('Game initialization failed. Other functions will not be executed.');
-}
+
 
 
