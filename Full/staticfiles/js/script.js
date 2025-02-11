@@ -89,7 +89,7 @@ const pagesContent = {
             <p class="choose-game">Which game do you want to launch ?</p>
             <div class="pongs">
                 <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
-                <button onclick="start_3Dgame()" id="game" class="game-rectangle">PONG 3D (local)</button>
+                <button onclick="navigateTo('game-page')" id="game" class="game-rectangle">PONG 3D (local)</button>
             </div>
             <button onclick="tournament()" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
         </div>      
@@ -244,6 +244,11 @@ const pagesContent = {
                   <div id="profile-container" class="profile-container"></div>
               </div>
         </div>
+        <div id="game-container">
+            <div id="score">Joueur 1: 0 | Joueur 2: 0</div>
+            
+        </div>
+        <script src="js/pong.js"></script>
     </div>
   `,
   "online-game-page": `
@@ -324,22 +329,6 @@ const pagesContent = {
         </div>
     </div>
     `,
-    "pong-game-page":`
-    <div id="pong-game">
-        <div class="home-navbar">
-            <div class="navbar-left">
-                <p class="text-wrapper">PONG</p>
-                <a id="home" href="#home" class="navbar-item">HOME</a>
-                <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
-                <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
-            </div>
-            <div class="navbar-right">
-                <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
-                <div id="profile-container" class="profile-container"></div>
-            </div>
-        </div>
-    </div>
-    `,
 };
 
 // -------------------------- GLOBAL ---------------------------------
@@ -347,7 +336,6 @@ const pagesContent = {
 
 // Affichage image de profil sur toutes les pages
 
-//document.addEventListener('DOMContentLoaded', async () => {
 async function initializeProfilePic () {
     try {
         let session = getCookie("user_username");
@@ -374,7 +362,6 @@ async function initializeProfilePic () {
     } catch (error) {
         console.error('Error loading profile image:', error);
     }
-//});
 }
 
 function getPageName(page) {
@@ -1208,6 +1195,7 @@ function tournament(){
     }
 }
 
+
 function load_tourn_game(){
     window.location.href='tournament/game/';
     wait_cookie();
@@ -1240,32 +1228,8 @@ function load_tourn_game(){
     }
 }
 
-function start_3Dgame(){
-    navigateTo('game-page')
-    const pongGameTab = document.getElementById('game-page');
-    const div = document.createElement('div')
-    div.id = 'game-container'
-    pongGameTab.appendChild(div);
-    console.log("game container created");
-    const script = document.createElement('script');
-    script.src = pong3d_url;
-    script.defer = true;
-    script.type = 'module'
-    pongGameTab.appendChild(script);
-    script.onload = () => {
-        init();
-    }
-    const interval = setInterval(() => {
-        if (getCurrentTab() !== 'game-page'){
-            script.remove();
-            div.remove();
-            clearInterval(interval);
-        }
-    }, 1000);
-}
-
 function load_game(difficulty){
-    window.location.href='create-game/' + difficulty + '/'
+    window.location.href='create-game/' + difficulty + '/';
     wait_cookie();
     function wait_cookie(){
         if (document.cookie.includes('match_id')){
