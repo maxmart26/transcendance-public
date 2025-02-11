@@ -855,26 +855,46 @@ function setupSettingsPage() {
 } */
 
 document.addEventListener("click", async function (event) {
-    if (document.getElementById("settings-page")) {
-        if (event.target && event.target.id === "logout") {
+    if (document.getElementById("settings-page")) {  
+        if (event.target && event.target.id === "logout") {  
             event.preventDefault();
-            const response = await fetch("https://" + window.location.host + "/logout/", {
-                method: "POST",
-                credentials: "include", // ✅ Inclure les cookies de session
-            });
-            if (response.ok) {
-                console.log("Déconnexion réussie !");
-                document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                document.cookie = "user_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                document.cookie = "user_username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                navigateTo("login-page");            
-            } else {
-                console.error("Erreur lors de la déconnexion.");
+            console.log("🔹 Bouton Logout cliqué !");
+
+            try {
+                const response = await fetch("https://" + window.location.host + "/logout/", {
+                    method: "POST",
+                    headers: { 
+                        "Authorization": "Bearer " + getCookie("access_token"),
+                    },
+                    credentials: "include", // ✅ Inclure les cookies de session
+                });
+                console.log(response)
+                if (response.ok) {
+                    console.log("✅ Déconnexion réussie !");
+                    
+                    // ✅ Supprime les cookies en tenant compte du domaine
+                    document.cookie = "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                    document.cookie = "user_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                    document.cookie = "user_username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                    
+                    console.log("🧹 Cookies supprimés !");
+                    
+                    // ✅ Redirige l'utilisateur vers la page de login
+                    navigateTo("login-page");            
+
+                } else {
+                    console.error("❌ Erreur lors de la déconnexion. Statut HTTP:", response.status);
+                    const errorData = await response.json();
+                    console.error("Détails :", errorData);
+                }
+            } catch (error) {
+                console.error("🚨 Erreur réseau lors de la requête de déconnexion :", error);
             }
-            
+        }
     }
-}
 });
+    
+
 
 // --------------------------- LEADERBOARD PAGE -------------------
 
@@ -964,11 +984,17 @@ function setFriendsPage() {
         removeButtonsContainer.innerHTML = "";
 
         data.user.friends.forEach(friend => {
+            // Déterminer la classe de l'indicateur en fonction du statut en ligne
+            const statusClass = friend.online ? "online" : "offline";
+
             // Création de l'élément pour chaque ami
             const friendElement = document.createElement("p");
             friendElement.classList.add("ranklist-player");
             friendElement.innerHTML = `
-                <img src="${friend.image_avatar || 'static/img/fox.png'}" alt="Profile" class="ranklist-img">
+                <div class="profile-container">
+                    <div class="status-indicator ${statusClass}"></div>
+                    <img src="${friend.image_avatar || 'static/img/fox.png'}" alt="Profile" class="ranklist-img">
+                </div>
                 ${friend.username}
             `;
             friendsContainer.appendChild(friendElement);
@@ -983,7 +1009,7 @@ function setFriendsPage() {
         });
     })
     .catch(error => console.error("Error loading friends list:", error));
-
+    
     // Ajout d'un ami
     document.querySelector(".add-friend").addEventListener("click", () => {
         const username = document.getElementById("user").value.trim();
@@ -1115,6 +1141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 document.addEventListener("DOMContentLoaded", async () => {
+    if (document.getElementById("match-history")){
     let session = getCookie("user_username"); // Récupère l'ID du joueur connecté
     let url = `https://${window.location.host}/user/${session}`; // API pour récupérer les matchs
 
@@ -1126,7 +1153,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         populateMatchHistory(matches);
     } catch (error) {
         console.error("Erreur :", error);
-    }
+    }}
 });
 
 function populateMatchHistory(matches) {
@@ -1141,24 +1168,30 @@ function populateMatchHistory(matches) {
     const matchHistory = Object.values(matches.user.games_history);
     matchHistory.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
-    matchHistory.forEach(match => {
+    const latestMatches = matchHistory.slice(0, 5);
+
+    latestMatches.forEach(match => {
         const row = document.createElement("tr");
 
         // On regarde si l'opponent existe toujours dans la db
         let opponentName;
         if (match.player1 === currentUser) {
-            opponentName = match.player2; // L'autre joueur est l'adversaire
-        } else if (match.player2 === currentUser) {
             opponentName = match.player1; // L'autre joueur est l'adversaire
+        } else if (match.player2 != currentUser) {
+            opponentName = match.player2; // L'autre joueur est l'adversaire
         } else {
             opponentName = "Deleted User"; // Cas improbable mais on le gère
         }
-        
+
+        let opponentHTML = opponentName !== "Deleted User"
+            ? `<a href="/profile/${opponentName}" class="profile-link" data-username="${opponentName}">${opponentName}</a>`
+            : opponentName;
+
         // ✅ Ajoute une classe dynamique sur le texte "win" ou "lose"
         const resultClass = match.result.toLowerCase() === "win" ? "win-text" : "lose-text";
 
         row.innerHTML = `
-            <td>${opponentName}</td>
+            <td>${opponentHTML}</td>
             <td>${new Date(match.date).toLocaleDateString()}</td>
             <td><span class="${resultClass}">${match.result}</span></td>
             <td>${match.score[1]}/${match.score[2]}</td>
@@ -1166,50 +1199,105 @@ function populateMatchHistory(matches) {
 
         tbody.appendChild(row);
     });
+    document.querySelectorAll(".profile-link").forEach(link => {
+        link.addEventListener("click", function (event) {
+            event.preventDefault();
+            const username = this.dataset.username;
+            navigateToProfile(username);
+        });
+    });
 }
+//----------------------PAGE PROFILE FRIEND----------------
+document.addEventListener("DOMContentLoaded", () => {
+    const app = document.getElementById("pong");
 
-document.addEventListener("DOMContentLoaded", async function () {
-    const searchInput = document.getElementById("search-player");
-    const searchResults = document.getElementById("search-results");
+    // Gestion de la navigation
+    function handleNavigation() {
+        const path = window.location.pathname;
+        console.log("📌 Nouvelle URL détectée :", path);
 
-    searchInput.addEventListener("input", async function () {
-        const query = searchInput.value.trim().toLowerCase();
-        if (query.length < 1) {
-            searchResults.style.display = "none";
-            return;
+        if (path.startsWith("/profile/")) {
+            const username = path.split("/")[2]; // Récupérer le username
+            loadUserProfile(username);
         }
+    }
 
-        try {
-            const response = await fetch(`https://${window.location.host}/search-player/?q=${query}`);
-            const players = await response.json();
-
-            searchResults.innerHTML = ""; // Efface les anciens résultats
-            if (players.length === 0) {
-                searchResults.innerHTML = "<div>Aucun joueur trouvé</div>";
-            } else {
-                players.forEach(player => {
-                    const div = document.createElement("div");
-                    div.textContent = player.username || "Deleted User";
-                    div.addEventListener("click", () => {
-                        navigateTo(`profile-page/${player.id}`);
-                    });
-                    searchResults.appendChild(div);
-                });
-            }
-
-            searchResults.style.display = "block";
-        } catch (error) {
-            console.error("Erreur lors de la recherche des joueurs:", error);
-        }
-    });
-
-    // Cacher la liste de résultats si on clique ailleurs
-    document.addEventListener("click", function (event) {
-        if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
-            searchResults.style.display = "none";
-        }
-    });
+    // Charger la page au changement d'URL
+    window.addEventListener("popstate", handleNavigation);
+    handleNavigation();
 });
+
+// Charger les infos du profil utilisateur
+async function loadUserProfile(username) {
+    console.log("🔍 Chargement du profil de :", username);
+    const app = document.getElementById("pong");
+
+    app.innerHTML = `
+        <div id="profile-page">
+            <h1>Profil de <span id="profile-username"></span></h1>
+            <img id="profile-image" src="static/img/person.png" alt="Profile">
+            <p id="profile-info">Chargement...</p>
+            <button onclick="history.back()">Retour</button>
+        </div>
+    `;
+
+    try {
+        const response = await fetch(`https://${window.location.host}/user/${username}/`);
+        if (!response.ok) throw new Error("Utilisateur introuvable");
+
+        const data = await response.json();
+
+        document.getElementById("profile-username").textContent = data.user.username;
+        document.getElementById("profile-image").src = data.user.image_avatar || "static/img/person.png";
+        document.getElementById("profile-info").textContent = `Email : ${data.user.email}`;
+
+    } catch (error) {
+        console.error("❌ Erreur lors du chargement du profil :", error);
+        document.getElementById("profile-info").textContent = "Utilisateur introuvable.";
+    }
+}
+// document.addEventListener("DOMContentLoaded", async function () {
+//     const searchInput = document.getElementById("search-player");
+//     const searchResults = document.getElementById("search-results");
+
+//     searchInput.addEventListener("input", async function () {
+//         const query = searchInput.value.trim().toLowerCase();
+//         if (query.length < 1) {
+//             searchResults.style.display = "none";
+//             return;
+//         }
+
+//         try {
+//             const response = await fetch(`https://${window.location.host}/search-player/?q=${query}`);
+//             const players = await response.json();
+
+//             searchResults.innerHTML = ""; // Efface les anciens résultats
+//             if (players.length === 0) {
+//                 searchResults.innerHTML = "<div>Aucun joueur trouvé</div>";
+//             } else {
+//                 players.forEach(player => {
+//                     const div = document.createElement("div");
+//                     div.textContent = player.username || "Deleted User";
+//                     div.addEventListener("click", () => {
+//                         navigateTo(`profile-page/${player.id}`);
+//                     });
+//                     searchResults.appendChild(div);
+//                 });
+//             }
+
+//             searchResults.style.display = "block";
+//         } catch (error) {
+//             console.error("Erreur lors de la recherche des joueurs:", error);
+//         }
+//     });
+
+//     // Cacher la liste de résultats si on clique ailleurs
+//     document.addEventListener("click", function (event) {
+//         if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+//             searchResults.style.display = "none";
+//         }
+//     });
+// });
 
 // ---------------- GAME -----------------------------------------
 

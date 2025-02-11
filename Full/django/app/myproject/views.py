@@ -254,8 +254,12 @@ def login(request):
             status=status.HTTP_401_UNAUTHORIZED,
         )
     
-@csrf_exempt  # Désactive la protection CSRF si tu l'appelles depuis un client externe
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])  # Désactive la protection CSRF si tu l'appelles depuis un client externe
 def user_logout(request):
+    print("Utilisateur actuel :", request.user)  # ✅ Debugging
+
     if request.user.is_authenticated:
         # ✅ Marquer l'utilisateur comme hors ligne avant de le déconnecter
         request.user.is_online = False
@@ -270,7 +274,7 @@ def user_logout(request):
         
         return response
     else:
-        return JsonResponse({"error": "User not authenticated"}, status=401)
+        return JsonResponse({"error":request.user}, status=401)
 
 
 def oauth_callback(request):
