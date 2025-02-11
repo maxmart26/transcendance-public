@@ -1080,7 +1080,7 @@ function initializeSearchBar() {
 }
 
 document.addEventListener("click", function (event) {
-        if (document.getElementById("profile-img")) {
+        if (event.target.id === "profile-img") {
             navigateTo('profile-page');
         }
     });
