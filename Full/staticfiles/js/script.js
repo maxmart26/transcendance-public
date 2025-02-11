@@ -1042,7 +1042,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!response.ok) throw new Error("Erreur de chargement des matchs");
 
         const matches = await response.json();
-        populateMatchHistory(matches);
+        History(matches);
     } catch (error) {
         console.error("Erreur :", error);
     }
@@ -1081,7 +1081,7 @@ function populateMatchHistory(matches) {
             <td>${opponentName}</td>
             <td>${new Date(match.date).toLocaleDateString()}</td>
             <td><span class="${resultClass}">${match.result}</span></td>
-            <td>${match.score[1]}/${match.score[2]}</td>
+            <td>${match.score[1]}-${match.score[2]}</td>
         `;
 
         tbody.appendChild(row);
@@ -1134,7 +1134,7 @@ function initializeSearchBar() {
 }
 
 document.addEventListener("click", function (event) {
-        if (event.target === document.getElementById("profile-img")) {
+        if (event.target.id === "profile-img") {
             navigateTo('profile-page');
         }
     });
