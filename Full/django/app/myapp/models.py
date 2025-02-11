@@ -1,4 +1,5 @@
 import uuid
+from asgiref.sync import async_to_sync
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -39,6 +40,7 @@ class Player(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     color = models.CharField(max_length=7, default='#ff79d1')
+    is_online = models.BooleanField(default=False)  # ✅ Champ en ligne
 
     games_history = models.JSONField(default=dict)
 

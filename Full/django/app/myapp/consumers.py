@@ -115,15 +115,19 @@ class MatchManager(AsyncWebsocketConsumer):
 		if event['winner'] == '2':
 			winner = self.player2.username
 			self.player2.nb_game_win += 1
-			self.player2.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'win', 'date': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
-			self.player1.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'lose', 'date': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
+			if (str(self.match.id) not in self.player2.games_history or str(self.match.id) not in self.player1.games_history):
+				self.player2.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'win', 'score': event['score'], 'date': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
+				self.player1.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'lose', 'score': event['score'], 'date': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
 		else:
 			self.player1.nb_game_win += 1
-			self.player1.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'win', 'date': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
-			self.player2.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'lose', 'date': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
+			if (str(self.match.id) not in self.player2.games_history or str(self.match.id) not in self.player1.games_history):
+				self.player1.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'win', 'score': event['score'], 'date': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
+				self.player2.games_history[str(self.match.id)] = {'player1': self.player1.username, 'player2': self.player2.username, 'result': 'lose', 'score': event['score'], 'date': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
 		
+		self.match.status = 'over'
 		await self.save_state(self.player1)
 		await self.save_state(self.player2)
+		await self.save_state(self.match)
 
 		print("Player ", event['winner'], "won! (", winner, ")\n", file=sys.stderr)
 		await self.send(text_data=json.dumps({'type': event["info"],
@@ -132,15 +136,17 @@ class MatchManager(AsyncWebsocketConsumer):
 		self.close()
 		
 	async def client_disconnected(self, event):
-		winner = '1'
-		if str(event['client']) == str(self.player1.id): winner = '2'
-		await self.channel_layer.group_send(
-				f"match_{self.match_id}",
-			{	'type': 'game.over',
-				'info': 'game_over',
-				"status": 'over',
-				"winner": winner,
-			})
+		if (self.match.status != 'over'):
+			winner = '1'
+			if str(event['client']) == str(self.player1.id): winner = '2'
+			await self.channel_layer.group_send(
+					f"match_{self.match_id}",
+				{	'type': 'game.over',
+					'info': 'game_over',
+					"status": 'over',
+					"winner": winner,
+					'score': {'1': 'X', '2': 'X'}
+				})
 
 #===========================================================
 
@@ -180,7 +186,7 @@ class TournamentManager(AsyncWebsocketConsumer):
 		if len(self.tournament.players) >= 4:
 			print("Tournament is ready !\n", file=sys.stderr)
 			self.tournament.status = 'closed'
-			self.save_state(self.tournament)
+			await self.save_state(self.tournament)
 			await self.channel_layer.group_send(
 			f"match_{self.tourn_id}",
 			{	'type': 'init.tournament',

@@ -7,7 +7,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import include
 from rest_framework.permissions import AllowAny
-from .views import add_player, update_or_add_player,ProtectedView,oauth_callback,get_user_info,add_friend, remove_friend,leaderboard
+from .views import add_player, update_or_add_player,ProtectedView,oauth_callback,get_user_info,add_friend, remove_friend,leaderboard,user_logout,get_online_users
 from myapp.views import get_all_players
 from . import views
 from rest_framework_simplejwt.views import (
@@ -42,9 +42,11 @@ urlpatterns = [
     path('update-player/', update_or_add_player, name='update-player'),
     path('get-all-players/', get_all_players, name='get_all_players'),
     path('login/', views.login, name='login'),
-    path('oauth/login/', views.login_42, name='login_42'),
+    path("logout/", user_logout, name="logout"),
     path('auth/complete/intra42/', oauth_callback, name='oauth_callback'),
     path('auth/', include('social_django.urls', namespace='social')),
+    
+    
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
@@ -56,6 +58,8 @@ urlpatterns = [
 
     path('add-friend/', add_friend, name='add_friend'),
     path('remove-friend/', remove_friend, name='remove_friend'),
+
+    path("online-users/", get_online_users, name="online_users"),
 ]
 
 # Si des fichiers statiques sont nécessaires

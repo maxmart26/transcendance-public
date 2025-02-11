@@ -316,20 +316,8 @@ const pagesContent = {
             <div class="scoreboard">
                 <div class="ranklist-container">
                     <div class="ranklist">
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
-                        <p class="ranklist-player"><img src="static/img/fox.png" alt="Profile" class="ranklist-img">Username</p>
                     </div>
                     <div class="remove-buttons">
-                        <button class="remove">Remove</button>
-                        <button class="remove">Remove</button>
-                        <button class="remove">Remove</button>
-                        <button class="remove">Remove</button>
-                        <button class="remove">Remove</button>
-                        <button class="remove">Remove</button>
                     </div>
                 </div>
             </div>
@@ -386,10 +374,8 @@ async function initializeProfilePic () {
     } catch (error) {
         console.error('Error loading profile image:', error);
     }
-
 //});
 }
-
 
 function getPageName(page) {
     return page.endsWith('-page') ? page : `${page}-page`;
@@ -412,7 +398,6 @@ function navigateTo(page, addToHistory = true) {
         userId = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
         normalizedPage = "profile-page";
     }
-
     if (normalizedPage == 'pong-game-page')
         document.body.id = 'pong-game-page';
     else
@@ -431,7 +416,7 @@ function navigateTo(page, addToHistory = true) {
         return;
     }
 
-    initializePageScripts(normalizedPage, userId);
+    initializePageScripts(normalizedPage, getCookie('user_id'));
 }
 
 // Mise a jour des pages quand on clique dessus
@@ -781,10 +766,20 @@ document.addEventListener("click", async function (event) {
     if (document.getElementById("settings-page")) {
         if (event.target && event.target.id === "logout") {
             event.preventDefault();
-            deleteCookie("user_id");
-            deleteCookie("user_username");
-            deleteCookie("access_token");
-            navigateTo("login-page");
+            const response = await fetch("https://" + window.location.host + "/logout/", {
+                method: "POST",
+                credentials: "include", // ✅ Inclure les cookies de session
+            });
+            if (response.ok) {
+                console.log("Déconnexion réussie !");
+                document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "user_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "user_username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                navigateTo("login-page");            
+            } else {
+                console.error("Erreur lors de la déconnexion.");
+            }
+            
     }
 }
 });
@@ -854,72 +849,120 @@ async function initializeLeaderboard() {
 
 function setFriendsPage() {
 
-    let session = getCookie("user_id");
+    console.log("testfriend");
+    let session = getCookie("user_username");
     if (!session) {
         console.error("No user session found.");
         return;
     }
 
-    let url = "https://" + window.location.host + "/friends/" + session + '/';
+    let url = "https://" + window.location.host + "/user/" + session + '/';
 
     // Récupération et affichage des amis
     fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            console.log("Friends list:", data);
-            const friendsContainer = document.querySelector(".ranklist");
-            const removeButtonsContainer = document.querySelector(".remove-buttons");
+    .then(response => response.json())
+    .then(data => {
+        console.log("Friends list:", data.user.friends);
 
-        })
-        .catch(error => console.error("Error loading friends list:", error));
+        const friendsContainer = document.querySelector(".ranklist");
+        const removeButtonsContainer = document.querySelector(".remove-buttons");
+
+        // Vider les conteneurs avant de les remplir
+        friendsContainer.innerHTML = "";
+        removeButtonsContainer.innerHTML = "";
+
+        data.user.friends.forEach(friend => {
+            // Création de l'élément pour chaque ami
+            const friendElement = document.createElement("p");
+            friendElement.classList.add("ranklist-player");
+            friendElement.innerHTML = `
+                <img src="${friend.image_avatar || 'static/img/fox.png'}" alt="Profile" class="ranklist-img">
+                ${friend.username}
+            `;
+            friendsContainer.appendChild(friendElement);
+
+            // Bouton Remove pour chaque ami
+            const removeButton = document.createElement("button");
+            removeButton.classList.add("remove");
+            removeButton.textContent = "Remove";
+            removeButton.addEventListener("click", () => removeFriend(friend.username, removeButton));
+
+            removeButtonsContainer.appendChild(removeButton);
+        });
+    })
+    .catch(error => console.error("Error loading friends list:", error));
 
     // Ajout d'un ami
     document.querySelector(".add-friend").addEventListener("click", () => {
         const username = document.getElementById("user").value.trim();
+        
         if (username === "") {
             alert("Please enter a username.");
             return;
         }
-
+    
+        console.log(username);
+    
         fetch("https://" + window.location.host + "/add-friend/", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_id: session, friend_username: username }),
+            headers: { 
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + getCookie("access_token"),
+            },
+            body: JSON.stringify({ friend_username: username }),
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log("Friend added:", data);
-                alert("Friend added successfully!");
-                navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
-            } else {
-                alert(data.error || "Error adding friend.");
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Error adding friend: " + response.status);
             }
+            return response.json();  // Convertit la réponse en JSON si elle est OK
         })
-        .catch(error => console.error("Error adding friend:", error));
+        .then(data => {
+            alert("Friend added successfully!");
+            navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
+        })
+        .catch(error => {
+            console.error("Error adding friend:", error);
+            alert("Error adding friend. Please try again.");
+        });
     });
 }
 
 // Supprimer un ami
-function removeFriend(friendId) {
+function removeFriend(username, buttonElement) {
     let session = getCookie("user_id");
 
     fetch("https://" + window.location.host + "/remove-friend/", {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: session, friend_id: friendId }),
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + getCookie("access_token"),
+        },
+        body: JSON.stringify({ user_id: session, friend_username: username }),
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log("Friend removed:", data);
-            alert("Friend removed successfully!");
-            navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
-        } else {
-            alert(data.error || "Error removing friend.");
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to remove friend");
         }
+        return response.json();
     })
-    .catch(error => console.error("Error removing friend:", error));
+    .then(data => {
+        console.log("Friend removed:", data);
+
+        // Supprimer l'élément du DOM sans recharger la page
+        const friendElement = buttonElement.parentElement.querySelector(".ranklist-player");
+        if (friendElement) {
+            friendElement.remove();
+        }
+        buttonElement.remove(); // Supprimer le bouton "Remove" correspondant
+
+        alert("Friend removed successfully!");
+        navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
+    })
+    .catch(error => {
+        console.error("Error removing friend:", error);
+        alert("Error removing friend. Please try again.");
+    });
 }
 
 // ------------------------ PROFILE PAGE ---------------------------
@@ -985,47 +1028,57 @@ function loadProfilePage() {
         .catch(error => {
             console.error("Erreur lors du chargement du profil utilisateur:", error);
         });
-
-    // Charger l'historique des matchs
-    loadMatchHistory(session);
 }
 
-// Fonction pour charger l'historique des matchs
-function loadMatchHistory(session) {
-    let url = `https://${window.location.host}/user/${session}/matches/`;
-    
-    fetch(url)
-        .then(response => {
-            if (!response.ok) throw new Error('Erreur lors du chargement des matchs');
-            return response.json();
-        })
-        .then(matches => {
-            populateMatchHistory(matches);
-        })
-        .catch(error => {
-            console.error("Erreur lors du chargement des matchs :", error);
-        });
-}
+document.addEventListener("DOMContentLoaded", async () => {
+    let session = getCookie("user_username"); // Récupère l'ID du joueur connecté
+    let url = `https://${window.location.host}/user/${session}`; // API pour récupérer les matchs
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Erreur de chargement des matchs");
+
+        const matches = await response.json();
+        populateMatchHistory(matches);
+    } catch (error) {
+        console.error("Erreur :", error);
+    }
+});
 
 // Fonction pour afficher les matchs dans le tableau
 function populateMatchHistory(matches) {
+    console.log(matches);
     const tbody = document.querySelector("#match-history tbody");
     tbody.innerHTML = ""; // Vider le tableau avant d'ajouter les nouveaux résultats
 
-    // Trier les matchs par date (du plus récent au plus ancien)
-    matches.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const currentUser = getCookie("user_username");
 
-    matches.forEach(match => {
+    // Tri des matchs par date (du plus récent au plus ancien)
+    console.log(matches.user.games_history);
+    const matchHistory = Object.values(matches.user.games_history);
+    matchHistory.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+    matchHistory.forEach(match => {
         const row = document.createElement("tr");
 
-        // Vérifier si l'adversaire existe toujours dans la base de données
-        const opponentName = match.opponent ? match.opponent : "Deleted User";
+        // On regarde si l'opponent existe toujours dans la db
+        let opponentName;
+        if (match.player1 === currentUser) {
+            opponentName = match.player2; // L'autre joueur est l'adversaire
+        } else if (match.player2 === currentUser) {
+            opponentName = match.player1; // L'autre joueur est l'adversaire
+        } else {
+            opponentName = "Deleted User"; // Cas improbable mais on le gère
+        }
+        
+        // ✅ Ajoute une classe dynamique sur le texte "win" ou "lose"
+        const resultClass = match.result.toLowerCase() === "win" ? "win-text" : "lose-text";
 
         row.innerHTML = `
             <td>${opponentName}</td>
             <td>${new Date(match.date).toLocaleDateString()}</td>
-            <td>${match.result}</td>
-            <td>${match.score}</td>
+            <td><span class="${resultClass}">${match.result}</span></td>
+            <td>${match.score[1]}/${match.score[2]}</td>
         `;
 
         tbody.appendChild(row);
@@ -1245,11 +1298,3 @@ function load_game(difficulty){
 }
 
 // ------------------------------------------------------------------
-
-
-
-
-
-
-
-    

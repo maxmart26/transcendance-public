@@ -122,4 +122,5 @@ class PongGame():
 				'info': 'game_over',
 				"status": 'over',
 				"winner": self.winner,
+				'score': {'1': self.player1.score_bo, '2': self.player2.score_bo}
 			})
