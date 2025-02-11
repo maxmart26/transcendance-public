@@ -244,6 +244,9 @@ const pagesContent = {
                   <div id="profile-container" class="profile-container"></div>
               </div>
         </div>
+        <div id='scoreboard'>
+			<h1 id='scores'>0-0</h1>
+		</div>
     </div>
   `,
   "online-game-page": `
@@ -1244,16 +1247,15 @@ function start_3Dgame(){
     navigateTo('game-page')
     const pongGameTab = document.getElementById('game-page');
     const div = document.createElement('div')
-    div.id = 'game-container'
+    div.id = 'gameCanvas'
     pongGameTab.appendChild(div);
-    console.log("game container created");
+
     const script = document.createElement('script');
     script.src = pong3d_url;
     script.defer = true;
-    script.type = 'module'
     pongGameTab.appendChild(script);
     script.onload = () => {
-        init();
+        setup();
     }
     const interval = setInterval(() => {
         if (getCurrentTab() !== 'game-page'){
