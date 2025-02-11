@@ -354,12 +354,17 @@ const pagesContent = {
     `,
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
+// -------------------------- GLOBAL ---------------------------------
+
+
+// Affichage image de profil sur toutes les pages
+
+//document.addEventListener('DOMContentLoaded', async () => {
+async function initializeProfilePic () {
     try {
-        
-        let session = getCookie("user_id");
+        let session = getCookie("user_username");
         console.log("User ID:", session);
-        let url = "https://" + window.location.host + "/user/" + session +'/';
+        let url = "https://" + window.location.host + "/user/" + session + '/';
         console.log(url);
         // Remplace l'URL par l'endpoint de ton API qui retourne l'image de l'utilisateur
         const response = await fetch(url);
@@ -382,9 +387,411 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error loading profile image:', error);
     }
 
+//});
+}
+
+
+function getPageName(page) {
+    return page.endsWith('-page') ? page : `${page}-page`;
+}
+
+function getCurrentTab() {
+    const hash = window.location.hash;
+    if (hash)
+        return hash.substring(1); // Supprimer le '#'
+    return null;
+}
+
+// Gestion de la navigation vers les pages avec historique
+
+function navigateTo(page, addToHistory = true) {
+    const normalizedPage = getPageName(page);
+    // Vérifie si on veut afficher un profil spécifique
+    let userId = null;
+    if (normalizedPage.startsWith("profile/")) {
+        userId = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
+        normalizedPage = "profile-page";
+    }
+
+    if (normalizedPage == 'pong-game-page')
+        document.body.id = 'pong-game-page';
+    else
+        document.body.id = '';
+    if (addToHistory) {
+        window.history.pushState({ normalizedPage }, normalizedPage, `#${normalizedPage}`);
+    }
+    const app = document.getElementById('pong');
+    
+    app.innerHTML = "";
+
+    if (pagesContent[normalizedPage]) {
+        app.innerHTML = pagesContent[normalizedPage];
+    } else {
+        app.innerHTML = `<h1>Page not found</h1>`;
+        return;
+    }
+
+    initializePageScripts(normalizedPage, userId);
+}
+
+// Mise a jour des pages quand on clique dessus
+
+function initializePageScripts(page, userId = null) {
+    initializeNavbar();
+    initializeProfilePic();
+    console.log(page);
+    if (page === "home-page") {
+        initializeSearchBar();
+    }
+    if (page === "profile-page" && userId) {
+        console.log("this is profile page");
+        loadProfilePage(userId);
+    }
+    if (page === "settings-page") {
+        setupSettingsPage();
+    }
+    if (page === "leaderboard-page") {
+        initializeLeaderboard();
+    }
+    if (page === "friends-page") {
+        setFriendsPage();
+    }
+}
+
+window.addEventListener("popstate", (event) => {
+    if (event.state && event.state.normalizedPage) {
+        navigateTo(event.state.normalizedPage, false);
+    }
 });
 
-document.addEventListener('DOMContentLoaded', async () => {
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+    const initialPage = window.location.hash.replace('#', '') || 'login-page';
+    console.log("hashtag remplace", initialPage);
+    navigateTo(initialPage, false); // Pas besoin d'ajouter dans l'historique au chargement
+});
+
+function initializeNavbar() {
+    document.querySelectorAll('.navbar-item').forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // Empêche le rechargement de la page
+            const page = link.getAttribute('href').replace('#', ''); // Extrait la page
+            console.log("navbar: ", page);
+            navigateTo(page); // Charge la page correspondante
+        });
+    });
+}
+
+async function loadUserProfile(userId = null) {
+    let sessionUserId = getCookie("user_username"); // ID du joueur connecté
+
+    // Détermine quel profil charger
+    let profileId = userId || sessionUserId;
+    if (!profileId) return console.error("Aucun utilisateur trouvé.");
+
+    try {
+        const response = await fetch(`https://${window.location.host}/user/${profileId}/`);
+        if (!response.ok) throw new Error("Profil introuvable");
+
+        const data = await response.json();
+        
+        document.getElementById("profile-username").textContent = data.user.username;
+
+        // Gérer l’image de profil (par défaut si supprimée)
+        const profileImage = document.getElementById("profile-image");
+        profileImage.src = data.user.image_avatar || "static/img/person.png";
+
+    } catch (error) {
+        console.error("Erreur lors du chargement du profil:", error);
+    }
+}
+
+// Gestion cookies
+
+function getCookie(name) {
+    let cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+        let [key, value] = cookie.split("=");
+        if (key === name) {
+            return decodeURIComponent(value);  // Décoder les valeurs encodées
+        }
+    }
+    return null; // Retourne `null` si le cookie n'existe pas
+}
+
+function deleteCookie(name) {
+    document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+}
+
+// ----------------- LOGIN PAGE ----------------------------------
+
+document.addEventListener("click", async function (event) {
+    if (event.target && event.target.id === "enter-button") {
+        event.preventDefault();
+    // Récupère les valeurs du formulaire
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const errorMessage = document.getElementById("error-message");
+
+    // Vérifie que les champs ne sont pas vides
+    if (username === "" || password === "") {
+        errorMessage.textContent = "Both username and password are required.";
+        return;
+    }
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('password', password);
+    console.table(Array.from(formData.entries()));
+    try {
+        // Envoie une requête POST à l'API
+        const response = await fetch("https://" + window.location.host + "/login/", {
+            method: "POST",
+            body: formData,
+        });
+
+        // Analyse la réponse
+        if (response.ok) {
+            const data = await response.json();
+            alert(data.message); // Affiche "Login successful"
+            navigateTo("home-page"); // Redirige l'utilisateur
+        } else {
+            const errorData = await response.json();
+            errorMessage.textContent = errorData.error; // Affiche l'erreur retournée
+        }
+    } catch (err) {
+        errorMessage.textContent = "Server error. Please try again later.";
+    }
+}   
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("login-page")) {
+        console.log("Cookies restants :", document.cookie);
+        if (document.cookie.includes("user_id=")) {
+            navigateTo("home-page");
+        }
+    }
+});
+
+// ------------------------- CREATE ACCOUNT ---------------------------------------
+
+document.addEventListener("click", async function (event) {
+    if (document.getElementById("create-account-page")) {
+
+    const imageUpload = document.getElementById('imageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const errorMessage = document.getElementById('account-error');
+    
+    // Ajoute un gestionnaire pour l'input file
+    imageUpload.addEventListener('change', function () {
+        const file = this.files[0]; // Récupère le fichier sélectionné
+
+        if (file) {
+            const reader = new FileReader();
+
+            // Une fois le fichier chargé
+            reader.onload = function (e) {
+                // Met à jour la source de l'image de prévisualisation
+                imagePreview.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.src = "static/img/person.png"; // Réinitialise l'image si aucun fichier n'est sélectionné
+            errorMessage.textContent = "Please choose a valid file.";
+        }
+    });
+
+    if (event.target && event.target.id === "save-button") {
+        event.preventDefault();
+    
+    
+    const _profileImage = document.getElementById('imageUpload');
+    const _username = document.getElementById('user').value.trim();
+    const _password = document.getElementById('password2').value.trim();
+    const _confirmPassword = document.getElementById('confirm-password').value.trim();
+    const _email = document.getElementById('email').value.trim();
+
+    if (_username === "") {
+        errorMessage.textContent = "Username is required.";
+        return;
+    }
+
+    if (_password === "") {
+        errorMessage.textContent = "Password is required.";
+        return;
+    }
+
+    if (_confirmPassword === "") {
+        errorMessage.textContent = "Please confirm password.";
+        return;
+    } else if (_password !== _confirmPassword) {
+        errorMessage.textContent = "Passwords are not the same.";
+        return;
+    }
+
+    console.log(_password);
+    console.log(_confirmPassword);
+
+    if (_email === "") {
+        errorMessage.textContent = "Email is required.";
+        return;
+    }
+
+    if (!_profileImage.files[0]) {
+        errorMessage.textContent = "Please choose a profile image.";
+        return;
+    }
+
+
+    const formData = new FormData();
+    formData.append('username', _username);
+    formData.append('password', _password);
+    formData.append('email', _email);
+    formData.append('image_avatar', _profileImage.files[0]);
+
+    console.table(Array.from(formData.entries()));
+
+    console.table(window.location.host);
+
+    try {
+        const response = await fetch('https://' + window.location.host + '/add-player/', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error('Error while submitting the form');
+        }
+
+        const result = await response.json();
+        console.log('Success:', result);
+        navigateTo("login-page"); // Redirige l'utilisateur
+    } catch (error) {
+        console.error('Error:', error);
+        errorMessage.textContent = "An error occurred. Please try again.";
+    }
+            
+    }
+}
+});
+
+// ---------------------- SETTINGS PAGE --------------------------
+
+function setupSettingsPage() {
+    // Vérifie si la page settings est affichée
+    if (!document.getElementById("settings-page")) return;
+
+    let session = getCookie("user_username");
+    console.log("User ID:", session);
+
+    let url = "https://" + window.location.host + "/user/" + session + "/";
+    console.log(url);
+
+    fetch(url)
+        .then(response => response.json())
+        .then(async data => {
+            console.log("User ID from API:", data);
+            let userID = data.user.id;
+
+            // Sélection des éléments HTML
+            const settingsImgContainer = document.getElementById("settings-img");
+            const imageUploadInput = document.getElementById("newImageUpload");
+            const saveButton = document.getElementById("save-settings");
+
+            console.log("settingsImgContainer:", settingsImgContainer);
+            
+            // Vérifie s'il y a déjà une image, sinon met une image par défaut
+            if (data.user.image_avatar) {
+                settingsImgContainer.style.backgroundImage = `url('${data.user.image_avatar}')`;
+            } else {
+                settingsImgContainer.style.backgroundImage = "url('static/img/person.png')";
+            }
+
+            // Événement pour mettre à jour l'image sélectionnée
+            imageUploadInput.addEventListener("change", function () {
+                const file = imageUploadInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        settingsImgContainer.style.backgroundImage = `url('${e.target.result}')`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Gestion du clic sur le bouton "Save Settings"
+            saveButton.addEventListener("click", async function (event) {
+                event.preventDefault();
+
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password2').value.trim();
+                const confirmPassword = document.getElementById('confirm-password').value.trim();
+                const email = document.getElementById('email').value.trim();
+
+                const formData = new FormData();
+                formData.append('player_id', userID);
+
+                if (username !== "") {
+                    formData.append('username', username);
+                }
+                if (email !== "") {
+                    formData.append('email', email);
+                }
+                if (imageUploadInput.files[0]) {
+                    formData.append('image_avatar', imageUploadInput.files[0]);
+                }
+                if (password !== "") {
+                    formData.append('password', password);
+                }
+                if (password !== "" && confirmPassword !== "" && password !== confirmPassword) {
+                    alert("Les mots de passe ne correspondent pas.");
+                    return;
+                } else if (password === "" && confirmPassword !== "") {
+                    alert("Veuillez entrer un nouveau mot de passe avant de confirmer.");
+                    return;
+                }
+
+                console.table(Array.from(formData.entries()));
+
+                try {
+                    const response = await fetch("https://" + window.location.host + "/update-player/", {
+                        method: "PUT",
+                        body: formData,
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Erreur lors de la mise à jour du profil");
+                    }
+
+                    const result = await response.json();
+                    console.log("Succès :", result);
+                    navigateTo("settings-page");
+
+                } catch (error) {
+                    console.error("Erreur :", error);
+                    alert("Une erreur s'est produite. Veuillez réessayer.");
+                }
+            });
+        })
+        .catch(error => console.error("Erreur lors du chargement du user_id :", error));
+}
+
+document.addEventListener("click", async function (event) {
+    if (document.getElementById("settings-page")) {
+        if (event.target && event.target.id === "logout") {
+            event.preventDefault();
+            deleteCookie("user_id");
+            deleteCookie("user_username");
+            deleteCookie("access_token");
+            navigateTo("login-page");
+    }
+}
+});
+
+// --------------------------- LEADERBOARD PAGE -------------------
+
+async function initializeLeaderboard() {
     try {
         let url = "https://" + window.location.host + "/leaderboard/";
         console.log(url);
@@ -440,121 +847,243 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         console.error('Error loading profile image:', error);
     }
-});
+//});
+}
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        let session = getCookie("user_id");
-        console.log("User ID:", session);
-        let url = "https://" + window.location.host + "/user/" + session +'/';
-        console.log(url);
-        // Remplace l'URL par l'endpoint de ton API qui retourne l'image de l'utilisateur
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to fetch user infos');
+// ------------------------ FRIENDS PAGE --------------------------
 
-        const data = await response.json();
-        
-        if (document.getElementById("profile-page")) {
+function setFriendsPage() {
+
+    let session = getCookie("user_id");
+    if (!session) {
+        console.error("No user session found.");
+        return;
+    }
+
+    let url = "https://" + window.location.host + "/friends/" + session + '/';
+
+    // Récupération et affichage des amis
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Friends list:", data);
+            const friendsContainer = document.querySelector(".ranklist");
+            const removeButtonsContainer = document.querySelector(".remove-buttons");
+
+        })
+        .catch(error => console.error("Error loading friends list:", error));
+
+    // Ajout d'un ami
+    document.querySelector(".add-friend").addEventListener("click", () => {
+        const username = document.getElementById("user").value.trim();
+        if (username === "") {
+            alert("Please enter a username.");
+            return;
+        }
+
+        fetch("https://" + window.location.host + "/add-friend/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: session, friend_username: username }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Friend added:", data);
+                alert("Friend added successfully!");
+                navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
+            } else {
+                alert(data.error || "Error adding friend.");
+            }
+        })
+        .catch(error => console.error("Error adding friend:", error));
+    });
+}
+
+// Supprimer un ami
+function removeFriend(friendId) {
+    let session = getCookie("user_id");
+
+    fetch("https://" + window.location.host + "/remove-friend/", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: session, friend_id: friendId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log("Friend removed:", data);
+            alert("Friend removed successfully!");
+            navigateTo("friends-page"); // Recharge la page pour voir la mise à jour
+        } else {
+            alert(data.error || "Error removing friend.");
+        }
+    })
+    .catch(error => console.error("Error removing friend:", error));
+}
+
+// ------------------------ PROFILE PAGE ---------------------------
+
+
+function loadProfilePage() {
+    // Récupérer l'ID de l'utilisateur connecté (session) ou l'ID passé dans l'URL
+    let session = getCookie("user_username");
+    if (!session) {
+        console.error("Utilisateur non connecté");
+        return;
+    }
+
+    // Récupérer les informations utilisateur depuis l'API
+    let url = `https://${window.location.host}/user/${session}/`;
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Échec du chargement des informations utilisateur');
+            return response.json();
+        })
+        .then(data => {
             const user = document.getElementById("user");
             const games = document.getElementById("nb-games");
             const win = document.getElementById("nb-win");
             const friends = document.getElementById("nb-friends");
 
+            // Créer et insérer les informations de l'utilisateur dans le DOM
             const li = document.createElement("li");
+            li.innerHTML = `
+                <div id="profile-image">
+                    <img src="${data.user.image_avatar}" alt="Profile" class="profile-image">
+                </div>
+                <div class="user-online">
+                    <p id="profile-username" class="profile-username">${data.user.username}</p>
+                    <div class="online">ONLINE</div>
+                </div>`;
+
             const li2 = document.createElement("li");
+            li2.innerHTML = `
+                <img src="static/img/dice.png" alt="Games" class="profile-icon">
+                <p class="item-nb">${data.user.nb_game_play}</p>
+                <p class="item-title">Games</p>`;
+
             const li3 = document.createElement("li");
+            li3.innerHTML = `
+                <img src="static/img/trophy.png" alt="Wins" class="profile-icon">
+                <p class="item-nb">${data.user.nb_game_win}</p>
+                <p class="item-title">Victories</p>`;
+
             const li4 = document.createElement("li");
-            
-            
-            li.innerHTML = `<div id="profile-image"><img src=${data.user.image_avatar} alt="Profile" class="profile-image"></div>
-            <div class="user-online">
-                <p id="profile-username" class="profile-username">${data.user.username}</p>
-                <div class="online">ONLINE</div>
-            </div>`;
+            li4.innerHTML = `
+                <img src="static/img/heart.png" alt="Friends" class="profile-icon">
+                <p class="item-nb">${data.user.nb_friends}</p>
+                <p class="item-title">Friends</p>`;
 
-            li2.innerHTML = `<img src="static/img/dice.png" alt="Profile" class="profile-icon">
-            <p class="item-nb">${data.user.nb_game_play}</p>
-            <p class="item-title">Games</p>`;
-            
-            li3.innerHTML = `<img src="static/img/trophy.png" alt="Profile" class="profile-icon">
-            <p class="item-nb">${data.user.nb_game_win}</p>
-            <p class="item-title">Victories</p>`;
-
-            li4.innerHTML = `<img src="static/img/heart.png" alt="Profile" class="profile-icon">
-            <p class="item-nb">5</p>
-            <p class="item-title">Friends</p>`;
-            
+            // Ajouter les éléments dans la page
             user.appendChild(li);
             games.appendChild(li2);
             win.appendChild(li3);
             friends.appendChild(li4);
-        
+
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement du profil utilisateur:", error);
+        });
+
+    // Charger l'historique des matchs
+    loadMatchHistory(session);
+}
+
+// Fonction pour charger l'historique des matchs
+function loadMatchHistory(session) {
+    let url = `https://${window.location.host}/user/${session}/matches/`;
+    
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Erreur lors du chargement des matchs');
+            return response.json();
+        })
+        .then(matches => {
+            populateMatchHistory(matches);
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement des matchs :", error);
+        });
+}
+
+// Fonction pour afficher les matchs dans le tableau
+function populateMatchHistory(matches) {
+    const tbody = document.querySelector("#match-history tbody");
+    tbody.innerHTML = ""; // Vider le tableau avant d'ajouter les nouveaux résultats
+
+    // Trier les matchs par date (du plus récent au plus ancien)
+    matches.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    matches.forEach(match => {
+        const row = document.createElement("tr");
+
+        // Vérifier si l'adversaire existe toujours dans la base de données
+        const opponentName = match.opponent ? match.opponent : "Deleted User";
+
+        row.innerHTML = `
+            <td>${opponentName}</td>
+            <td>${new Date(match.date).toLocaleDateString()}</td>
+            <td>${match.result}</td>
+            <td>${match.score}</td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+// -------------------------------- HOME PAGE -------------------------------------------------
+
+function initializeSearchBar() {
+    const searchInput = document.getElementById("search-player");
+    const searchResults = document.getElementById("search-results");
+
+    searchInput.addEventListener("input", async function () {
+        const query = searchInput.value.trim().toLowerCase();
+        if (query.length < 1) {
+            searchResults.style.display = "none";
+            return;
         }
-    } catch (error) {
-        console.error('Error loading profile image:', error);
-    }
-});
 
-function getPageName(page) {
-    return page.endsWith('-page') ? page : `${page}-page`;
+        try {
+            const response = await fetch(`https://${window.location.host}/search-player/?q=${query}`);
+            const players = await response.json();
+
+            searchResults.innerHTML = ""; // Efface les anciens résultats
+            if (players.length === 0) {
+                searchResults.innerHTML = "<div>Aucun joueur trouvé</div>";
+            } else {
+                players.forEach(player => {
+                    const div = document.createElement("div");
+                    div.textContent = player.username || "Deleted User";
+                    div.addEventListener("click", () => {
+                        navigateTo(`profile-page/${player.id}`);
+                    });
+                    searchResults.appendChild(div);
+                });
+            }
+
+            searchResults.style.display = "block";
+        } catch (error) {
+            console.error("Erreur lors de la recherche des joueurs:", error);
+        }
+    });
+
+    // Cacher la liste de résultats si on clique ailleurs
+    document.addEventListener("click", function (event) {
+        if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+            searchResults.style.display = "none";
+        }
+    });
 }
 
-function getCurrentTab() {
-    const hash = window.location.hash;
-    if (hash)
-        return hash.substring(1); // Supprimer le '#'
-    return null;
-}
+document.addEventListener("click", function (event) {
+        if (event.target.id === "profile-img") {
+            navigateTo('profile-page');
+        }
+    });
 
-// Fonction pour gérer la navigation avec l'historique
-function navigateTo(page, addToHistory = true) {
-    const normalizedPage = getPageName(page);
-
-    // Vérifie si on veut afficher un profil spécifique
-    let userId = null;
-    if (normalizedPage.startsWith("profile/")) {
-        userId = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
-        normalizedPage = "profile";
-    }
-
-    if (normalizedPage == 'pong-game-page')
-        document.body.id = 'pong-game-page';
-    else
-        document.body.id = '';
-    if (addToHistory) {
-        window.history.pushState({ normalizedPage }, normalizedPage, `#${normalizedPage}`);
-    }
-    const app = document.getElementById('pong');
-    app.innerHTML = pagesContent[normalizedPage] || `<h1>Page not found</h1>`;
-
-    if (normalizedPage === "profile") {
-        loadUserProfile(userId);
-    }
-}
-
-async function loadUserProfile(userId = null) {
-    let sessionUserId = getCookie("user_id"); // ID du joueur connecté
-
-    // Détermine quel profil charger
-    let profileId = userId || sessionUserId;
-    if (!profileId) return console.error("Aucun utilisateur trouvé.");
-
-    try {
-        const response = await fetch(`https://${window.location.host}/user/${profileId}/`);
-        if (!response.ok) throw new Error("Profil introuvable");
-
-        const data = await response.json();
-        
-        document.getElementById("profile-username").textContent = data.user.username;
-
-        // Gérer l’image de profil (par défaut si supprimée)
-        const profileImage = document.getElementById("profile-image");
-        profileImage.src = data.user.image_avatar || "static/img/person.png";
-
-    } catch (error) {
-        console.error("Erreur lors du chargement du profil:", error);
-    }
-}
+// ---------------- GAME -----------------------------------------
 
 function tournament(){
     window.location.href='tournament/';
@@ -715,365 +1244,12 @@ function load_game(difficulty){
     }
 }
 
-// Initialisation
-document.addEventListener('DOMContentLoaded', () => {
-    const initialPage = window.location.hash.replace('#', '') || 'login-page';
-    navigateTo(initialPage, false); // Pas besoin d'ajouter dans l'historique au chargement
-});
-
-// Rechargement de la page en arrière/avant dans l'historique
-window.onpopstate = (event) => {
-    const page = window.location.hash.replace('#', '') || 'login-page';
-    navigateTo(page, false); // Pas d'ajout à l'historique ici non plus
-};
-
-document.querySelectorAll('a.nav-link').forEach(link => {
-    link.addEventListener('click', (event) => {
-        event.preventDefault(); // Empêche le comportement par défaut
-        const page = link.getAttribute('href').replace('#', '');
-        navigateTo(page); // Navigue vers la page
-    });
-});
-
-document.addEventListener("click", async function (event) {
-    if (event.target && event.target.id === "enter-button") {
-        event.preventDefault();
-    // Récupère les valeurs du formulaire
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const errorMessage = document.getElementById("error-message");
-
-    // Vérifie que les champs ne sont pas vides
-    if (username === "" || password === "") {
-        errorMessage.textContent = "Both username and password are required.";
-        return;
-    }
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('password', password);
-    console.table(Array.from(formData.entries()));
-    try {
-        // Envoie une requête POST à l'API
-        const response = await fetch("https://" + window.location.host + "/login/", {
-            method: "POST",
-            body: formData,
-        });
-
-        // Analyse la réponse
-        if (response.ok) {
-            const data = await response.json();
-            alert(data.message); // Affiche "Login successful"
-            navigateTo("home-page"); // Redirige l'utilisateur
-        } else {
-            const errorData = await response.json();
-            errorMessage.textContent = errorData.error; // Affiche l'erreur retournée
-        }
-    } catch (err) {
-        errorMessage.textContent = "Server error. Please try again later.";
-    }
-}   
-});
-
-document.addEventListener("click", async function (event) {
-    if (document.getElementById("create-account-page")) {
-
-    const imageUpload = document.getElementById('imageUpload');
-    const imagePreview = document.getElementById('imagePreview');
-    const errorMessage = document.getElementById('account-error');
-    
-    // Ajoute un gestionnaire pour l'input file
-    imageUpload.addEventListener('change', function () {
-        const file = this.files[0]; // Récupère le fichier sélectionné
-
-        if (file) {
-            const reader = new FileReader();
-
-            // Une fois le fichier chargé
-            reader.onload = function (e) {
-                // Met à jour la source de l'image de prévisualisation
-                imagePreview.src = e.target.result;
-            };
-
-            reader.readAsDataURL(file);
-        } else {
-            imagePreview.src = "static/img/person.png"; // Réinitialise l'image si aucun fichier n'est sélectionné
-            errorMessage.textContent = "Please choose a valid file.";
-        }
-    });
-
-    if (event.target && event.target.id === "save-button") {
-        event.preventDefault();
-    
-    
-    const _profileImage = document.getElementById('imageUpload');
-    const _username = document.getElementById('user').value.trim();
-    const _password = document.getElementById('password2').value.trim();
-    const _confirmPassword = document.getElementById('confirm-password').value.trim();
-    const _email = document.getElementById('email').value.trim();
-
-    if (_username === "") {
-        errorMessage.textContent = "Username is required.";
-    }
-
-    if (_password === "") {
-        errorMessage.textContent = "Password is required.";
-    }
-
-    if (_confirmPassword === "") {
-        errorMessage.textContent = "Please confirm password.";
-    } else if (_password !== _confirmPassword) {
-        errorMessage.textContent = "Passwords are not the same.";
-    }
-
-    console.log(_password);
-    console.log(_confirmPassword);
-
-    if (_email === "") {
-        errorMessage.textContent = "Email is required.";
-    }
-
-    if (!_profileImage.files[0]) {
-        errorMessage.textContent = "Please choose a profile image.";
-    }
-
-
-    const formData = new FormData();
-    formData.append('username', _username);
-    formData.append('password', _password);
-    formData.append('email', _email);
-    formData.append('image_avatar', _profileImage.files[0]);
-
-    console.table(Array.from(formData.entries()));
-
-    console.table(window.location.host);
-
-    try {
-        const response = await fetch('https://' + window.location.host + '/add-player/', {
-            method: 'POST',
-            body: formData,
-        });
-
-        if (!response.ok) {
-            throw new Error('Error while submitting the form');
-        }
-
-        const result = await response.json();
-        console.log('Success:', result);
-        navigateTo("login-page"); // Redirige l'utilisateur
-    } catch (error) {
-        console.error('Error:', error);
-        errorMessage.textContent = "An error occurred. Please try again.";
-    }
-            
-    }
-}
-});
-
-function getCookie(name) {
-    let cookies = document.cookie.split("; ");
-    for (let cookie of cookies) {
-        let [key, value] = cookie.split("=");
-        if (key === name) {
-            return decodeURIComponent(value);  // Décoder les valeurs encodées
-        }
-    }
-    return null; // Retourne `null` si le cookie n'existe pas
-}
+// ------------------------------------------------------------------
 
 
 
-document.addEventListener("click", async function (event) {
-    if (document.getElementById("settings-page")) {
-    let session = getCookie("user_id");
-    console.log("User ID:", session);
-    let url = "https://" + window.location.host + "/user/" + session +'/';
-    console.log(url);
-    fetch(url)
-        .then(response => response.json())
-        .then(async data => {
-            console.log("User ID from API:", data);
-            let userID = data.user.id;
-
-            const settings_img = document.getElementById("settings-img");
-                    
-            const li = document.createElement("li");
-
-            if (event.target && event.target.id === "save-settings") {
-                event.preventDefault();
-            if (data.user.image_avatar !== null)
-                li.innerHTML = `<img id="newImagePreview" class="preview" src=${data.user.image_avatar}>`;
-            else
-                li.innerHTML = `<img id="newImagePreview" class="preview" src="static/img/person.png">`;
-            settings_img.appendChild(li);
-            
-            
-            
-                // Récupère les valeurs du formulaire
-                const _profileImage = document.getElementById('newImageUpload');
-                const _username = document.getElementById('username').value.trim();
-                const _password = document.getElementById('password2').value.trim();
-                const _confirmPassword = document.getElementById('confirm-password').value.trim();
-                const _email = document.getElementById('email').value.trim();
-        
-                const formData = new FormData();
-        
-                formData.append('player_id', userID);
-        
-                if (_username !== "") {
-                    formData.append('username', _username);
-                }
-        
-                if (_email !== "") {
-                    formData.append('email', _email);
-                }
-        
-                if (_profileImage.files[0]) {
-                    formData.append('image_avatar', _profileImage.files[0]);
-                }
-                if (_password !== "") {
-                    formData.append('password', _password);
-                }
-                if (_password !== "" && _confirmPassword !== "" && _password !== _confirmPassword) {
-                    errorMessage.textContent = "Passwords are not the same.";
-                    return ;
-                } else if (_password === "" && _confirmPassword !== "") {
-                    errorMessage.textContent = "Please enter a new password before confirming.";
-                    return ;
-                }
-        
-                console.table(Array.from(formData.entries()));
-                
-                try {
-                    // Envoie une requête POST à l'API
-                    const response = await fetch("https://" + window.location.host + "/update-player/", {
-                        method: "PUT",
-                        body: formData,
-                    });
-        
-                    if (!response.ok) {
-                        throw new Error('Error while submitting the form');
-                    }
-            
-                    const result = await response.json();
-                    console.log('Success:', result);
-                    navigateTo("settings-page");
-                    
-                } catch (error) {
-                    console.error('Error:', error);
-                    errorMessage.textContent = "An error occurred. Please try again.";
-                }
-            
-            }
-        })
-        
-        .catch(error => console.error("Erreur lors du chargement des param du user_id :", error));  
-}
-    }); 
 
 
-function deleteCookie(name) {
-    document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-}
 
 
-document.addEventListener("click", async function (event) {
-    if (document.getElementById("settings-page")) {
-        if (event.target && event.target.id === "logout") {
-            event.preventDefault();
-            deleteCookie("user_id");
-            navigateTo("login-page");
-    }
-}
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-    if (document.getElementById("login-page")) {
-        console.log("Cookies restants :", document.cookie);
-        if (document.cookie.includes("user_id=")) {
-            navigateTo("home-page");
-        }
-    }
-});
-
-document.addEventListener("DOMContentLoaded", async () => {
-    let session = getCookie("user_id"); // Récupère l'ID du joueur connecté
-    let url = `https://${window.location.host}/user/${session}/matches/`; // API pour récupérer les matchs
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Erreur de chargement des matchs");
-
-        const matches = await response.json();
-        populateMatchHistory(matches);
-    } catch (error) {
-        console.error("Erreur :", error);
-    }
-});
-
-function populateMatchHistory(matches) {
-    const tbody = document.querySelector("#match-history tbody");
-    tbody.innerHTML = ""; // Vide le tableau avant de le remplir
-
-    // Tri des matchs par date (du plus récent au plus ancien)
-    matches.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    matches.forEach(match => {
-        const row = document.createElement("tr");
-
-        // On regarde si l'opponent existe toujours dans la db
-        const opponentName = match.opponent ? match.opponent : "Deleted User";
-
-        row.innerHTML = `
-            <td>${opponentName}</td>
-            <td>${new Date(match.date).toLocaleDateString()}</td>
-            <td>${match.result}</td>
-            <td>${match.score}</td>
-        `;
-
-        tbody.appendChild(row);
-    });
-}
-
-document.addEventListener("DOMContentLoaded", async function () {
-    const searchInput = document.getElementById("search-player");
-    const searchResults = document.getElementById("search-results");
-
-    searchInput.addEventListener("input", async function () {
-        const query = searchInput.value.trim().toLowerCase();
-        if (query.length < 1) {
-            searchResults.style.display = "none";
-            return;
-        }
-
-        try {
-            const response = await fetch(`https://${window.location.host}/search-player/?q=${query}`);
-            const players = await response.json();
-
-            searchResults.innerHTML = ""; // Efface les anciens résultats
-            if (players.length === 0) {
-                searchResults.innerHTML = "<div>Aucun joueur trouvé</div>";
-            } else {
-                players.forEach(player => {
-                    const div = document.createElement("div");
-                    div.textContent = player.username || "Deleted User";
-                    div.addEventListener("click", () => {
-                        navigateTo(`profile-page/${player.id}`);
-                    });
-                    searchResults.appendChild(div);
-                });
-            }
-
-            searchResults.style.display = "block";
-        } catch (error) {
-            console.error("Erreur lors de la recherche des joueurs:", error);
-        }
-    });
-
-    // Cacher la liste de résultats si on clique ailleurs
-    document.addEventListener("click", function (event) {
-        if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
-            searchResults.style.display = "none";
-        }
-    });
-});
     

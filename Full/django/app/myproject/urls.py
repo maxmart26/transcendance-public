@@ -51,7 +51,7 @@ urlpatterns = [
     path('api/protected/', ProtectedView.as_view(), name='protected_view'),
     path('players/', PlayerListView.as_view(), name='player-list'),
 
-    path('user/<uuid:user_id>/', get_user_info, name='get_user_info'),
+    path('user/<str:username>/', get_user_info, name='get_user_info'),
     path('leaderboard/', leaderboard, name='leaderboard'),
 
     path('add-friend/', add_friend, name='add_friend'),

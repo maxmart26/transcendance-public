@@ -324,6 +324,11 @@ input {
   justify-content: center;
   margin-bottom: 10%;
   overflow: hidden;
+  width: 90px;
+  height: 90px;
+  background-size: cover;
+  background-position: center; /* Centre l'image dans le cercle */
+  background-repeat: no-repeat;
 }
 
 .people-icon {
@@ -496,6 +501,7 @@ input {
 .profile-container {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .profile-image {
@@ -514,6 +520,10 @@ input {
   border: none;
   background: none; /* Supprime l'arrière-plan par défaut */
   cursor: pointer; /* Garde le curseur de clic */
+}
+
+li {
+  display: flex;
 }
 
 .start-game {
@@ -776,6 +786,21 @@ input {
   font-family: 'Audiowide', sans-serif;
 }
 
+#first li {
+  display: flex;
+  flex-direction: column;
+}
+
+#second li {
+  display: flex;
+  flex-direction: column;
+}
+
+#third li {
+  display: flex;
+  flex-direction: column;
+}
+
 .rank-username {
   color: #fff;
   font-size: 12px;
@@ -810,6 +835,7 @@ input {
   flex-direction: row;
   gap: 80%;
   white-space: nowrap;
+  margin-top: 5%;
 }
 
 .playerlist {
@@ -822,6 +848,11 @@ input {
   flex-direction: row;
   gap: 80%;
   white-space: nowrap;
+}
+
+.rank-list {
+  display: flex;
+  flex-direction: column;
 }
 
 .ranklist {
@@ -838,7 +869,7 @@ input {
   font-size: 13px;
 }
 
-.ranklist-player {
+li .ranklist-player {
   color: #fff;
   font-size: 13px;
   margin-top: 4%;
@@ -858,10 +889,15 @@ input {
   justify-content: center;
   flex-direction: column;
   font-family: 'Audiowide', sans-serif;
-  margin-top: 15%;
+  
 }
 
-.score-nb {
+#score-list {
+  display: flex;
+  flex-direction: column;
+}
+
+li .score-nb {
   color: #fff;  
   font-size: 13px;
   margin-top: 10%;
