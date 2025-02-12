@@ -376,12 +376,17 @@ function getCurrentTab() {
 // Gestion de la navigation vers les pages avec historique
 
 function navigateTo(page, addToHistory = true) {
-    const normalizedPage = getPageName(page);
+    let normalizedPage = getPageName(page);
     // Vérifie si on veut afficher un profil spécifique
+    let pageName = null;
     let userId = null;
-    if (normalizedPage.startsWith("profile/")) {
-        userId = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
+    console.log(normalizedPage);
+    if (normalizedPage.startsWith("profile-page/")) {
+        console.log("decoupe user id");
+        pageName = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
+        userId = pageName.split("-")[0];
         normalizedPage = "profile-page";
+        console.log("navigate to: ", userId);
     }
     if (normalizedPage == 'pong-game-page')
         document.body.id = 'pong-game-page';
@@ -400,8 +405,7 @@ function navigateTo(page, addToHistory = true) {
         app.innerHTML = `<h1>Page not found</h1>`;
         return;
     }
-
-    initializePageScripts(normalizedPage, getCookie('user_id'));
+    initializePageScripts(normalizedPage, userId);
 }
 
 // Mise a jour des pages quand on clique dessus
@@ -862,8 +866,11 @@ function setFriendsPage() {
             friendElement.classList.add("ranklist-player");
             friendElement.innerHTML = `
                 <img src="${friend.image_avatar || 'static/img/fox.png'}" alt="Profile" class="ranklist-img">
-                ${friend.username}
+                <a href="#profile-page" onclick="loadProfilePage('${friend.username}')">
+        ${friend.username}
+    </a>
             `;
+            console.log("friend code : ", friendElement);
             friendsContainer.appendChild(friendElement);
 
             // Bouton Remove pour chaque ami
@@ -953,16 +960,16 @@ function removeFriend(username, buttonElement) {
 // ------------------------ PROFILE PAGE ---------------------------
 
 
-function loadProfilePage() {
+function loadProfilePage(userId) {
     // Récupérer l'ID de l'utilisateur connecté (session) ou l'ID passé dans l'URL
     let session = getCookie("user_username");
     if (!session) {
         console.error("Utilisateur non connecté");
         return;
     }
-
+    console.log(userId);
     // Récupérer les informations utilisateur depuis l'API
-    let url = `https://${window.location.host}/user/${session}/`;
+    let url = `https://${window.location.host}/user/${userId}/`;
     fetch(url)
         .then(response => {
             if (!response.ok) throw new Error('Échec du chargement des informations utilisateur');
@@ -1095,7 +1102,8 @@ function initializeSearchBar() {
                     const div = document.createElement("div");
                     div.textContent = player.username || "Deleted User";
                     div.addEventListener("click", () => {
-                        navigateTo(`profile-page/${player.id}`);
+                        console.log("home page", player.username);
+                        navigateTo(`profile-page/${player.username}`);
                     });
                     searchResults.appendChild(div);
                 });
