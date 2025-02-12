@@ -7,7 +7,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import include
 from rest_framework.permissions import AllowAny
-from .views import add_player, update_or_add_player,ProtectedView,oauth_callback,get_user_info,add_friend, remove_friend,leaderboard,user_logout,get_online_users
+from .views import add_player, update_or_add_player,ProtectedView,oauth_callback,get_user_info,add_friend, remove_friend,leaderboard,user_logout,get_online_users, victories_per_day,record_match_result
 from myapp.views import get_all_players
 from . import views
 from rest_framework_simplejwt.views import (
@@ -60,6 +60,10 @@ urlpatterns = [
     path('remove-friend/', remove_friend, name='remove_friend'),
 
     path("online-users/", get_online_users, name="online_users"),
+    path('victories-per-day/<uuid:player_id>/', views.victories_per_day, name='victories_per_day'),
+    path('record-game/', views.record_match_result, name='record_game'),
+
+
 ]
 
 # Si des fichiers statiques sont nécessaires

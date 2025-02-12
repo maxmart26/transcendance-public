@@ -222,12 +222,12 @@ const pagesContent = {
                         </tr>
                     </thead>
                     <tbody>
+                    <canvas id="winChart"></canvas>
                         <!-- Les lignes de matchs seront ajoutées dynamiquement ici -->
                     </tbody>
                 </table>
             </div>
-        </div>
-        
+        </div> 
     </div>
   `,
   "game-page": `
@@ -1153,7 +1153,40 @@ document.addEventListener("DOMContentLoaded", async () => {
         populateMatchHistory(matches);
     } catch (error) {
         console.error("Erreur :", error);
-    }}
+    }
+    async function fetchVictories() {
+        const response = await fetch(`/victories-per-day/` + getCookie("user_id") + `/`);
+        const data = await response.json();
+        
+        const winPercentage = data.win_percentage;
+        const losePercentage = 100 - winPercentage;
+
+        new Chart(document.getElementById('winChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Victoires', 'Défaites'],
+                datasets: [{
+                    data: [winPercentage, losePercentage],
+                    backgroundColor: ['green', 'red']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Pourcentage de Victoires'
+                    }
+                }
+            }
+        });
+    }
+
+    fetchVictories();
+}
 });
 
 function populateMatchHistory(matches) {
@@ -1176,9 +1209,9 @@ function populateMatchHistory(matches) {
         // On regarde si l'opponent existe toujours dans la db
         let opponentName;
         if (match.player1 === currentUser) {
-            opponentName = match.player1; // L'autre joueur est l'adversaire
-        } else if (match.player2 != currentUser) {
             opponentName = match.player2; // L'autre joueur est l'adversaire
+        } else if (match.player2 === currentUser) {
+            opponentName = match.player1; // L'autre joueur est l'adversaire
         } else {
             opponentName = "Deleted User"; // Cas improbable mais on le gère
         }

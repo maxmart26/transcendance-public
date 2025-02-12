@@ -22,6 +22,10 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.views.decorators.csrf import csrf_exempt
+from collections import defaultdict
+from django.utils.timezone import now
+import uuid
+
 
 
 
@@ -510,3 +514,94 @@ def leaderboard(request):
 def get_online_users(request):
     online_users = Player.objects.filter(is_online=True).values("username", "email")
     return JsonResponse(list(online_users), safe=False)
+
+
+def victories_per_day(request, player_id):
+    """
+    Calcule le pourcentage de victoires d'un joueur.
+    """
+    try:
+        player = Player.objects.get(id=player_id)
+
+        # Vérifier si le joueur a joué des parties
+        if player.nb_game_play == 0:
+            return JsonResponse({"win_percentage": 0}, safe=False)
+
+        # Calculer le pourcentage
+        percentage = (player.nb_game_win / player.nb_game_play) * 100
+
+        return JsonResponse({"win_percentage": round(percentage, 2)}, safe=False)
+
+    except Player.DoesNotExist:
+        return JsonResponse({"error": "Player not found"}, status=404)
+
+@api_view(["POST"])
+def record_match_result(request):
+    """
+    Enregistre le résultat d'un match de Pong et met à jour les statistiques des joueurs.
+    """
+    data = request.data
+
+    player1_username = data.get("player1")
+    player2_username = data.get("player2")
+    winner_username = data.get("winner")  # "player1" ou "player2"
+    score = data.get("score")  # { "player1": 10, "player2": 7 }
+
+    if not player1_username or not player2_username or not winner_username or not score:
+        return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        player1 = Player.objects.get(username=player1_username)
+        player2 = Player.objects.get(username=player2_username)
+
+        # Créer un match
+        match = Match.objects.create(
+            id=uuid.uuid4(),
+            player1=player1.username,
+            player2=player2.username,
+            status="finished"
+        )
+
+        # Déterminer le gagnant et mettre à jour les stats
+        if winner_username == player1.username:
+            winner = player1
+        elif winner_username == player2.username:
+            winner = player2
+        else:
+            return Response({"error": "Winner must be either player1 or player2"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Mettre à jour les statistiques des joueurs
+        player1.nb_game_play += 1
+        player2.nb_game_play += 1
+
+        if winner == player1:
+            player1.nb_game_win += 1
+        else:
+            player2.nb_game_win += 1
+
+        # Ajouter l'historique du match dans les jeux des joueurs
+        match_id = str(match.id)
+        match_data = {
+            "date": now().strftime("%Y-%m-%d %H:%M:%S"),
+            "player1": player1.username,
+            "player2": player2.username,
+            "winner": winner.username,
+            "score": score
+        }
+
+        # Ajouter l'historique au joueur 1
+        if match_id not in player1.games_history:
+            player1.games_history[match_id] = match_data
+
+        # Ajouter l'historique au joueur 2
+        if match_id not in player2.games_history:
+            player2.games_history[match_id] = match_data
+
+        # Sauvegarder les modifications
+        player1.save()
+        player2.save()
+
+        return Response({"message": "Match recorded successfully!", "match_id": match_id}, status=status.HTTP_201_CREATED)
+
+    except Player.DoesNotExist:
+        return Response({"error": "One or both players not found"}, status=status.HTTP_404_NOT_FOUND)
