@@ -417,7 +417,7 @@ function initializePageScripts(page, userId = null) {
     if (page === "home-page") {
         initializeSearchBar();
     }
-    if (page === "profile-page" && userId) {
+    if (page === "profile-page") {
         console.log("this is profile page");
         loadProfilePage(userId);
     }
@@ -962,12 +962,14 @@ function removeFriend(username, buttonElement) {
 
 function loadProfilePage(userId) {
     // Récupérer l'ID de l'utilisateur connecté (session) ou l'ID passé dans l'URL
-    let session = getCookie("user_username");
-    if (!session) {
+    if (!userId) {
+    userId = getCookie("user_username");
+    if (!userId) {
         console.error("Utilisateur non connecté");
         return;
     }
-    console.log(userId);
+}
+    console.log("user :", userId);
     // Récupérer les informations utilisateur depuis l'API
     let url = `https://${window.location.host}/user/${userId}/`;
     fetch(url)
