@@ -244,10 +244,9 @@ const pagesContent = {
                   <div id="profile-container" class="profile-container"></div>
               </div>
         </div>
-        <div id="game-container">
-            <div id="score">Joueur 1: 0 | Joueur 2: 0</div>
-            
-        </div>
+        <div id='scoreboard'>
+			<h1 id='scores'>0-0</h1>
+		</div>
     </div>
   `,
   "online-game-page": `
@@ -1280,6 +1279,29 @@ function load_tourn_game(){
         else
             setTimeout(wait_cookie, 100);
     }
+}
+
+function start_3Dgame(){
+    navigateTo('game-page')
+    const pongGameTab = document.getElementById('game-page');
+    const div = document.createElement('div')
+    div.id = 'gameCanvas'
+    pongGameTab.appendChild(div);
+
+    const script = document.createElement('script');
+    script.src = pong3d_url;
+    script.defer = true;
+    pongGameTab.appendChild(script);
+    script.onload = () => {
+        setup();
+    }
+    const interval = setInterval(() => {
+        if (getCurrentTab() !== 'game-page'){
+            script.remove();
+            div.remove();
+            clearInterval(interval);
+        }
+    }, 1000);
 }
 
 function load_game(difficulty){
