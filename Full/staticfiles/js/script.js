@@ -88,7 +88,7 @@ const pagesContent = {
         <div class="game-types">
             <p class="choose-game">Which game do you want to launch ?</p>
             <div class="pongs">
-                <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
+                <button onclick="navigateTo('pong-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
                 <button onclick="start_3Dgame()" id="game" class="game-rectangle">PONG 3D (local)</button>
             </div>
             <button onclick="tournament()" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
@@ -249,7 +249,7 @@ const pagesContent = {
 		</div>
     </div>
   `,
-  "online-game-page": `
+  "pong-game-page": `
     <div id="online-game-page">
         <div class="home-navbar">
               <div class="navbar-left">
@@ -398,7 +398,7 @@ function navigateTo(page, addToHistory = true) {
     const app = document.getElementById('pong');
     
     app.innerHTML = "";
-
+    console.log("game page", normalizedPage);
     if (pagesContent[normalizedPage]) {
         app.innerHTML = pagesContent[normalizedPage];
     } else {
