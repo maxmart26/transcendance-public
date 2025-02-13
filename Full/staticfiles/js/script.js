@@ -384,7 +384,7 @@ function navigateTo(page, addToHistory = true) {
     if (normalizedPage.startsWith("profile-page/")) {
         console.log("decoupe user id");
         pageName = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
-        userId = pageName.split("-")[0];
+        userId = pageName.includes("-page") ? pageName.split("-page")[0] : pageName;
         normalizedPage = "profile-page";
         console.log("navigate to: ", userId);
     }
@@ -866,7 +866,7 @@ function setFriendsPage() {
             friendElement.classList.add("ranklist-player");
             friendElement.innerHTML = `
                 <img src="${friend.image_avatar || 'static/img/fox.png'}" alt="Profile" class="ranklist-img">
-                <a href="#profile-page" onclick="loadProfilePage('${friend.username}')">
+                <a href="#profile-page" onclick="navigateTo('profile-page/${friend.username}')">
         ${friend.username}
     </a>
             `;
