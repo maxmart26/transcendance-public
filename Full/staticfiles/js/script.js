@@ -88,7 +88,7 @@ const pagesContent = {
         <div class="game-types">
             <p class="choose-game">Which game do you want to launch ?</p>
             <div class="pongs">
-                <button onclick="navigateTo('pong-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
+                <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
                 <button onclick="start_3Dgame()" id="game" class="game-rectangle">PONG 3D (local)</button>
             </div>
             <button onclick="tournament()" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
@@ -249,7 +249,7 @@ const pagesContent = {
 		</div>
     </div>
   `,
-  "pong-game-page": `
+  "online-game-page": `
     <div id="online-game-page">
         <div class="home-navbar">
               <div class="navbar-left">
@@ -323,6 +323,22 @@ const pagesContent = {
                     <div class="remove-buttons">
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    `,
+    "pong-game-page":`
+    <div id="pong-game">
+        <div class="home-navbar">
+            <div class="navbar-left">
+                <p class="text-wrapper">PONG</p>
+                <a id="home" href="#home" class="navbar-item">HOME</a>
+                <a id="leaderboard" href="#leaderboard" class="navbar-item">LEADERBOARD</a>
+                <a id="friends" href="#friends" class="navbar-item">FRIENDS</a>
+            </div>
+            <div class="navbar-right">
+                <a id="settings" href="#settings" class="navbar-item">SETTINGS</a>
+                <div id="profile-container" class="profile-container"></div>
             </div>
         </div>
     </div>
