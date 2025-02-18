@@ -208,6 +208,7 @@ const pagesContent = {
                     </div>
                 </div>
                 <div class="profile-stats">
+                    <canvas id="winChart"></canvas>
                 </div>
             </div>
             <div class="recap-games">
@@ -222,7 +223,6 @@ const pagesContent = {
                         </tr>
                     </thead>
                     <tbody>
-                    <canvas id="winChart"></canvas>
                         <!-- Les lignes de matchs seront ajoutées dynamiquement ici -->
                     </tbody>
                 </table>
@@ -1103,7 +1103,7 @@ function loadProfilePage() {
             games.appendChild(li2);
             win.appendChild(li3);
             friends.appendChild(li4);
-
+            
         })
         .catch(error => {
             console.error("Erreur lors du chargement du profil utilisateur:", error);
@@ -1137,6 +1137,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const matches = await response.json();
         populateMatchHistory(matches);
+        fetchVictories();
     } catch (error) {
         console.error("Erreur :", error);
     }
@@ -1171,7 +1172,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    fetchVictories();
 }
 });
 

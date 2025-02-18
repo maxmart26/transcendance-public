@@ -764,7 +764,6 @@ li {
 .lead-rectangle {
   position: relative;
   width: 70%;
-  height: 672px;
   margin-top: 9%;
   margin-left: auto;
   margin-right: auto;
@@ -777,6 +776,7 @@ li {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .lead-title {
@@ -955,12 +955,15 @@ li .score-nb {
   justify-content: center;
   gap: 17%;
   margin-bottom: 5%;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
 }
 
 .profile-recap {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   flex-direction: column;
 }
 
@@ -992,22 +995,47 @@ li .score-nb {
 
 .recap-items {
   display: flex;
+  flex: 1;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
   flex-direction: row;
   gap: 50%;
   margin-top: 15%;
 }
 
+#nb-games li {
+  display: flex;
+  flex-direction: column;
+}
+
+#nb-win li {
+  display: flex;
+  flex-direction: column;
+}
+
+#nb-friends li {
+  display: flex;
+  flex-direction: column;
+}
+
 .item-infos {
   display: flex;
+  flex: 1;
+  text-align: center;
+  padding: 5px;
+  border-radius: 5px;
   align-items: center;
   justify-content: center;
   flex-direction: column;
 }
 
-.profile-icon {
-  font-size: 144%;
+#nb-games .profile-icon {
+  width: 60%;
+  margin-left: 20%;
+}
+
+#nb-win .profile-icon {
+  width: 60%;
   margin-left: 20%;
 }
 
@@ -1015,6 +1043,7 @@ li .score-nb {
   color: #FAB005;
   font-family: 'Audiowide', sans-serif;
   font-size: 100%;
+  margin-top: 3%;
 }
 
 .item-title {
@@ -1426,11 +1455,11 @@ li .score-nb {
   color: #fff;
 }
 
-canvas {
-  position: absolute;
-  z-index: 1;
-  top: 25%;
-  left: 30%;
+#winChart {
+  z-index: 5;
+  max-width: 250px;
+  max-height: 250px;
+
 }
 
 .save-settings {
@@ -1583,4 +1612,9 @@ tr:nth-child(even) {
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+}
+.user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
