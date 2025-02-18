@@ -244,6 +244,9 @@ const pagesContent = {
                   <div id="profile-container" class="profile-container"></div>
               </div>
         </div>
+        <div id='scoreboard'>
+            <h1 id='scores'>0-0</h1>
+        </div>
     </div>
   `,
   "online-game-page": `
@@ -1465,62 +1468,6 @@ function tournament(){
     }
 }
 
-function start_3Dgame(){
-    navigateTo('game-page');
-    const pongGameTab = document.getElementById('game-page');
-    const script = document.createElement('script');
-    console.log("pong3d url: ", pong3d_url);
-    script.src = pong3d_url;
-    script.defer = true;
-    script.type = 'module';
-    pongGameTab.appendChild(script);
-    let isInitialized = false;
-    script.onload = () => {
-        console.log("Script Pong chargé !");
-        if (typeof window.init === 'function') {
-            window.init();
-            isInitialized = true;
-          } else {
-            console.error("init n'est pas accessible sur window !");
-          }
-        console.log(isInitialized);
-        if (isInitialized) {
-        console.log("Init() exécuté !");
-
-        // Si l'initialisation a réussi, exécuter les autres fonctions
-        window.createBall();
-        window.updateScoreDisplay();
-        window.animate();
-    }
-}
-    const interval = setInterval(() => {
-        if (getCurrentTab() !== 'game-page'){
-            window.stopGame();
-            script.remove();
-            clearInterval(interval);
-        }
-    }, 1000);
-
-}
-
-
-// Fonction pour nettoyer le jeu
-function cleanupGame() {
-    isGameRunning = false; // Arrête l'animation
-    const container = document.getElementById('game-container');
-    if (container) {
-        container.innerHTML = ''; // Vide le conteneur du jeu
-    }
-    const gameOverElement = document.getElementById('gameOver');
-    if (gameOverElement) {
-        gameOverElement.remove(); // Supprime le message de fin si présent
-    }
-    const scoreElement = document.getElementById('score');
-    if (scoreElement) {
-        scoreElement.remove(); // Supprime le score
-    }
-}
-
 function load_tourn_game(){
     window.location.href='tournament/game/';
     wait_cookie();
@@ -1558,16 +1505,14 @@ function start_3Dgame(){
     navigateTo('game-page')
     const pongGameTab = document.getElementById('game-page');
     const div = document.createElement('div')
-    div.id = 'game-container'
+    div.id = 'gameCanvas'
     pongGameTab.appendChild(div);
-    console.log("game container created");
     const script = document.createElement('script');
     script.src = pong3d_url;
     script.defer = true;
-    script.type = 'module'
     pongGameTab.appendChild(script);
     script.onload = () => {
-        init();
+        setup();
     }
     const interval = setInterval(() => {
         if (getCurrentTab() !== 'game-page'){

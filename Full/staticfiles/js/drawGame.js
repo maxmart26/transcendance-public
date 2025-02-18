@@ -313,7 +313,7 @@ function start_game(socket)
 					player1.score_bo++;
 				else if (winner == player2.name)
 					player2.score_bo++;
-				console.log(player_nb + " received a game over notification.\n");
+				// console.log(player_nb + " received a game over notification.\n");
 				draw('over');
 				kill();
 				break;
@@ -363,7 +363,7 @@ function init_game()
 	player_id = getCookieValue('user_id')
 	match_id = getCookieValue('match_id')
 	console.log("Match_id: " + match_id);
-	console.log("Player_id: " + player_id);
+	// console.log("Player_id: " + player_id);
 
 	socket = new WebSocket('wss://' + window.location.host + '/ws/game/' + match_id + '/');
 
@@ -406,7 +406,7 @@ function init_game()
 			else
 				player_nb = 'spectator'
 
-			console.log("game is all set");
+			console.log("game is ready.");
 			console.log("Player1: " + player1.name);
 			console.log("Player2: " + player2.name);
 			start_game(socket);
@@ -415,9 +415,9 @@ function init_game()
 	};
 
 	socket.onclose = function(e) {
-		console.error('Socket WebSocket closed');
+		console.log('Socket WebSocket closed');
 	};
 	socket.onerror = function(err) {
-		console.error('Error WebSocket :', err);
+		// console.error('Error WebSocket :', err);
 	};
 }
