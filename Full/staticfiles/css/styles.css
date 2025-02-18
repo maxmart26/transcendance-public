@@ -19,7 +19,10 @@ body#pong-game-page {
   background-color: #000;
   width: 900px;
   height: 600px;
-  z-index: 2;
+  position: absolute;
+  z-index: 1;
+  top: 25%;
+  left: 25%;
 }
 
 #scoreboard {
@@ -40,7 +43,7 @@ body#pong-game-page {
   z-index: 3;
 }
 
-canvas {
+#Pong-Multi {
   background-color: #000;
   width: 900px;
   height: 600px;

@@ -4,7 +4,7 @@ var fieldWidth = 400, fieldHeight = 200;
 var paddleWidth, paddleHeight, paddleDepth, paddleQuality;
 var paddle1DirY = 0, paddle2DirY = 0, paddleSpeed = 3;
 var ball, paddle1, paddle2;
-var ballDirX = 1, ballDirY = 1, maxBallSpeed = 1.5, ballSpeed = 0.3;
+var ballDirX = 1, ballDirY = 1, maxBallSpeed = 1.5, ballSpeed = 0.8;
 var score1 = 0, score2 = 0;
 var maxScore = 7;
 

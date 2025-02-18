@@ -490,6 +490,12 @@ function initializeSearchBar() {
     });
 }
 
+document.addEventListener("click", function (event) {
+    if (event.target.id === "profile-img") {
+        navigateTo('profile-page');
+    }
+});
+
 window.addEventListener("popstate", (event) => {
     if (event.state && event.state.normalizedPage) {
         navigateTo(event.state.normalizedPage, false);
@@ -1342,7 +1348,8 @@ function load_tourn_game(){
         if (document.cookie.includes('match_id')){
             navigateTo('pong-game-page', true);
             const pongGameTab = document.getElementById('pong-game');
-            const canvas = document.createElement('canvas')
+            const canvas = document.createElement('canvas');
+            canvas.id = "Pong-Multi";
             pongGameTab.appendChild(canvas);
             const script = document.createElement('script');
             script.src = pongtourney_url;
@@ -1398,6 +1405,7 @@ function load_game(difficulty){
             navigateTo('pong-game-page', true);
             const pongGameTab = document.getElementById('pong-game');
             const canvas = document.createElement('canvas')
+            canvas.id = "Pong-Multi"
             pongGameTab.appendChild(canvas);
             const script = document.createElement('script');
             script.src = pong_url;
