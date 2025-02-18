@@ -20,7 +20,7 @@ re:
 	docker compose -f ./Full/docker-compose.yml up -d --build --force-recreate
 
 logs:
-	docker logs django-container -f
+	docker logs django-container -f | grep -v "WebSocket"
 	
 test:
 	docker compose -f ./Full/docker-compose.yml up --build

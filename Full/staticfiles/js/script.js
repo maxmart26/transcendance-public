@@ -91,7 +91,7 @@ const pagesContent = {
                 <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
                 <button onclick="start_3Dgame()" id="game" class="game-rectangle">PONG 3D (local)</button>
             </div>
-            <button onclick="tournament()" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
+            <button onclick="tournament()" id="tournament-game" class="tournament-rectangle">Tournament</button>
         </div>      
     </div>
   `,
@@ -1529,6 +1529,7 @@ function load_tourn_game(){
             navigateTo('pong-game-page', true);
             const pongGameTab = document.getElementById('pong-game');
             const canvas = document.createElement('canvas')
+            canvas.id = "Pong-Multi"
             pongGameTab.appendChild(canvas);
             const script = document.createElement('script');
             script.src = pongtourney_url;
@@ -1585,6 +1586,7 @@ function load_game(difficulty){
             navigateTo('pong-game-page', true);
             const pongGameTab = document.getElementById('pong-game');
             const canvas = document.createElement('canvas')
+            canvas.id = "Pong-Multi"
             pongGameTab.appendChild(canvas);
             const script = document.createElement('script');
             script.src = pong_url;

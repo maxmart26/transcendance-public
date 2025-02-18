@@ -230,7 +230,7 @@ class TournamentManager(AsyncWebsocketConsumer):
 	async def receive(self, text_data):
 		info_json = json.loads(text_data)
 		type = info_json.get('type')
-		print("Consumer received ", type, "\n", file=sys.stderr)
+		print("\n\n\n\n\n\n\n\n\n\nConsumer received ", type, "\n", file=sys.stderr)
 
 		if (type == "player_disconnect"):
 			self.tournament.players.remove(info_json.get('id'))
@@ -238,6 +238,8 @@ class TournamentManager(AsyncWebsocketConsumer):
 				self.tournament.delete()
 			await self.save_state(self.tournament)
 		elif (type == "get_next_game"):
+			print("id :", info_json.get('player_id'), "\n", file=sys.stderr)
+			print("result: ", info_json.get('result'), "\n", file=sys.stderr)
 			if (info_json.get('result') == 'winner'):
 				match = await self.get_match(self.tournament.games[2])
 				if (not match.player1):

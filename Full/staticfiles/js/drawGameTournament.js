@@ -469,6 +469,7 @@ function start_game(socket)
 					}));
 				}
 				else{
+					console.log('Sent get next');
 					bracket = result;
 					socket_tourn.send(JSON.stringify({
 						'type': 'get_next_game',
@@ -612,9 +613,9 @@ function init_game()
 	};
 
 	socket.onclose = function(e) {
-		console.error('Socket WebSocket closed');
+		console.log('Socket WebSocket closed');
 	};
 	socket.onerror = function(err) {
-		console.error('Error WebSocket :', err);
+		// console.error('Error WebSocket :', err);
 	};
 }
