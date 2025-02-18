@@ -722,6 +722,7 @@ function setupSettingsPage() {
 
                 if (username !== "") {
                     formData.append('username', username);
+                    document.cookie = "user_username=" + username;
                 }
                 if (email !== "") {
                     formData.append('email', email);
