@@ -512,6 +512,57 @@ function deleteCookie(name) {
     document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 }
 
+// -------------------------------- HOME PAGE -------------------------------------------------
+
+function initializeSearchBar() {
+    const searchInput = document.getElementById("search-player");
+    const searchResults = document.getElementById("search-results");
+
+    searchInput.addEventListener("input", async function () {
+        const query = searchInput.value.trim().toLowerCase();
+        if (query.length < 1) {
+            searchResults.style.display = "none";
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://${window.location.host}/search-player/?q=${query}`);
+            const players = await response.json();
+
+            searchResults.innerHTML = ""; // Efface les anciens résultats
+            if (players.length === 0) {
+                searchResults.innerHTML = "<div>Aucun joueur trouvé</div>";
+            } else {
+                players.forEach(player => {
+                    const div = document.createElement("div");
+                    div.textContent = player.username || "Deleted User";
+                    div.addEventListener("click", () => {
+                        console.log("home page", player.username);
+                        navigateTo(`profile-page/${player.username}`);
+                    });
+                    searchResults.appendChild(div);
+                });
+            }
+
+            searchResults.style.display = "block";
+        } catch (error) {
+            console.error("Erreur lors de la recherche des joueurs:", error);
+        }
+    });
+
+    // Cacher la liste de résultats si on clique ailleurs
+    document.addEventListener("click", function (event) {
+        if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+            searchResults.style.display = "none";
+        }
+    });
+}
+
+document.addEventListener("click", function (event) {
+        if (event.target.id === "profile-img") {
+            navigateTo('profile-page');
+        }
+    });
 
 // ----------------- LOGIN PAGE ----------------------------------
 
@@ -1144,11 +1195,20 @@ function loadProfilePage(userId) {
                 <p class="item-nb">${data.user.nb_friends}</p>
                 <p class="item-title">Friends</p>`;
 
+            
+        
+                
+            populateMatchHistory(data);
+            fetchVictories(data.user.username);
+           
+
             // Ajouter les éléments dans la page
             user.appendChild(li);
             games.appendChild(li2);
             win.appendChild(li3);
             friends.appendChild(li4);
+
+            
 
         })
         .catch(error => {
@@ -1156,72 +1216,39 @@ function loadProfilePage(userId) {
         });
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    if (document.getElementById("match-history")){
-    let session = getCookie("user_username"); // Récupère l'ID du joueur connecté
-    let url = `https://${window.location.host}/user/${session}`; // API pour récupérer les matchs
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Erreur de chargement des matchs");
-
-        const matches = await response.json();
-        History(matches);
-    } catch (error) {
-        console.error('Error loading profile image:', error);
-    }
-}
-});
+    
 
 
-document.addEventListener("DOMContentLoaded", async () => {
-    if (document.getElementById("match-history")){
-    let session = getCookie("user_username"); // Récupère l'ID du joueur connecté
-    let url = `https://${window.location.host}/user/${session}`; // API pour récupérer les matchs
+async function fetchVictories(user) {
+    const response = await fetch(`/victories-per-day/` + user + `/`);
+    const data = await response.json();
+    
+    const winPercentage = data.win_percentage;
+    const losePercentage = 100 - winPercentage;
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Erreur de chargement des matchs");
-
-        const matches = await response.json();
-        populateMatchHistory(matches);
-        fetchVictories();
-    } catch (error) {
-        console.error("Erreur :", error);
-    }
-    async function fetchVictories() {
-        const response = await fetch(`/victories-per-day/` + getCookie("user_id") + `/`);
-        const data = await response.json();
-        
-        const winPercentage = data.win_percentage;
-        const losePercentage = 100 - winPercentage;
-
-        new Chart(document.getElementById('winChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Victoires', 'Défaites'],
-                datasets: [{
-                    data: [winPercentage, losePercentage],
-                    backgroundColor: ['green', 'red']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Pourcentage de Victoires'
-                    }
+    new Chart(document.getElementById('winChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Victoires', 'Défaites'],
+            datasets: [{
+                data: [winPercentage, losePercentage],
+                backgroundColor: ['green', 'red']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Pourcentage de Victoires'
                 }
             }
-        });
-    }
-
+        }
+    });
 }
-});
 
 function populateMatchHistory(matches) {
     console.log(matches);
@@ -1251,7 +1278,7 @@ function populateMatchHistory(matches) {
         }
 
         let opponentHTML = opponentName !== "Deleted User"
-            ? `<a href="/profile/${opponentName}" class="profile-link" data-username="${opponentName}">${opponentName}</a>`
+            ? `<a href="#profile-page" onclick="navigateTo('profile-page/${opponentName}')"  class="profile-link" data-username="${opponentName}">${opponentName}</a>`
             : opponentName;
 
         // ✅ Ajoute une classe dynamique sur le texte "win" ou "lose"

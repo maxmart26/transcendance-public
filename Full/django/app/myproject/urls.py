@@ -60,7 +60,7 @@ urlpatterns = [
     path('remove-friend/', remove_friend, name='remove_friend'),
 
     path("online-users/", get_online_users, name="online_users"),
-    path('victories-per-day/<uuid:player_id>/', views.victories_per_day, name='victories_per_day'),
+    path('victories-per-day/<str:username>/', views.victories_per_day, name='victories_per_day'),
     path('record-game/', views.record_match_result, name='record_game'),
 
 

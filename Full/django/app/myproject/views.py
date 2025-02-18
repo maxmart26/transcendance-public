@@ -516,12 +516,12 @@ def get_online_users(request):
     return JsonResponse(list(online_users), safe=False)
 
 
-def victories_per_day(request, player_id):
+def victories_per_day(request, username):
     """
     Calcule le pourcentage de victoires d'un joueur.
     """
     try:
-        player = Player.objects.get(id=player_id)
+        player = Player.objects.get(username=username)
 
         # Vérifier si le joueur a joué des parties
         if player.nb_game_play == 0:
