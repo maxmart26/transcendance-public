@@ -350,7 +350,6 @@ const pagesContent = {
 
 // Affichage image de profil sur toutes les pages
 
-//document.addEventListener('DOMContentLoaded', async () => {
 async function initializeProfilePic () {
     try {
         let session = getCookie("user_username");
@@ -377,7 +376,6 @@ async function initializeProfilePic () {
     } catch (error) {
         console.error('Error loading profile image:', error);
     }
-//});
 }
 
 function getPageName(page) {
@@ -394,12 +392,17 @@ function getCurrentTab() {
 // Gestion de la navigation vers les pages avec historique
 
 function navigateTo(page, addToHistory = true) {
-    const normalizedPage = getPageName(page);
+    let normalizedPage = getPageName(page);
     // Vérifie si on veut afficher un profil spécifique
+    let pageName = null;
     let userId = null;
-    if (normalizedPage.startsWith("profile/")) {
-        userId = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
+    console.log(normalizedPage);
+    if (normalizedPage.startsWith("profile-page/")) {
+        console.log("decoupe user id");
+        pageName = normalizedPage.split("/")[1]; // Récupère l'ID du joueur depuis l'URL
+        userId = pageName.includes("-page") ? pageName.split("-page")[0] : pageName;
         normalizedPage = "profile-page";
+        console.log("navigate to: ", userId);
     }
     if (normalizedPage == 'pong-game-page')
         document.body.id = 'pong-game-page';
@@ -411,15 +414,14 @@ function navigateTo(page, addToHistory = true) {
     const app = document.getElementById('pong');
     
     app.innerHTML = "";
-
+    console.log("game page", normalizedPage);
     if (pagesContent[normalizedPage]) {
         app.innerHTML = pagesContent[normalizedPage];
     } else {
         app.innerHTML = `<h1>Page not found</h1>`;
         return;
     }
-
-    initializePageScripts(normalizedPage, getCookie('user_id'));
+    initializePageScripts(normalizedPage, userId);
 }
 
 // Mise a jour des pages quand on clique dessus
@@ -431,7 +433,7 @@ function initializePageScripts(page, userId = null) {
     if (page === "home-page") {
         initializeSearchBar();
     }
-    if (page === "profile-page" && userId) {
+    if (page === "profile-page") {
         console.log("this is profile page");
         loadProfilePage(userId);
     }
@@ -957,8 +959,11 @@ function setFriendsPage() {
                     <div class="status-indicator ${statusClass}"></div>
                     <img src="${friend.image_avatar || 'static/img/fox.png'}" alt="Profile" class="ranklist-img">
                 </div>
-                ${friend.username}
+                <a href="#profile-page" onclick="navigateTo('profile-page/${friend.username}')">
+        ${friend.username}
+    </a>
             `;
+            console.log("friend code : ", friendElement);
             friendsContainer.appendChild(friendElement);
 
             // Bouton Remove pour chaque ami
@@ -1048,16 +1053,18 @@ function removeFriend(username, buttonElement) {
 // ------------------------ PROFILE PAGE ---------------------------
 
 
-function loadProfilePage() {
+function loadProfilePage(userId) {
     // Récupérer l'ID de l'utilisateur connecté (session) ou l'ID passé dans l'URL
-    let session = getCookie("user_username");
-    if (!session) {
+    if (!userId) {
+    userId = getCookie("user_username");
+    if (!userId) {
         console.error("Utilisateur non connecté");
         return;
     }
-
+}
+    console.log("user :", userId);
     // Récupérer les informations utilisateur depuis l'API
-    let url = `https://${window.location.host}/user/${session}/`;
+    let url = `https://${window.location.host}/user/${userId}/`;
     fetch(url)
         .then(response => {
             if (!response.ok) throw new Error('Échec du chargement des informations utilisateur');
@@ -1390,6 +1397,62 @@ function tournament(){
     }
 }
 
+function start_3Dgame(){
+    navigateTo('game-page');
+    const pongGameTab = document.getElementById('game-page');
+    const script = document.createElement('script');
+    console.log("pong3d url: ", pong3d_url);
+    script.src = pong3d_url;
+    script.defer = true;
+    script.type = 'module';
+    pongGameTab.appendChild(script);
+    let isInitialized = false;
+    script.onload = () => {
+        console.log("Script Pong chargé !");
+        if (typeof window.init === 'function') {
+            window.init();
+            isInitialized = true;
+          } else {
+            console.error("init n'est pas accessible sur window !");
+          }
+        console.log(isInitialized);
+        if (isInitialized) {
+        console.log("Init() exécuté !");
+
+        // Si l'initialisation a réussi, exécuter les autres fonctions
+        window.createBall();
+        window.updateScoreDisplay();
+        window.animate();
+    }
+}
+    const interval = setInterval(() => {
+        if (getCurrentTab() !== 'game-page'){
+            window.stopGame();
+            script.remove();
+            clearInterval(interval);
+        }
+    }, 1000);
+
+}
+
+
+// Fonction pour nettoyer le jeu
+function cleanupGame() {
+    isGameRunning = false; // Arrête l'animation
+    const container = document.getElementById('game-container');
+    if (container) {
+        container.innerHTML = ''; // Vide le conteneur du jeu
+    }
+    const gameOverElement = document.getElementById('gameOver');
+    if (gameOverElement) {
+        gameOverElement.remove(); // Supprime le message de fin si présent
+    }
+    const scoreElement = document.getElementById('score');
+    if (scoreElement) {
+        scoreElement.remove(); // Supprime le score
+    }
+}
+
 function load_tourn_game(){
     window.location.href='tournament/game/';
     wait_cookie();
@@ -1447,7 +1510,7 @@ function start_3Dgame(){
 }
 
 function load_game(difficulty){
-    window.location.href='create-game/' + difficulty + '/'
+    window.location.href='create-game/' + difficulty + '/';
     wait_cookie();
     function wait_cookie(){
         if (document.cookie.includes('match_id')){

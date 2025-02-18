@@ -1584,6 +1584,7 @@ tr:nth-child(even) {
   font-weight: bold;
 }
 
+<<<<<<< HEAD
 .profile-container {
   position: relative;
   display: inline-block;
@@ -1613,8 +1614,14 @@ tr:nth-child(even) {
   border-radius: 50%;
   object-fit: cover;
 }
+=======
+>>>>>>> frontend
 .user {
   display: flex;
   align-items: center;
   justify-content: center;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> frontend

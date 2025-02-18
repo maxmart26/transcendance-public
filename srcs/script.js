@@ -279,7 +279,7 @@ const pagesContent = {
             <div id="score">Joueur 1: 0 | Joueur 2: 0</div>
             
         </div>
-        <script src="pong3d/pong.js"></script>
+        <script src="js/pong.js"></script>
     </div>
   `
 };

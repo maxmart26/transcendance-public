@@ -975,7 +975,7 @@ input {
 }
 
 .profile-icon {
-  font-size: 144%;
+  font-size: 10px;
   margin-left: 20%;
 }
 
@@ -983,6 +983,7 @@ input {
   color: #FAB005;
   font-family: 'Audiowide', sans-serif;
   font-size: 100%;
+  margin-top: 3%;
 }
 
 .item-title {
