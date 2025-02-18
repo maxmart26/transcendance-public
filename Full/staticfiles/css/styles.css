@@ -1427,10 +1427,10 @@ li .score-nb {
 }
 
 canvas {
-  position: absolute;
-  z-index: 1;
-  top: 25%;
-  left: 30%;
+  z-index: 5;
+  max-width: 250px;
+  max-height: 250px;
+
 }
 
 .save-settings {
