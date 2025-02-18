@@ -446,6 +446,50 @@ function initializePageScripts(page, userId = null) {
     }
 }
 
+function initializeSearchBar() {
+    const searchInput = document.getElementById("search-player");
+    const searchResults = document.getElementById("search-results");
+
+    searchInput.addEventListener("input", async function () {
+        const query = searchInput.value.trim().toLowerCase();
+        if (query.length < 1) {
+            searchResults.style.display = "none";
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://${window.location.host}/search-player/?q=${query}`);
+            const players = await response.json();
+
+            searchResults.innerHTML = ""; // Efface les anciens résultats
+            if (players.length === 0) {
+                searchResults.innerHTML = "<div>Aucun joueur trouvé</div>";
+            } else {
+                players.forEach(player => {
+                    const div = document.createElement("div");
+                    div.textContent = player.username || "Deleted User";
+                    div.addEventListener("click", () => {
+                        console.log("home page", player.username);
+                        navigateTo(`profile-page/${player.username}`);
+                    });
+                    searchResults.appendChild(div);
+                });
+            }
+
+            searchResults.style.display = "block";
+        } catch (error) {
+            console.error("Erreur lors de la recherche des joueurs:", error);
+        }
+    });
+
+    // Cacher la liste de résultats si on clique ailleurs
+    document.addEventListener("click", function (event) {
+        if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+            searchResults.style.display = "none";
+        }
+    });
+}
+
 window.addEventListener("popstate", (event) => {
     if (event.state && event.state.normalizedPage) {
         navigateTo(event.state.normalizedPage, false);
