@@ -91,7 +91,7 @@ const pagesContent = {
                 <button onclick="navigateTo('online-game-page')" id="online-game" class="game-rectangle">PONG (online)</button>
                 <button onclick="start_3Dgame()" id="game" class="game-rectangle">PONG 3D (local)</button>
             </div>
-            <button onclick="tournament()" id="tournament-game" class="tournament-rectangle">Tournament (1/4)</button>
+            <button onclick="tournament()" id="tournament-game" class="tournament-rectangle">Tournament</button>
         </div>      
     </div>
   `,
@@ -1073,7 +1073,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (error) {
         console.error("Erreur :", error);
     }
-});
+}});
 
 function populateMatchHistory(matches) {
     console.log(matches);
