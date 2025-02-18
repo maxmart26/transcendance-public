@@ -1427,8 +1427,10 @@ li .score-nb {
 }
 
 canvas {
-  display: block;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  position: absolute;
+  z-index: 1;
+  top: 25%;
+  left: 30%;
 }
 
 .save-settings {
