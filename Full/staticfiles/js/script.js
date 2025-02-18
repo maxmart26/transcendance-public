@@ -1126,6 +1126,55 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 }});
 
+document.addEventListener("DOMContentLoaded", async () => {
+    if (document.getElementById("match-history")){
+    let session = getCookie("user_username"); // Récupère l'ID du joueur connecté
+    let url = `https://${window.location.host}/user/${session}`; // API pour récupérer les matchs
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Erreur de chargement des matchs");
+
+        const matches = await response.json();
+        populateMatchHistory(matches);
+    } catch (error) {
+        console.error("Erreur :", error);
+    }
+    async function fetchVictories() {
+        const response = await fetch(`/victories-per-day/` + getCookie("user_id") + `/`);
+        const data = await response.json();
+        
+        const winPercentage = data.win_percentage;
+        const losePercentage = 100 - winPercentage;
+
+        new Chart(document.getElementById('winChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Victoires', 'Défaites'],
+                datasets: [{
+                    data: [winPercentage, losePercentage],
+                    backgroundColor: ['green', 'red']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Pourcentage de Victoires'
+                    }
+                }
+            }
+        });
+    }
+
+    fetchVictories();
+}
+});
+
 function populateMatchHistory(matches) {
     console.log(matches);
     const tbody = document.querySelector("#match-history tbody");
