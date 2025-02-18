@@ -431,9 +431,9 @@ function navigateTo(page, addToHistory = true) {
 function initializePageScripts(page, userId = null) {
     initializeNavbar();
     initializeProfilePic();
-    // if (page === "home-page") {
-    //     initializeSearchBar();
-    // }
+    if (page === "home-page") {
+        initializeSearchBar();
+    }
     if (page === "profile-page") {
         console.log("this is profile page");
         loadProfilePage(userId);
@@ -1092,55 +1092,66 @@ function removeFriend(username, buttonElement) {
 // ------------------------ PROFILE PAGE ---------------------------
 
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        let session = getCookie("user_username");
-        console.log("User ID:", session);
-        let url = "https://" + window.location.host + "/user/" + session +'/';
-        console.log(url);
-        // Remplace l'URL par l'endpoint de ton API qui retourne l'image de l'utilisateur
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to fetch user infos');
-
-        const data = await response.json();
-        
-        if (document.getElementById("profile-page")) {
+function loadProfilePage(userId) {
+    // Récupérer l'ID de l'utilisateur connecté (session) ou l'ID passé dans l'URL
+    if (!userId) {
+    userId = getCookie("user_username");
+    if (!userId) {
+        console.error("Utilisateur non connecté");
+        return;
+    }
+}
+    console.log("user :", userId);
+    // Récupérer les informations utilisateur depuis l'API
+    let url = `https://${window.location.host}/user/${userId}/`;
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Échec du chargement des informations utilisateur');
+            return response.json();
+        })
+        .then(data => {
             const user = document.getElementById("user");
             const games = document.getElementById("nb-games");
             const win = document.getElementById("nb-win");
             const friends = document.getElementById("nb-friends");
 
+            // Créer et insérer les informations de l'utilisateur dans le DOM
             const li = document.createElement("li");
+            li.innerHTML = `
+                <div id="profile-image">
+                    <img src="${data.user.image_avatar}" alt="Profile" class="profile-image">
+                </div>
+                <div class="user-online">
+                    <p id="profile-username" class="profile-username">${data.user.username}</p>
+                    <div class="online">ONLINE</div>
+                </div>`;
+
             const li2 = document.createElement("li");
+            li2.innerHTML = `
+                <img src="static/img/dice.png" alt="Games" class="profile-icon">
+                <p class="item-nb">${data.user.nb_game_play}</p>
+                <p class="item-title">Games</p>`;
+
             const li3 = document.createElement("li");
+            li3.innerHTML = `
+                <img src="static/img/trophy.png" alt="Wins" class="profile-icon">
+                <p class="item-nb">${data.user.nb_game_win}</p>
+                <p class="item-title">Victories</p>`;
+
             const li4 = document.createElement("li");
-            
-            
-            li.innerHTML = `<div id="profile-image"><img src=${data.user.image_avatar} alt="Profile" class="profile-image"></div>
-            <div class="user-online">
-                <p id="profile-username" class="profile-username">${data.user.username}</p>
-                <div class="online">ONLINE</div>
-            </div>`;
+            li4.innerHTML = `
+                <img src="static/img/heart.png" alt="Friends" class="profile-icon">
+                <p class="item-nb">${data.user.nb_friends}</p>
+                <p class="item-title">Friends</p>`;
 
-            li2.innerHTML = `<img src="static/img/dice.png" alt="Profile" class="profile-icon">
-            <p class="item-nb">${data.user.nb_game_play}</p>
-            <p class="item-title">Games</p>`;
-            
-            li3.innerHTML = `<img src="static/img/trophy.png" alt="Profile" class="profile-icon">
-            <p class="item-nb">${data.user.nb_game_win}</p>
-            <p class="item-title">Victories</p>`;
-
-            li4.innerHTML = `<img src="static/img/heart.png" alt="Profile" class="profile-icon">
-            <p class="item-nb">${data.user.nb_friends}</p>
-            <p class="item-title">Friends</p>`;
-            
+            // Ajouter les éléments dans la page
             user.appendChild(li);
             games.appendChild(li2);
             win.appendChild(li3);
             friends.appendChild(li4);
-            
-        }
-        catch(error => {
+
+        })
+        .catch(error => {
             console.error("Erreur lors du chargement du profil utilisateur:", error);
         });
 }
@@ -1159,6 +1170,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (error) {
         console.error('Error loading profile image:', error);
     }
+}
 });
 
 
