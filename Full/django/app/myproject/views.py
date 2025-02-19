@@ -69,10 +69,10 @@ def add_player(request):
         username = data.get("username")
         password = data.get("password")
         email = data.get("email")
-        image_avatar = request.FILES.get("image_avatar")
+        image_avatar = request.FILES.get("image_avatar", None)
 
-        if not username or not password or not email or not image_avatar:
-            return Response({"error": "Tous les champs (username, password, email, image_avatar) sont requis."},
+        if not username or not password or not email:
+            return Response({"error": "Tous les champs (username, password, image_avatar) sont requis."},
                             status=status.HTTP_400_BAD_REQUEST)
 
         if Player.objects.filter(email=email).exists():
@@ -433,7 +433,7 @@ def get_user_info(request, username):
         'id': str(user.id),
         'username': user.username,
         'email': user.email,
-        'image_avatar': user.image_avatar.url if user.image_avatar else None,
+        'image_avatar': user.get_avatar_url(),
         'nb_game_play': user.nb_game_play,
         'nb_game_win': user.nb_game_win,
         'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S'),

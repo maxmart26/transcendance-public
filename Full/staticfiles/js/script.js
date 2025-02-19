@@ -682,18 +682,19 @@ document.addEventListener("click", async function (event) {
         return;
     }
 
-    if (!_profileImage.files[0]) {
-        errorMessage.textContent = "Please choose a profile image.";
-        return;
-    }
+    // if (!_profileImage.files[0]) {
+    //     errorMessage.textContent = "Please choose a profile image.";
+    //     return;
+    // }
 
 
     const formData = new FormData();
     formData.append('username', _username);
     formData.append('password', _password);
     formData.append('email', _email);
-    formData.append('image_avatar', _profileImage.files[0]);
-
+    if (_profileImage.files[0]) {
+        formData.append("image_avatar", _profileImage.files[0]);
+    }
     console.table(Array.from(formData.entries()));
 
     console.table(window.location.host);
@@ -778,6 +779,7 @@ function setupSettingsPage() {
 
                 if (username !== "") {
                     formData.append('username', username);
+                    document.cookie = "user_username=" + username;
                 }
                 if (email !== "") {
                     formData.append('email', email);

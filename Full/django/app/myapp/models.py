@@ -5,6 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 
 class PlayerManager(BaseUserManager):
@@ -29,12 +30,16 @@ class PlayerManager(BaseUserManager):
         return self.create_user(username, password, email, **extra_fields)
 
 
+def get_default_avatar():
+    return "avatar/fox.png"  # Relatif à MEDIA_ROOT
+
+
 class Player(AbstractBaseUser, PermissionsMixin):
     id = models.CharField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=20, unique=True)
     password = models.CharField(_('password'), max_length=128)
     email = models.EmailField(max_length=128, unique=True)
-    image_avatar = models.ImageField(upload_to='avatar/', null=True, blank=True)
+    image_avatar = models.ImageField(upload_to='avatar/', default=get_default_avatar, null=True, blank=True)
     nb_game_play = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     nb_game_win = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     created_at = models.DateTimeField(auto_now_add=True)
@@ -57,6 +62,12 @@ class Player(AbstractBaseUser, PermissionsMixin):
 
     objects = PlayerManager()
 
+    def get_avatar_url(self):
+        """Retourne l'URL de l'avatar ou l'image par défaut."""
+        if self.image_avatar:
+            return f"{settings.MEDIA_URL}{self.image_avatar}"
+        return f"{settings.MEDIA_URL}{get_default_avatar()}"
+
     def __str__(self):
         return self.username
 
@@ -77,7 +88,7 @@ class Player(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
-    
+        
 class Match(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     player1 = models.CharField(max_length=255, null=True, blank=True)
