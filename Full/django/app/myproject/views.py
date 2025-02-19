@@ -340,12 +340,14 @@ def oauth_callback(request):
             image_response = requests.get(avatar_url)
             if image_response.status_code == 200:
                 image_name = f"avatars/{username}.jpg"  # Nom du fichier
+                player.is_online = True
                 player.image_avatar.save(image_name, ContentFile(image_response.content), save=True)
 
         if not created and avatar_url:
             image_response = requests.get(avatar_url)
             if image_response.status_code == 200:
                 image_name = f"avatars/{username}.jpg"
+                player.is_online = True
                 player.image_avatar.save(image_name, ContentFile(image_response.content), save=True)
 
         # Connecter l'utilisateur

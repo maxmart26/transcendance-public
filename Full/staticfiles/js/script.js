@@ -1203,7 +1203,7 @@ function loadProfilePage(userId) {
             
         
                 
-            populateMatchHistory(data);
+            populateMatchHistory(data,userId);
             fetchVictories(data.user.username);
            
 
@@ -1255,12 +1255,11 @@ async function fetchVictories(user) {
     });
 }
 
-function populateMatchHistory(matches) {
+function populateMatchHistory(matches,currentUser) {
     console.log(matches);
     const tbody = document.querySelector("#match-history tbody");
     tbody.innerHTML = ""; // Vide le tableau avant de le remplir
 
-    const currentUser = getCookie("user_username");
 
     // Tri des matchs par date (du plus récent au plus ancien)
     console.log(matches.user.games_history);
